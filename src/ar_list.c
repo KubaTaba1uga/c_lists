@@ -10,8 +10,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// External
-
 // App
 #include "ar_list.h"
 #include "utils/std_lib_utils.h"
@@ -34,7 +32,7 @@ static void *arl_move_indexes_by_positive_number(ar_list *l, size_t start_i,
 /* TO-DO */
 /* 1. set up errno on failure */
 
-void *arl_init(ar_list *l, size_t default_capacity) {
+ar_list *arl_init(ar_list *l, size_t default_capacity) {
   /* `default_capacity` tells maximum amount of pointers
    *     which list can store until realloc. */
   /*  `default_capacity` is parametrized for flexibility. */

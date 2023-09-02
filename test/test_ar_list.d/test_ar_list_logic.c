@@ -9,6 +9,7 @@
 //   for static functions testing.
 // Do not forget adding `-zmuldefs` to gcc.
 #include "ar_list.h"
+#include "mock_std_lib_utils.h"
 
 /*******************************************************************************
  *    TESTS DECLARATIONS
@@ -27,7 +28,16 @@ int arl_small_values[] = {0, 1, 2, 3, 4, 5};
 
 void test_unity(void) { TEST_PASS_MESSAGE("Unity is working."); }
 
-void test_arl_init_success(void) {}
+void test_arl_init_failure(void) {
+  ar_list l, *received;
+
+  app_malloc_IgnoreAndReturn(NULL);
+  get_pointer_size_ExpectAndReturn(sizeof(void));
+
+  received = arl_init(&l, 10);
+
+  TEST_ASSERT_NULL(received);
+}
 
 /*******************************************************************************
  *    PRIVATE API TESTS

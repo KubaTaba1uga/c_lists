@@ -14,7 +14,7 @@ project('c_lists', 'c',
 
 subdir('src')
 
-c_lists = shared_library('c_lists', sources)
+#c_lists = shared_library('c_lists', sources)
 
 # ******************************************************************************
 # *    Tests

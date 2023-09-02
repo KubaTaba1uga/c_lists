@@ -17,7 +17,7 @@ typedef struct {
   void **array;
 } ar_list;
 
-extern void *arl_init(ar_list *l, size_t default_size);
+extern ar_list *arl_init(ar_list *l, size_t default_size);
 extern void *arl_get(ar_list *l, size_t i);
 extern void *arl_set(ar_list *l, size_t i, void *value);
 
