@@ -18,6 +18,10 @@ test_ar_list_exe = executable('test_ar_list_logic',
   ],
   include_directories: [src, utils],
   dependencies: [unity_dependency, cmock_dependency],
+  link_args: [
+    # allow static functions testing
+    '-zmuldefs',
+  ]
 )
 
 test('test_ar_list_logic', test_ar_list_exe)

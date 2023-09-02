@@ -9,7 +9,8 @@
 // including source file instead of header file allows
 //   for static functions testing.
 // Do not forget adding `-zmuldefs` to gcc.
-#include "ar_list.h"
+#include "ar_list.c"
+
 #include "mock_std_lib_utils.h"
 #include "std_lib_utils.h"
 
@@ -78,5 +79,20 @@ void test_arl_init_success(void) {
 /*******************************************************************************
  *    PRIVATE API TESTS
  ******************************************************************************/
+void test_arl_count_new_capacity_base(void) {
+  /* Show array capacity growth ratio by example. */
+  /* Purpose of this function is mainly documentational. */
+
+  size_t expected_values[] = {1000, 2500, 6250, 15625};
+  size_t size = 0;
+  size_t capacity = 1000;
+  size_t i;
+
+  for (i = 0; i < (sizeof(expected_values) / sizeof(size_t)); i++) {
+    capacity = size = arl_count_new_capacity_base(size, capacity);
+
+    TEST_ASSERT_EQUAL(capacity, expected_values[i]);
+  }
+}
 
 /* void test_arl_alloc_array */
