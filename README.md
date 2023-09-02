@@ -46,8 +46,6 @@ git push -u origin master
 
 I recommend installing perequesitest and confirming that all tests are passing before src/* and test/* are actually deleted.
 
-Project's name or version can be changed in ./meson.build file.
-
 ## Prerequisites
 - [Meson](https://mesonbuild.com/)
 - [Ruby](https://www.ruby-lang.org/en/)
