@@ -17,7 +17,6 @@
 /*******************************************************************************
  *    PRIVATE API DECLARATIONS
  ******************************************************************************/
-static void *arl_alloc_array(ar_list *l, size_t default_size);
 static size_t arl_count_new_capacity(size_t size, size_t capacity);
 static size_t arl_count_new_capacity_base(size_t size, size_t capacity);
 static bool arl_is_i_invalid(ar_list *l, size_t i);
@@ -38,7 +37,7 @@ ar_list *arl_init(ar_list *l, size_t default_capacity) {
   /*  `default_capacity` is parametrized for flexibility. */
   /*  Which makes You responsible for knowing the data. */
 
-  void *arl_array = arl_alloc_array(l, default_capacity);
+  void *arl_array = app_malloc(default_capacity * get_pointer_size());
 
   if (!arl_array)
     return NULL;
@@ -112,11 +111,6 @@ void *arl_insert(ar_list *l, size_t i, void *value) {
 // SHRINK IS ONLY IN POP
 // IF SIZE < CAPACITY / 3
 //     CAPACITY = CAPACITY / 2
-
-static void *arl_alloc_array(ar_list *l, size_t default_capacity) {
-  /* return NULL if not enough memory. */
-  return app_malloc(default_capacity * get_pointer_size());
-}
 
 static size_t arl_count_new_capacity(size_t size, size_t capacity) {
   return arl_count_new_capacity_base(size, capacity) * get_pointer_size();
