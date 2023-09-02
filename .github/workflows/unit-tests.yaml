@@ -1,0 +1,23 @@
+name: Unit Tests
+run-name: ${{ github.actor }} is testing the app for ${{ github.ref }}
+on:
+  push:
+    branches:
+      - "main"
+  pull_request:
+    branches:
+      - "main"
+env:
+  BUILD_DIR: build
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Copy Project
+        uses: actions/checkout@v3
+      - name: Install meson
+        run: ./scripts/install_meson.sh
+      - name: Setup build dir
+        run: meson setup $BUILD_DIR
+      - name: Run tests
+        run: meson test -v -C $BUILD_DIR
