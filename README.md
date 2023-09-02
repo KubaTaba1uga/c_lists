@@ -3,12 +3,12 @@
 Template for new c projects. Includes build system, test, mocking, readme, license, pipelines. 
 
 1. [Getting Started](#Getting-Started)
-2. [Prerequisites](#Prerequisites)
-3. [Building](#Building)
-4. [Tests](#Tests)
-5. [Pipelines](#Pipelines)
-6. [Authors](#Authors)
-7. [License](#License)
+3. [Prerequisites](#Prerequisites)
+4. [Building](#Building)
+5. [Tests](#Tests)
+6. [Pipelines](#Pipelines)
+7. [Authors](#Authors)
+8. [License](#License)
 
 
 
