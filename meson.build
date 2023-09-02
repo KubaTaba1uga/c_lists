@@ -3,7 +3,7 @@
 # ******************************************************************************
 # *    App
 # ******************************************************************************
-project('c_project_template', 'c',
+project('c_lists', 'c',
          version: '0.0.1',
 	 meson_version: '>=1.0.1',
 	 default_options: [
@@ -14,7 +14,7 @@ project('c_project_template', 'c',
 
 subdir('src')
 
-main = executable('main', sources)
+c_lists = shared_library('c_lists', sources)
 
 # ******************************************************************************
 # *    Tests

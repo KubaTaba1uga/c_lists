@@ -1,3 +1,3 @@
 sources += files(
-   'std_lib_utils.c', 'std_lib_utils.h'
+   'memory.c', 'memory.h'
 )

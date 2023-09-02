@@ -1,6 +1,5 @@
 sources = files(
-   'main.c',
-   'gardener.c', 'gardener.h',
+   'ar_list.c', 'ar_list.h',
 )
 
 subdir('utils')
