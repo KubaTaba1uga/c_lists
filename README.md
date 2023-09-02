@@ -44,7 +44,7 @@ Push changes
 git push -u origin master
 ```
 
-I recommend installing perequesitest and confirming that all tests are passing before src/*, test/* are actually deleted.
+I recommend installing perequesitest and confirming that all tests are passing before src/* and test/* are actually deleted.
 
 Project's name or version can be changed in ./meson.build file.
 
