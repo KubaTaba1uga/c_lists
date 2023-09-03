@@ -5,9 +5,9 @@
  *    IMPORTS
  ******************************************************************************/
 // C standard library
+#include <limits.h>
 #include <stdbool.h>
 #include <stddef.h>
-#include <stdio.h>
 #include <stdlib.h>
 
 // App
@@ -38,10 +38,15 @@ int arl_init(ar_list *l, size_t default_capacity) {
   /*  `default_capacity` is parametrized for flexibility. */
   /*  Which makes You responsible for knowing the data. */
 
-  void *arl_array = app_malloc(default_capacity * get_pointer_size());
+  size_t p_size = get_pointer_size();
+
+  if (!is_overflow_size_t_multi(default_capacity, p_size))
+    return -1;
+
+  void *arl_array = app_malloc(default_capacity * p_size);
 
   if (!arl_array)
-    return -1;
+    return -2;
 
   l->array = arl_array;
   l->capacity = default_capacity;
@@ -127,7 +132,7 @@ static int arl_grow_array_capacity(ar_list *l) {
   size_t new_capacity = arl_count_new_capacity(l->size, l->capacity);
   size_t pointer_size = get_pointer_size();
 
-  if (is_overflow_int_multi(new_capacity, pointer_size))
+  if (is_overflow_size_t_multi(new_capacity, pointer_size))
     return -1;
 
   p = app_realloc(l->array, new_capacity * pointer_size);
@@ -150,9 +155,12 @@ static void *arl_move_indexes_by_positive_number(ar_list *l, size_t start_i,
   /*    INPUT  l.array {0, 1, 2, , ,}, start_i 1, move_by 2 */
   /*    OUTPUT l.array {0, NULL, NULL, 1, 2} */
 
+  // Idea is to detect all failures upfront so recovery from half moved array is
+  // not required.
+
   void *p;
-  signed long int elements_to_move_amount;
-  size_t i, old_size, new_size, i_source, i_dest;
+
+  size_t i, old_size, new_size, i_source, i_dest, elements_to_move_amount;
 
   old_size = l->size, new_size = l->size + move_by;
   elements_to_move_amount = old_size - start_i;
