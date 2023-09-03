@@ -11,6 +11,7 @@
  *    PUBLIC API
  ******************************************************************************/
 void *app_malloc(size_t size);
+void *app_realloc(void *p, size_t size);
 
 size_t get_pointer_size(void);
 

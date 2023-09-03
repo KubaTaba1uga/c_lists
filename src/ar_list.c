@@ -12,15 +12,15 @@
 
 // App
 #include "ar_list.h"
+#include "utils/overflow_utils.h"
 #include "utils/std_lib_utils.h"
 
 /*******************************************************************************
  *    PRIVATE API DECLARATIONS
  ******************************************************************************/
 static size_t arl_count_new_capacity(size_t size, size_t capacity);
-static size_t arl_count_new_capacity_base(size_t size, size_t capacity);
 static bool arl_is_i_invalid(ar_list *l, size_t i);
-static void *arl_grow_array_capacity(ar_list *l);
+static int arl_grow_array_capacity(ar_list *l);
 static void *arl_move_indexes_by_positive_number(ar_list *l, size_t start_i,
                                                  size_t move_by);
 
@@ -31,22 +31,23 @@ static void *arl_move_indexes_by_positive_number(ar_list *l, size_t start_i,
 /* TO-DO */
 /* 1. set up errno on failure */
 
-ar_list *arl_init(ar_list *l, size_t default_capacity) {
+int arl_init(ar_list *l, size_t default_capacity) {
+  /* Function return 0 on success, not 0 on failure. */
   /* `default_capacity` tells maximum amount of pointers
-   *     which list can store until realloc. */
+   *     which list can store until first realloc. */
   /*  `default_capacity` is parametrized for flexibility. */
   /*  Which makes You responsible for knowing the data. */
 
   void *arl_array = app_malloc(default_capacity * get_pointer_size());
 
   if (!arl_array)
-    return NULL;
+    return -1;
 
   l->array = arl_array;
   l->capacity = default_capacity;
   l->size = 0;
 
-  return l;
+  return 0;
 }
 
 void *arl_get(ar_list *l, size_t i) {
@@ -84,6 +85,7 @@ void *arl_set(ar_list *l, size_t i, void *value) {
 /*     arl_grow_array_capacity(l); */
 /* } */
 
+// to-do: change void* to int
 void *arl_insert(ar_list *l, size_t i, void *value) {
   /* Insert value to the index. */
   /* Return NULL on failure. */
@@ -98,8 +100,6 @@ void *arl_insert(ar_list *l, size_t i, void *value) {
     return NULL;
 
   p = arl_set(l, i, value);
-  if (!p)
-    return NULL;
 
   return p;
 }
@@ -113,11 +113,7 @@ void *arl_insert(ar_list *l, size_t i, void *value) {
 //     CAPACITY = CAPACITY / 2
 
 static size_t arl_count_new_capacity(size_t size, size_t capacity) {
-  return arl_count_new_capacity_base(size, capacity) * get_pointer_size();
-}
-
-static size_t arl_count_new_capacity_base(size_t size, size_t capacity) {
-  /* List's growth ratio. */
+  /* Useful for array realloc. */
   return (size_t)(3 * size / 2 + capacity);
 }
 
@@ -126,24 +122,24 @@ static bool arl_is_i_invalid(ar_list *l, size_t i) {
   return i >= (l->size);
 }
 
-static void *arl_grow_array_capacity(ar_list *l) {
+static int arl_grow_array_capacity(ar_list *l) {
   void *p;
   size_t new_capacity = arl_count_new_capacity(l->size, l->capacity);
+  size_t pointer_size = get_pointer_size();
 
-  printf("0:%p\n", l->array);
-  printf("%li\n", new_capacity);
+  if (is_overflow_int_multi(new_capacity, pointer_size))
+    return -1;
 
-  p = realloc(l->array, new_capacity);
+  p = app_realloc(l->array, new_capacity * pointer_size);
 
-  if (p) {
-    l->capacity = new_capacity;
-    l->array = p;
+  if (!p) {
+    return -2;
   }
 
-  printf("1:%p\n", l->array);
-  printf("2:%p\n", p);
+  l->capacity = new_capacity;
+  l->array = p;
 
-  return p;
+  return 0;
 };
 
 static void *arl_move_indexes_by_positive_number(ar_list *l, size_t start_i,

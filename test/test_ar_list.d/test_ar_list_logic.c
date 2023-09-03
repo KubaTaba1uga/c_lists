@@ -24,6 +24,29 @@ int arl_small_values[] = {0, 1, 2, 3, 4, 5};
 size_t arl_small_size = sizeof(arl_small_values) / sizeof(int);
 
 /*******************************************************************************
+ *    SETUP, TEARDOWN
+ ******************************************************************************/
+
+void setUp(void) {
+  memory_mock_size = sizeof(void *) * 10;
+
+  memory_mock = malloc(memory_mock_size);
+  if (!memory_mock)
+    TEST_FAIL_MESSAGE("Unable to allocate memory. Mocking malloc failed!");
+
+  get_pointer_size_IgnoreAndReturn(sizeof(void *));
+}
+
+void tearDown(void) {
+  if (!memory_mock)
+    return;
+
+  free(memory_mock);
+  memory_mock = NULL;
+  memory_mock_size = 0;
+}
+
+/*******************************************************************************
  *    TESTS UTILS
  ******************************************************************************/
 
@@ -50,53 +73,30 @@ ar_list setup_small_list() {
 }
 
 /*******************************************************************************
- *    SETUP, TEARDOWN
- ******************************************************************************/
-
-void setUp(void) {
-  memory_mock_size = sizeof(void *) * 10;
-
-  memory_mock = malloc(memory_mock_size);
-  if (!memory_mock)
-    TEST_FAIL_MESSAGE("Unable to allocate memory. Mocking malloc failed!");
-
-  get_pointer_size_IgnoreAndReturn(sizeof(void *));
-}
-
-void tearDown(void) {
-  if (!memory_mock)
-    return;
-
-  free(memory_mock);
-  memory_mock = NULL;
-  memory_mock_size = 0;
-}
-
-/*******************************************************************************
  *    PUBLIC API TESTS
  ******************************************************************************/
 
 void test_arl_init_failure(void) {
-  ar_list l, *received;
+  ar_list l;
+  int received;
 
   app_malloc_IgnoreAndReturn(NULL);
-  get_pointer_size_IgnoreAndReturn(sizeof(void));
 
   received = arl_init(&l, 10);
 
-  TEST_ASSERT_NULL(received);
+  TEST_ASSERT_EQUAL(received, -1);
 }
 
 void test_arl_init_success(void) {
-  ar_list l, *received;
+  ar_list l;
+  int received;
   size_t default_capacity = memory_mock_size / sizeof(void *);
 
   app_malloc_ExpectAndReturn(memory_mock_size, memory_mock);
-  get_pointer_size_IgnoreAndReturn(sizeof(void *));
 
   received = arl_init(&l, default_capacity);
 
-  TEST_ASSERT_NOT_NULL(received);
+  TEST_ASSERT_EQUAL(received, 0);
   TEST_ASSERT_EQUAL(l.size, 0);
   TEST_ASSERT_EQUAL(l.capacity, default_capacity);
 }
@@ -114,7 +114,7 @@ void test_arl_count_new_capacity_base(void) {
   size_t i;
 
   for (i = 0; i < (sizeof(expected_values) / sizeof(size_t)); i++) {
-    capacity = size = arl_count_new_capacity_base(size, capacity);
+    capacity = size = arl_count_new_capacity(size, capacity);
 
     TEST_ASSERT_EQUAL(capacity, expected_values[i]);
   }
@@ -125,8 +125,6 @@ void test_arl_is_i_invalid_true(void) {
 
   for (size_t i = 0; i < sizeof(ll) / sizeof(ar_list); i++) {
     ar_list l = ll[i];
-
-    print_array_values(l);
 
     size_t j, i_to_check[] = {l.size, ULONG_MAX};
     bool is_invalid;
@@ -139,18 +137,67 @@ void test_arl_is_i_invalid_true(void) {
   }
 }
 
-/* void test_arl_is_i_invalid_false(void) { */
-/*   ar_list l = setup_small_list(); */
+void test_arl_is_i_invalid_false(void) {
+  ar_list l = setup_small_list();
 
-/*     size_t j, i_to_check[] = {l.size, ULONG_MAX}; */
-/*     bool is_invalid; */
+  size_t j, i_to_check[] = {l.size - 1, 0};
+  bool is_invalid;
 
-/*     for (j = 0; j < (sizeof(i_to_check) / sizeof(size_t)); j++) { */
-/*       is_invalid = arl_is_i_invalid(&l, i_to_check[j]); */
+  for (j = 0; j < (sizeof(i_to_check) / sizeof(size_t)); j++) {
+    is_invalid = arl_is_i_invalid(&l, i_to_check[j]);
 
-/*       TEST_ASSERT_TRUE(is_invalid); */
-/*     } */
-/*   } */
-/* } */
+    TEST_ASSERT_FALSE(is_invalid);
+  }
+}
+
+void test_arl_grow_array_capacity_memory_failure(void) {
+  ar_list l_cp, l = setup_small_list();
+  int exit_code;
+
+  l_cp = l;
+
+  app_realloc_IgnoreAndReturn(NULL);
+
+  exit_code = arl_grow_array_capacity(&l);
+
+  TEST_ASSERT_EQUAL(-2, exit_code);
+  TEST_ASSERT_EQUAL_PTR(l_cp.array, l.array);
+  TEST_ASSERT_EQUAL(l_cp.size, l.size);
+  TEST_ASSERT_EQUAL(l_cp.capacity, l.capacity);
+}
+
+void test_arl_grow_array_capacity_overflow(void) {
+  ar_list l = setup_small_list();
+  int exit_code;
+
+  l.size = 2;
+  l.capacity = INT_MAX;
+
+  exit_code = arl_grow_array_capacity(&l);
+
+  TEST_ASSERT_EQUAL(-1, exit_code);
+}
+
+void test_arl_grow_array_capacity_success(void) {
+  int received;
+  void *new_array;
+  ar_list l = setup_small_list();
+  size_t new_l_capacity = arl_count_new_capacity(l.size, l.capacity);
+  size_t new_array_size = new_l_capacity * get_pointer_size();
+
+  new_array = realloc(l.array, new_array_size);
+  if (!new_array)
+    TEST_FAIL_MESSAGE("Unable to reallocate memory!");
+
+  memory_mock = new_array;
+
+  app_realloc_ExpectAndReturn(l.array, new_array_size, new_array);
+
+  received = arl_grow_array_capacity(&l);
+
+  TEST_ASSERT_EQUAL(0, received);
+  TEST_ASSERT_EQUAL_PTR(new_array, l.array);
+  TEST_ASSERT_EQUAL(new_l_capacity, l.capacity);
+}
 
 /* void test_arl_alloc_array */
