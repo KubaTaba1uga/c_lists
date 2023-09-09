@@ -11,6 +11,7 @@
 //   for static functions testing.
 // Do not forget adding `-zmuldefs` to gcc.
 #include "ar_list.c"
+#include "l_error.h"
 
 #include "mock_std_lib_utils.h"
 #include "test_utils.h"
@@ -104,7 +105,7 @@ void test_arl_init_success(void) {
 /*******************************************************************************
  *    PRIVATE API TESTS
  ******************************************************************************/
-void test_arl_count_new_capacity_base(void) {
+void test_arl_count_new_capacity(void) {
   /* Show array capacity growth ratio by example. */
   /* Purpose of this function is mainly documentational. */
 
@@ -114,28 +115,30 @@ void test_arl_count_new_capacity_base(void) {
   size_t i;
 
   for (i = 0; i < (sizeof(expected_values) / sizeof(size_t)); i++) {
-    capacity = size = arl_count_new_capacity(size, capacity);
+    arl_count_new_capacity(size, capacity, &capacity);
+
+    size = capacity;
 
     TEST_ASSERT_EQUAL(capacity, expected_values[i]);
   }
 }
 
-/* void test_arl_is_i_invalid_true(void) { */
-/*   ar_list ll[] = {setup_empty_list(), setup_small_list()}; */
+void test_arl_is_i_invalid_true(void) {
+  ar_list ll[] = {setup_empty_list(), setup_small_list()};
 
-/*   for (size_t i = 0; i < sizeof(ll) / sizeof(ar_list); i++) { */
-/*     ar_list l = ll[i]; */
+  for (size_t i = 0; i < sizeof(ll) / sizeof(ar_list); i++) {
+    ar_list l = ll[i];
 
-/*     size_t j, i_to_check[] = {l.size, ULONG_MAX}; */
-/*     bool is_invalid; */
+    size_t j, i_to_check[] = {l.size, ULONG_MAX};
+    bool is_invalid;
 
-/*     for (j = 0; j < (sizeof(i_to_check) / sizeof(size_t)); j++) { */
-/*       is_invalid = arl_is_i_invalid(&l, i_to_check[j]); */
+    for (j = 0; j < (sizeof(i_to_check) / sizeof(size_t)); j++) {
+      arl_is_i_invalid(&l, i_to_check[j], &is_invalid);
 
-/*       TEST_ASSERT_TRUE(is_invalid); */
-/*     } */
-/*   } */
-/* } */
+      TEST_ASSERT_TRUE(is_invalid);
+    }
+  }
+}
 
 /* void test_arl_is_i_invalid_false(void) { */
 /*   ar_list l = setup_small_list(); */

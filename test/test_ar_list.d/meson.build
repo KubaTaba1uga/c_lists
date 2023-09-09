@@ -5,10 +5,10 @@ test_utils = join_paths('..', 'utils')
 
 test_name = 'test_ar_list_logic.c'
 
-
 cmock_test_src = files([
   test_name,
   src / 'ar_list.h', src / 'ar_list.c',
+  src / 'l_error.h', src / 'l_error.c',
   utils / 'overflow_utils.h', utils / 'overflow_utils.c',
   test_utils / 'test_utils.h', test_utils / 'test_utils.c',
 ])

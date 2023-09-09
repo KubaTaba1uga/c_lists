@@ -12,14 +12,17 @@
 
 // App
 #include "ar_list.h"
+#include "l_error.h"
 #include "utils/overflow_utils.h"
 #include "utils/std_lib_utils.h"
 
 /*******************************************************************************
  *    PRIVATE API DECLARATIONS
  ******************************************************************************/
-static size_t arl_count_new_capacity(size_t size, size_t capacity);
-static bool arl_is_i_invalid(ar_list *l, size_t i);
+static l_error_t arl_count_new_capacity(size_t current_size,
+                                        size_t current_capacity,
+                                        size_t *new_capacity);
+static l_error_t arl_is_i_invalid(ar_list *l, size_t i, bool *result);
 static int arl_grow_array_capacity(ar_list *l);
 static void *arl_move_indexes_by_positive_number(ar_list *l, size_t start_i,
                                                  size_t move_by);
@@ -117,28 +120,48 @@ void *arl_insert(ar_list *l, size_t i, void *value) {
 // IF SIZE < CAPACITY / 3
 //     CAPACITY = CAPACITY / 2
 
-static size_t arl_count_new_capacity(size_t size, size_t capacity) {
+static l_error_t arl_count_new_capacity(size_t current_size,
+                                        size_t current_capacity,
+                                        size_t *new_capacity) {
   /* Useful for array realloc. */
-  return (size_t)(3 * size / 2 + capacity);
+  // TO-DO
+  // 1. validate calculations for overflow
+
+  if (!new_capacity)
+    return L_ERROR_INVALID_ARGS;
+
+  *new_capacity = (size_t)(3 * current_size / 2 + current_capacity);
+
+  return L_SUCCESS;
 }
 
-static bool arl_is_i_invalid(ar_list *l, size_t i) {
-  /* Return true if i is not in l->array boundaries. */
-  return i >= (l->size);
+static l_error_t arl_is_i_invalid(ar_list *l, size_t i, bool *result) {
+  /* Set result to true if i is not in l->array boundaries. */
+  if (!result)
+    return L_ERROR_INVALID_ARGS;
+
+  *result = i >= (l->size);
+
+  return L_SUCCESS;
 }
 
 static int arl_grow_array_capacity(ar_list *l) {
   void *p;
-  size_t new_capacity = arl_count_new_capacity(l->size, l->capacity);
+  l_error_t err;
+  size_t new_capacity;
   size_t pointer_size = get_pointer_size();
 
+  err = arl_count_new_capacity(l->size, l->capacity, &new_capacity);
+  if (err)
+    return err;
+
   if (is_overflow_size_t_multi(new_capacity, pointer_size))
-    return -1;
+    return -2;
 
   p = app_realloc(l->array, new_capacity * pointer_size);
 
   if (!p) {
-    return -2;
+    return -3;
   }
 
   l->capacity = new_capacity;
