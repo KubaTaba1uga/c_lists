@@ -9,18 +9,26 @@ typedef enum {
 
   L_ERROR_INVALID_ARGS,
 
+  L_ERROR_OVERFLOW,
+
+  L_ERROR_MEMORY_SHORTAGE,
+
+  L_ERROR_INDEX_TOO_BIG,
+
   /* Enum assigns values automatically by incrementing */
   /*   the first value. */
   L_ERROR_LEN,
 } l_error_t;
 
 const char *const L_ERROR_STRINGS[] = {
-    "SUCCESS",
-};
+    "Success",
 
-// errors validation
-/* int l_eqrror_strings_len = sizeof(L_ERROR_STRINGS) / sizeof(char *); */
-/* assert(0); //(l_error_strings_len == L_ERROR_LEN)); */
+    "Invalid arguments",
+
+    "Overflow",
+
+    "Not enough memory",
+};
 
 const char *l_strerror(l_error_t error);
 

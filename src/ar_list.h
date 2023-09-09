@@ -3,7 +3,7 @@
 
 #ifndef _ar_list_h
 #define _ar_list_h
-#include "utils/std_lib_utils.h"
+#include "l_error.h"
 
 typedef struct {
 
@@ -17,8 +17,8 @@ typedef struct {
   void **array;
 } ar_list;
 
-extern int arl_init(ar_list *l, size_t default_size);
-extern void *arl_get(ar_list *l, size_t i);
-extern void *arl_set(ar_list *l, size_t i, void *value);
+l_error_t arl_init(ar_list *l, size_t default_size);
+l_error_t arl_get(ar_list *l, size_t i, void **p);
+l_error_t arl_set(ar_list *l, size_t i, void *value);
 
 #endif
