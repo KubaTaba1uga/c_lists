@@ -161,16 +161,13 @@ static l_error_t arl_is_i_too_big(ar_list *l, size_t i, bool *result) {
 
 static l_error_t arl_grow_array_capacity(ar_list *l) {
   void *p;
-  l_error_t err;
   size_t new_capacity;
   size_t pointer_size = get_pointer_size();
 
   if (!l)
     return L_ERROR_INVALID_ARGS;
 
-  err = arl_count_new_capacity(l->size, l->capacity, &new_capacity);
-  if (err)
-    return err;
+  arl_count_new_capacity(l->size, l->capacity, &new_capacity);
 
   if (is_overflow_size_t_multi(new_capacity, pointer_size))
     return L_ERROR_OVERFLOW;

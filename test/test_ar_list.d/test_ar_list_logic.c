@@ -122,18 +122,21 @@ void test_arl_count_new_capacity(void) {
   size_t size = 0;
   size_t capacity = 1000;
   size_t i;
+  l_error_t err;
 
   for (i = 0; i < (sizeof(expected_values) / sizeof(size_t)); i++) {
-    arl_count_new_capacity(size, capacity, &capacity);
+    err = arl_count_new_capacity(size, capacity, &capacity);
 
     size = capacity;
 
+    TEST_ASSERT_EQUAL(L_SUCCESS, err);
     TEST_ASSERT_EQUAL(capacity, expected_values[i]);
   }
 }
 
 void test_arl_is_i_too_big_true(void) {
   ar_list ll[] = {setup_empty_list(), setup_small_list()};
+  l_error_t err;
 
   for (size_t i = 0; i < sizeof(ll) / sizeof(ar_list); i++) {
     ar_list l = ll[i];
@@ -142,8 +145,9 @@ void test_arl_is_i_too_big_true(void) {
     bool is_invalid;
 
     for (j = 0; j < (sizeof(i_to_check) / sizeof(size_t)); j++) {
-      arl_is_i_too_big(&l, i_to_check[j], &is_invalid);
+      err = arl_is_i_too_big(&l, i_to_check[j], &is_invalid);
 
+      TEST_ASSERT_EQUAL(L_SUCCESS, err);
       TEST_ASSERT_TRUE(is_invalid);
     }
   }
@@ -151,13 +155,15 @@ void test_arl_is_i_too_big_true(void) {
 
 void test_arl_is_i_too_big_false(void) {
   ar_list l = setup_small_list();
+  l_error_t err;
 
   size_t j, i_to_check[] = {l.size - 1, 0};
   bool is_invalid;
 
   for (j = 0; j < (sizeof(i_to_check) / sizeof(size_t)); j++) {
-    arl_is_i_too_big(&l, i_to_check[j], &is_invalid);
+    err = arl_is_i_too_big(&l, i_to_check[j], &is_invalid);
 
+    TEST_ASSERT_EQUAL(L_SUCCESS, err);
     TEST_ASSERT_FALSE(is_invalid);
   }
 }
@@ -196,7 +202,8 @@ void test_arl_grow_array_capacity_success(void) {
   ar_list l = setup_small_list();
   size_t new_l_capacity, new_array_size;
 
-  arl_count_new_capacity(l.size, l.capacity, &new_l_capacity);
+  err = arl_count_new_capacity(l.size, l.capacity, &new_l_capacity);
+  TEST_ASSERT_EQUAL(L_SUCCESS, err);
 
   new_array_size = new_l_capacity * get_pointer_size();
 
