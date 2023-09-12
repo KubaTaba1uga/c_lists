@@ -3,17 +3,17 @@
 
 #ifndef _ar_list_h
 #define _ar_list_h
+/* #include "l_def.h" */
 #include "l_error.h"
 
 typedef struct {
+  /* Number of elements.*/
+  size_l length;
 
-  /* The number of elements.*/
-  size_t size;
+  /* Maximum number of elements. */
+  size_l capacity;
 
-  /* The size of the underlying array, */
-  /* which is the maximum possible size without relocating data. */
-  size_t capacity;
-
+  /* Storage. */
   void **array;
 } ar_list;
 

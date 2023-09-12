@@ -1,6 +1,7 @@
 /*******************************************************************************
  *    IMPORTS
  ******************************************************************************/
+#include "l_limits.h"
 #include <limits.h>
 #include <stdbool.h>
 #include <stddef.h>
@@ -20,5 +21,9 @@ bool is_overflow_int_multi(int a, int b) {
 }
 
 bool is_overflow_size_t_multi(size_t a, size_t b) {
-  return is_overflow_multi(a, b, ULONG_MAX);
+  return is_overflow_multi(a, b, L_SIZE_T_MAX);
+}
+
+bool is_overflow_size_l_multi(size_l a, size_l b) {
+  return is_overflow_multi(a, b, L_SIZE_L_MAX);
 }

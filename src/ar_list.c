@@ -12,20 +12,22 @@
 
 // App
 #include "ar_list.h"
+#include "l_def.h"
 #include "l_error.h"
+#include "l_limits.h"
 #include "utils/overflow_utils.h"
 #include "utils/std_lib_utils.h"
 
 /*******************************************************************************
  *    PRIVATE API DECLARATIONS
  ******************************************************************************/
-static l_error_t arl_count_new_capacity(size_t current_size,
-                                        size_t current_capacity,
-                                        size_t *new_capacity);
-static l_error_t arl_is_i_too_big(ar_list *l, size_t i, bool *result);
+static l_error_t arl_count_new_capacity(size_l current_size,
+                                        size_l current_capacity,
+                                        size_l *new_capacity);
+static l_error_t arl_is_i_too_big(ar_list *l, size_l i, bool *result);
 static l_error_t arl_grow_array_capacity(ar_list *l);
-static void *arl_move_indexes_by_positive_number(ar_list *l, size_t start_i,
-                                                 size_t move_by);
+static void *arl_move_indexes_by_positive_number(ar_list *l, size_l start_i,
+                                                 size_l move_by);
 
 /*******************************************************************************
  *    PUBLIC API
@@ -35,12 +37,6 @@ static void *arl_move_indexes_by_positive_number(ar_list *l, size_t start_i,
 /* 1. set up errno on failure */
 
 l_error_t arl_init(ar_list *l, size_t default_capacity) {
-  /* Function return 0 on success, not 0 on failure. */
-  /* `default_capacity` tells maximum amount of pointers
-   *     which list can store until first realloc. */
-  /*  `default_capacity` is parametrized for flexibility. */
-  /*  Which makes You responsible for knowing the data. */
-
   size_t p_size = get_pointer_size();
 
   if (is_overflow_size_t_multi(default_capacity, p_size))
@@ -134,16 +130,19 @@ l_error_t arl_insert(ar_list *l, size_t i, void *value) {
 // IF SIZE < CAPACITY / 3
 //     CAPACITY = CAPACITY / 2
 
+/* Counts list's new capacity.
+ * The behaviour is undefined if new capacity is not a valid pointer.
+ * Prevents overflow by assigning L_MAX_SIZE_CAPACITY, whenever overflow
+ *   would occur. At some point list will be prevented from growing.
+ */
 static l_error_t arl_count_new_capacity(size_t current_size,
                                         size_t current_capacity,
                                         size_t *new_capacity) {
   /* Useful for array realloc. */
+  /* if (!is_overflow_size_t_multi(current_size, 3)) */
 
   // TO-DO
   // 1. validate calculations for overflow
-
-  if (!new_capacity)
-    return L_ERROR_INVALID_ARGS;
 
   *new_capacity = (size_t)(3 * current_size / 2 + current_capacity);
 
@@ -161,13 +160,15 @@ static l_error_t arl_is_i_too_big(ar_list *l, size_t i, bool *result) {
 
 static l_error_t arl_grow_array_capacity(ar_list *l) {
   void *p;
+  l_error_t err;
   size_t new_capacity;
   size_t pointer_size = get_pointer_size();
 
   if (!l)
     return L_ERROR_INVALID_ARGS;
 
-  arl_count_new_capacity(l->size, l->capacity, &new_capacity);
+  err = arl_count_new_capacity(l->size, l->capacity, &new_capacity);
+  TEST_ASSERT_EQUAL(L_SUCCESS, err);
 
   if (is_overflow_size_t_multi(new_capacity, pointer_size))
     return L_ERROR_OVERFLOW;
@@ -184,30 +185,28 @@ static l_error_t arl_grow_array_capacity(ar_list *l) {
   return L_SUCCESS;
 };
 
-static void *arl_move_indexes_by_positive_number(ar_list *l, size_t start_i,
-                                                 size_t move_by) {
+l_error_t arl_move_indexes_by_positive_number(ar_list *l, size_t start_i,
+                                              size_t move_by) {
   /* Move elements further by `move_by`, starting from `start_i`.
    * Set NULL on source value.  */
   /* Ex: */
   /*    INPUT  l.array {0, 1, 2, , ,}, start_i 1, move_by 2 */
   /*    OUTPUT l.array {0, NULL, NULL, 1, 2} */
 
-  // Idea is to detect all failures upfront so recovery from half moved array is
-  // not required.
-
   void *p;
 
   size_t i, old_size, new_size, i_source, i_dest, elements_to_move_amount;
 
+  // Detect oveflow
   old_size = l->size, new_size = l->size + move_by;
   elements_to_move_amount = old_size - start_i;
 
-  // TO-DO
-  // set erramount on validation error
+  // Idea is to detect all failures upfront so recovery from half moved array is
+  // not required.
   if (new_size > l->capacity)
-    return NULL;
+    return L_ERROR_INVALID_ARGS;
   if (elements_to_move_amount == 0)
-    return NULL;
+    return L_SUCCESS;
 
   l->size = new_size;
 
@@ -218,11 +217,9 @@ static void *arl_move_indexes_by_positive_number(ar_list *l, size_t start_i,
     i_dest = i_source + move_by;
 
     arl_get(l, i_source, &p);
-
     arl_set(l, i_dest, p);
-
     arl_set(l, i_source, NULL);
   }
 
-  return l->array;
+  return L_SUCCESS;
 }

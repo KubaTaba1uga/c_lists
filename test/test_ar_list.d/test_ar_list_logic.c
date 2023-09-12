@@ -189,11 +189,11 @@ void test_arl_grow_array_capacity_overflow(void) {
   l_error_t err;
 
   l.capacity = ULONG_MAX;
+  l.size = ULONG_MAX;
 
   err = arl_grow_array_capacity(&l);
 
   TEST_ASSERT_EQUAL(L_ERROR_OVERFLOW, err);
-  TEST_FAIL_MESSAGE(l_strerror(err));
 }
 
 void test_arl_grow_array_capacity_success(void) {

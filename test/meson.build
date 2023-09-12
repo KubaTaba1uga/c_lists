@@ -21,3 +21,4 @@ cmock_gen_mock = generator(
 
 subdir('test_ar_list.d')
 subdir('test_utils.d')
+subdir('test_l_error.d')
