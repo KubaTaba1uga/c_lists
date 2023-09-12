@@ -2,6 +2,7 @@
  *    IMPORTS
  ******************************************************************************/
 #include "l_error.h"
+#include <stddef.h>
 
 /*******************************************************************************
  *    PRIVATE DATA
@@ -23,13 +24,19 @@ static const char *const L_ERROR_STRINGS[] = {
     "Index too big",
 };
 
+static const size_t L_ERROR_STRINGS_LEN =
+    sizeof(L_ERROR_STRINGS) / sizeof(char *);
+
 /*******************************************************************************
  *    PUBLIC API
  ******************************************************************************/
 const char *l_strerror(l_error_t error) {
   // Return string on success, NULL on failure.
 
-  if ((error >= L_ERROR_LEN) || (error < 0))
+  if ( // Upper bound
+      (error >= L_ERROR_LEN) || (error >= L_ERROR_STRINGS_LEN) ||
+      // Lower bound
+      (error < 0))
     return NULL;
 
   return L_ERROR_STRINGS[error];
