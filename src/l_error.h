@@ -14,12 +14,12 @@ typedef enum {
 
   L_ERROR_INDEX_TOO_BIG,
 
-  /* Enum assigns values automatically by incrementing */
-  /*   the first value. */
+  /* Enum assigns values automatically by incrementing
+   *   the first value. `L_ERROR_LEN` stands for number
+   *   of elements in enum (aka `length`).
+   */
   L_ERROR_LEN,
 } l_error_t;
-
-// extern const char *const L_ERROR_STRINGS[L_ERROR_LEN];
 
 const char *l_strerror(l_error_t error);
 
