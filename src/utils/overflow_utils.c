@@ -28,3 +28,7 @@ bool is_overflow_size_t_multi(size_t a, size_t b) {
 bool is_overflow_l_capacity_multi(size_t a, size_t b) {
   return is_overflow_multi(a, b, L_CAPACITY_MAX);
 }
+
+bool is_overflow_l_capacity_add(size_t a, size_t b) {
+  return is_overflow_add(a, b, L_CAPACITY_MAX);
+}

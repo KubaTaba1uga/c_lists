@@ -8,10 +8,10 @@
 
 typedef struct {
   /* Number of elements.*/
-  size_l length;
+  size_t length;
 
   /* Maximum number of elements. */
-  size_l capacity;
+  size_t capacity;
 
   /* Storage. */
   void **array;

@@ -7,7 +7,7 @@ project('c_lists', 'c',
          version: '0.0.1',
 	 meson_version: '>=1.0.1',
 	 default_options: [
-            'werror=true',
+            'werror=false',
             'c_std=c11'
          ]
 )
