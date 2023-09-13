@@ -1,10 +1,11 @@
 /*******************************************************************************
  *    IMPORTS
  ******************************************************************************/
-#include "l_limits.h"
 #include <limits.h>
 #include <stdbool.h>
 #include <stddef.h>
+
+#include "../l_def.h"
 
 /*******************************************************************************
  *    PRIVATE API
@@ -24,6 +25,6 @@ bool is_overflow_size_t_multi(size_t a, size_t b) {
   return is_overflow_multi(a, b, L_SIZE_T_MAX);
 }
 
-bool is_overflow_size_l_multi(size_l a, size_l b) {
-  return is_overflow_multi(a, b, L_SIZE_L_MAX);
+bool is_overflow_l_capacity_multi(size_t a, size_t b) {
+  return is_overflow_multi(a, b, L_CAPACITY_MAX);
 }

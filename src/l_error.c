@@ -30,6 +30,8 @@ static const size_t L_ERROR_STRINGS_LEN =
 /*******************************************************************************
  *    PUBLIC API
  ******************************************************************************/
+// TO-DO
+// return l_error_t
 const char *l_strerror(l_error_t error) {
   // Return string on success, NULL on failure.
 

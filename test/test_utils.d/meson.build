@@ -19,4 +19,4 @@ test_overflow_exe = executable('test_overflow_utils',
   dependencies: [unity_dependency, cmock_dependency],
 )
 
-test('test_overflow_utils', test_overflow_exe)
+test('test_utils', test_overflow_exe)
