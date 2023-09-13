@@ -36,23 +36,23 @@ static size_t arl_count_new_capacity(size_t current_size,
 /* TO-DO */
 /* 1. set up errno on failure */
 
-/* l_error_t arl_init(ar_list *l, size_t default_capacity) { */
-/*   size_t p_size = get_pointer_size(); */
+/* Returns L_SUCCESS on success. */
+/* Behaviour is undefined if `l` is not a valid pointer. */
+l_error_t arl_init(ar_list *l, size_t default_capacity) {
+  if (is_overflow_size_t_multi(default_capacity, L_PTR_SIZE))
+    return L_ERROR_OVERFLOW;
 
-/*   if (is_overflow_size_t_multi(default_capacity, p_size)) */
-/*     return L_ERROR_OVERFLOW; */
+  void *arl_array = app_malloc(default_capacity * L_PTR_SIZE);
 
-/*   void *arl_array = app_malloc(default_capacity * p_size); */
+  if (!arl_array)
+    return L_ERROR_OUT_OF_MEMORY;
 
-/*   if (!arl_array) */
-/*     return L_ERROR_MEMORY_SHORTAGE; */
+  l->array = arl_array;
+  l->capacity = default_capacity;
+  l->length = 0;
 
-/*   l->array = arl_array; */
-/*   l->capacity = default_capacity; */
-/*   l->size = 0; */
-
-/*   return L_SUCCESS; */
-/* } */
+  return L_SUCCESS;
+}
 
 /* l_error_t arl_get(ar_list *l, size_t i, void **p) { */
 /*   /\* Set p to `pointer to value under the index`. *\/ */
@@ -148,14 +148,9 @@ size_t arl_count_new_capacity(size_t current_length, size_t current_capacity) {
   return 3 * current_length / 2 + current_capacity;
 }
 
-/* static l_error_t arl_is_i_too_big(ar_list *l, size_t i, bool *result) { */
-/*   if (!result || !l) */
-/*     return L_ERROR_INVALID_ARGS; */
-
-/*   *result = i >= (l->size); */
-
-/*   return L_SUCCESS; */
-/* } */
+/* Checks if index is within list boundaries. */
+/* The behaviour is undefined if `l` is not a valid pointer.     */
+/* bool arl_is_i_too_big(ar_list *l, size_t i) { return i >= (l->length); } */
 
 /* static l_error_t arl_grow_array_capacity(ar_list *l) { */
 /*   void *p; */

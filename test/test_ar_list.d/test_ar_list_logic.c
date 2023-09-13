@@ -11,6 +11,7 @@
 //   for static functions testing.
 // Do not forget adding `-zmuldefs` to gcc.
 #include "ar_list.c"
+#include "l_def.h"
 #include "l_error.h"
 
 #include "mock_std_lib_utils.h"
@@ -51,27 +52,27 @@ void tearDown(void) {
  *    TESTS UTILS
  ******************************************************************************/
 
-/* ar_list setup_empty_list() { */
-/*   ar_list l; */
-/*   size_t default_capacity = memory_mock_size / sizeof(void *); */
+ar_list setup_empty_list() {
+  ar_list l;
+  size_t default_capacity = memory_mock_size / sizeof(void *);
 
-/*   app_malloc_ExpectAndReturn(memory_mock_size, memory_mock); */
+  app_malloc_ExpectAndReturn(memory_mock_size, memory_mock);
 
-/*   arl_init(&l, default_capacity); */
+  arl_init(&l, default_capacity);
 
-/*   return l; */
-/* } */
-/* ar_list setup_small_list() { */
-/*   ar_list l = setup_empty_list(); */
-/*   size_t i; */
+  return l;
+}
+ar_list setup_small_list() {
+  ar_list l = setup_empty_list();
+  size_t i;
 
-/*   for (i = 0; i < arl_small_size; i++) { */
-/*     l.array[i] = &arl_small_values[i]; */
-/*     l.length += 1; */
-/*   } */
+  for (i = 0; i < arl_small_size; i++) {
+    l.array[i] = &arl_small_values[i];
+    l.length += 1;
+  }
 
-/*   return l; */
-/* } */
+  return l;
+}
 
 /*******************************************************************************
  *    PUBLIC API TESTS
@@ -128,6 +129,18 @@ void test_arl_count_new_capacity(void) {
 
     TEST_ASSERT_EQUAL(expected_values[i], capacity);
   }
+}
+
+void test_arl_count_new_capacity_overflow(void) {
+  /* Show array growth stop. */
+  /* Upper bound of list is well defined. */
+  size_t length, capacity;
+
+  capacity = length = L_CAPACITY_MAX;
+
+  capacity = arl_count_new_capacity(length, capacity);
+
+  TEST_ASSERT_EQUAL(L_CAPACITY_MAX, capacity);
 }
 
 /* void test_arl_is_i_too_big_true(void) { */
