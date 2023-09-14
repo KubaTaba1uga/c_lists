@@ -31,7 +31,7 @@
  ******************************************************************************/
 static size_t arl_count_new_capacity(size_t current_size,
                                      size_t current_capacity);
-/* static l_error_t arl_is_i_too_big(ar_list *l, size_t i, bool *result); */
+static bool arl_is_i_too_big(ar_list *l, size_t i);
 /* static l_error_t arl_grow_array_capacity(ar_list *l); */
 /* static void *arl_move_indexes_by_positive_number(ar_list *l, size_t start_i,
  */
@@ -146,7 +146,8 @@ l_error_t arl_init(ar_list *l, size_t default_capacity) {
 size_t arl_count_new_capacity(size_t current_length, size_t current_capacity) {
 
   /* Size is always smaller than capacity. There is no need in checking new_size
-   * divided by cur_size overflow.*/
+   * divided by cur_size overflow.
+   */
   if (is_overflow_l_capacity_multi(current_length, 3) ||
       is_overflow_l_capacity_add(current_capacity, 2)) {
 
@@ -157,35 +158,32 @@ size_t arl_count_new_capacity(size_t current_length, size_t current_capacity) {
 }
 
 /* Checks if index is within list boundaries. */
-/* The behaviour is undefined if `l` is not a valid pointer.     */
-/* bool arl_is_i_too_big(ar_list *l, size_t i) { return i >= (l->length); } */
+/* The behaviour is undefined if `l` is not a valid pointer. */
+bool arl_is_i_too_big(ar_list *l, size_t i) { return i >= (l->length); }
 
-/* static l_error_t arl_grow_array_capacity(ar_list *l) { */
-/*   void *p; */
-/*   l_error_t err; */
-/*   size_t new_capacity; */
-/*   size_t pointer_size = get_pointer_size(); */
+/* Grows underlaying array size. */
+/* If array reached it's maximum, further growing is undefined behaviour.' */
+// REMEMBER FUTURE ME
+//  array grows only on insert, insert should validate before assignment
+static l_error_t arl_grow_array_capacity(ar_list *l) {
+  void *p;
+  size_t new_capacity;
 
-/*   if (!l) */
-/*     return L_ERROR_INVALID_ARGS; */
+  if (l->capacity == ARL_CAPACITY_MAX)
+    return L_ERROR_REACHED_CAPACITY_MAX;
 
-/*   err = arl_count_new_capacity(l->size, l->capacity, &new_capacity); */
-/*   TEST_ASSERT_EQUAL(L_SUCCESS, err); */
+  new_capacity = arl_count_new_capacity(l->length, l->capacity);
 
-/*   if (is_overflow_size_t_multi(new_capacity, pointer_size)) */
-/*     return L_ERROR_OVERFLOW; */
+  p = app_realloc(l->array, new_capacity * L_PTR_SIZE);
+  if (!p) {
+    return L_ERROR_OUT_OF_MEMORY;
+  }
 
-/*   p = app_realloc(l->array, new_capacity * pointer_size); */
+  l->capacity = new_capacity;
+  l->array = p;
 
-/*   if (!p) { */
-/*     return L_ERROR_MEMORY_SHORTAGE; */
-/*   } */
-
-/*   l->capacity = new_capacity; */
-/*   l->array = p; */
-
-/*   return L_SUCCESS; */
-/* }; */
+  return L_SUCCESS;
+};
 
 /* l_error_t arl_move_indexes_by_positive_number(ar_list *l, size_t start_i, */
 /*                                               size_t move_by) { */

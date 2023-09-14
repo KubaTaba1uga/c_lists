@@ -22,6 +22,9 @@ static const char *const L_ERROR_STRINGS[] = {
 
     // 4
     "Index too big",
+
+    // 5
+    "Array's maximum capacity reached",
 };
 
 static const size_t L_ERROR_STRINGS_LEN =

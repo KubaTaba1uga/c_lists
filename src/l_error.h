@@ -14,6 +14,7 @@ typedef enum {
 
   L_ERROR_INDEX_TOO_BIG,
 
+  L_ERROR_REACHED_CAPACITY_MAX,
   /* Enum assigns values automatically by incrementing
    *   the first value. `L_ERROR_LEN` stands for number
    *   of elements in enum (aka `length`).
