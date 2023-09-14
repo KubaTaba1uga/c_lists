@@ -62,24 +62,28 @@ l_error_t arl_init(ar_list *l, size_t default_capacity) {
   return L_SUCCESS;
 }
 
-/* l_error_t arl_get(ar_list *l, size_t i, void **p) { */
-/*   /\* Set p to `pointer to value under the index`. *\/ */
-/*   bool i_is_invalid; */
+/* Gets pointer to the value under the index.
+ * `p` is placeholder for the value's pointer.
+ * `l` and `p` have to be valid pointers,
+ *  otherwise behaviour is undefined.
+ */
+l_error_t arl_get(ar_list *l, size_t i, void **p) {
 
-/*   arl_is_i_too_big(l, i, &i_is_invalid); */
+  if (arl_is_i_too_big(l, i))
+    return L_ERROR_INDEX_TOO_BIG;
 
-/*   if (i_is_invalid || !l || !p) */
-/*     return L_ERROR_INVALID_ARGS; */
+  *p = l->array[i];
 
-/*   *p = l->array[i]; */
+  return L_SUCCESS;
+}
 
-/*   return L_SUCCESS; */
-/* } */
+/* Sets value under the index.
+ *  Index has to be smaller than list's length.
+ *  `l` and `value` have to be valid pointers,
+ *  otherwise behaviour is undefined.
+ */
 
 /* l_error_t arl_set(ar_list *l, size_t i, void *value) { */
-/*   /\* Set value under the index. *\/ */
-/*   /\* Index has to be smaller than l.size. *\/ */
-/*   /\* Do not expand array. *\/ */
 /*   bool i_is_invalid; */
 
 /*   if (!l || !value) */
@@ -185,36 +189,45 @@ static l_error_t arl_grow_array_capacity(ar_list *l) {
   return L_SUCCESS;
 };
 
+/* Move elements further by `move_by`, starting from `start_i`.
+ * Set NULL on source value.
+ * Ex:
+ *    INPUT  l.array {0, 1, 2, , ,}, start_i 1, move_by 2
+ *    OUTPUT l.array {0, NULL, NULL, 1, 2}
+ */
 /* l_error_t arl_move_indexes_by_positive_number(ar_list *l, size_t start_i, */
 /*                                               size_t move_by) { */
-/*   /\* Move elements further by `move_by`, starting from `start_i`. */
-/*    * Set NULL on source value.  *\/ */
-/*   /\* Ex: *\/ */
-/*   /\*    INPUT  l.array {0, 1, 2, , ,}, start_i 1, move_by 2 *\/ */
-/*   /\*    OUTPUT l.array {0, NULL, NULL, 1, 2} *\/ */
 
+/*   // to-do */
+/*   // check for overflow before making calculations */
 /*   void *p; */
-
-/*   size_t i, old_size, new_size, i_source, i_dest, elements_to_move_amount; */
-
-/*   // Detect oveflow */
-/*   old_size = l->size, new_size = l->size + move_by; */
-/*   elements_to_move_amount = old_size - start_i; */
+/*   size_t old_length, new_length, i_source, i_dest, elements_to_move_amount;
+ */
 
 /*   // Idea is to detect all failures upfront so recovery from half moved array
- * is */
-/*   // not required. */
-/*   if (new_size > l->capacity) */
+ */
+/*   //  is not required. */
+/*   if (is_overflow_size_t_add(l->length, move_by)) */
+/*     return L_ERROR_OVERFLOW; */
+
+/*   old_length = l->length, new_length = l->length + move_by; */
+
+/*   if (is_underflow_size_t_sub(old_length, start_i)) */
+/*     return L_ERROR_OVERFLOW; */
+
+/*   elements_to_move_amount = old_length - start_i; */
+
+/*   if (new_length > l->capacity) */
 /*     return L_ERROR_INVALID_ARGS; */
 /*   if (elements_to_move_amount == 0) */
 /*     return L_SUCCESS; */
 
-/*   l->size = new_size; */
+/*   l->length = new_length; */
 
 /*   start_i--; */
 
-/*   for (i = elements_to_move_amount; i > 0; i--) { */
-/*     i_source = start_i + i; */
+/*   for (; elements_to_move_amount > 0; elements_to_move_amount--) { */
+/*     i_source = start_i + elements_to_move_amount; */
 /*     i_dest = i_source + move_by; */
 
 /*     arl_get(l, i_source, &p); */

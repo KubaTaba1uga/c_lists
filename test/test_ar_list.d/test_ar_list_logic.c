@@ -7,6 +7,7 @@
 #include <stdlib.h>
 
 // Test framework
+#include "ar_list.h"
 #include "mock_std_lib_utils.h"
 #include <unity.h>
 
@@ -112,6 +113,24 @@ void test_arl_init_success(void) {
   TEST_ASSERT_EQUAL(received, 0);
   TEST_ASSERT_EQUAL(l.length, 0);
   TEST_ASSERT_EQUAL(l.capacity, default_capacity);
+}
+
+void parametrize_test_arl_get_i_too_big_failure(ar_list l) {
+  size_t i, indexes_to_check[] = {l.length, l.length + 1, l.length + 2};
+  void *p;
+  l_error_t err;
+
+  for (i = 0; i < sizeof(indexes_to_check) / sizeof(size_t); i++) {
+    err = arl_get(&l, indexes_to_check[i], &p);
+    TEST_ASSERT_EQUAL(L_ERROR_INDEX_TOO_BIG, err);
+  }
+}
+
+void test_arl_get_i_too_big_failure(void) {
+  ar_list ls_to_param[] = {setup_empty_list(), setup_small_list()};
+
+  for (size_t i = 0; i < sizeof(ls_to_param) / sizeof(ar_list); i++)
+    parametrize_test_arl_get_i_too_big_failure(ls_to_param[i]);
 }
 
 /*******************************************************************************
