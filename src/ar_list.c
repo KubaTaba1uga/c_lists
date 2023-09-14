@@ -1,6 +1,14 @@
 /* Array list implementation, as described here: */
 /*   https://en.wikipedia.org/wiki/Dynamic_array   */
 
+/* Array list require allocating one continous chunk of memory. As all
+ * allocating functions take required memory size in size_t type, it is safe to
+ * assume that SIZE_MAX is maximum allocable memory size for one object.
+ * To not shrink list accadidentially at some point ARL_MAX_CAPACITY
+ * is defined as upper boundary. If You require bigger capacity check out other
+ * lists.
+ */
+
 /*******************************************************************************
  *    IMPORTS
  ******************************************************************************/
@@ -142,7 +150,7 @@ size_t arl_count_new_capacity(size_t current_length, size_t current_capacity) {
   if (is_overflow_l_capacity_multi(current_length, 3) ||
       is_overflow_l_capacity_add(current_capacity, 2)) {
 
-    return L_CAPACITY_MAX;
+    return ARL_CAPACITY_MAX;
   }
 
   return 3 * current_length / 2 + current_capacity;

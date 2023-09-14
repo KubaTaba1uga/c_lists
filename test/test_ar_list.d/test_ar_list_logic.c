@@ -136,11 +136,11 @@ void test_arl_count_new_capacity_overflow(void) {
   /* Upper bound of list is well defined. */
   size_t length, capacity;
 
-  capacity = length = L_CAPACITY_MAX;
+  capacity = length = ARL_CAPACITY_MAX;
 
   capacity = arl_count_new_capacity(length, capacity);
 
-  TEST_ASSERT_EQUAL(L_CAPACITY_MAX, capacity);
+  TEST_ASSERT_EQUAL(ARL_CAPACITY_MAX, capacity);
 }
 
 /* void test_arl_is_i_too_big_true(void) { */

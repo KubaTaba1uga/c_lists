@@ -50,7 +50,7 @@ void test_is_overflow_size_t_multi_false(void) {
 
 void test_is_overflow_capacity_multi_true(void) {
   bool received;
-  size_t a = L_CAPACITY_MAX, b = 2;
+  size_t a = ARL_CAPACITY_MAX, b = 2;
 
   received = is_overflow_l_capacity_multi(a, b);
 
@@ -59,7 +59,7 @@ void test_is_overflow_capacity_multi_true(void) {
 
 void test_is_overflow_capacity_multi_false(void) {
   bool received;
-  size_t a = L_CAPACITY_MAX, b = 1;
+  size_t a = ARL_CAPACITY_MAX, b = 1;
 
   received = is_overflow_l_capacity_multi(a, b);
 
