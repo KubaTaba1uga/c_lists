@@ -205,45 +205,40 @@ static l_error_t arl_grow_array_capacity(arl_ptr l) {
  *    INPUT  l.array {0, 1, 2, , ,}, start_i 1, move_by 2
  *    OUTPUT l.array {0, NULL, NULL, 1, 2}
  */
-/* l_error_t arl_move_indexes_by_positive_number(ar_list *l, size_t start_i, */
-/*                                               size_t move_by) { */
+l_error_t arl_move_indexes_by_positive_number(arl_ptr l, size_t start_i,
+                                              size_t move_by) {
 
-/*   // to-do */
-/*   // check for overflow before making calculations */
-/*   void *p; */
-/*   size_t old_length, new_length, i_source, i_dest, elements_to_move_amount;
- */
+  size_t old_length, new_length, i_source, i_dest, elements_to_move_amount;
+  void *p;
 
-/*   // Idea is to detect all failures upfront so recovery from half moved array
- */
-/*   //  is not required. */
-/*   if (is_overflow_size_t_add(l->length, move_by)) */
-/*     return L_ERROR_OVERFLOW; */
+  // Idea is to detect all failures upfront so recovery from half moved array
+  //  is not required.
+  if (is_overflow_size_t_add(l->length, move_by))
+    return L_ERROR_OVERFLOW;
 
-/*   old_length = l->length, new_length = l->length + move_by; */
+  old_length = l->length, new_length = l->length + move_by;
 
-/*   if (is_underflow_size_t_sub(old_length, start_i)) */
-/*     return L_ERROR_OVERFLOW; */
+  if (new_length > (l->capacity) || new_length < (l->length))
+    return L_ERROR_INVALID_ARGS;
 
-/*   elements_to_move_amount = old_length - start_i; */
+  if (is_underflow_size_t_sub(old_length, start_i))
+    return L_ERROR_OVERFLOW;
 
-/*   if (new_length > l->capacity) */
-/*     return L_ERROR_INVALID_ARGS; */
-/*   if (elements_to_move_amount == 0) */
-/*     return L_SUCCESS; */
+  elements_to_move_amount = old_length - start_i;
 
-/*   l->length = new_length; */
+  if (elements_to_move_amount == 0)
+    return L_SUCCESS;
 
-/*   start_i--; */
+  l->length = new_length, start_i--;
 
-/*   for (; elements_to_move_amount > 0; elements_to_move_amount--) { */
-/*     i_source = start_i + elements_to_move_amount; */
-/*     i_dest = i_source + move_by; */
+  for (; elements_to_move_amount > 0; elements_to_move_amount--) {
+    i_source = start_i + elements_to_move_amount;
+    i_dest = i_source + move_by;
 
-/*     arl_get(l, i_source, &p); */
-/*     arl_set(l, i_dest, p); */
-/*     arl_set(l, i_source, NULL); */
-/*   } */
+    arl_get(l, i_source, &p);
+    arl_set(l, i_dest, p);
+    arl_set(l, i_source, NULL);
+  }
 
-/*   return L_SUCCESS; */
-/* } */
+  return L_SUCCESS;
+}

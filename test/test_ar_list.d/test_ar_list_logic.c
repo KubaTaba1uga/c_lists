@@ -321,10 +321,26 @@ void test_arl_grow_array_capacity_success(void) {
   TEST_ASSERT_EQUAL(new_l_capacity, l->capacity);
 }
 
-/* void test_arl_move_indexes_by_positive_number_new_size_overflow(void) { */
-/*   /\* int exit_code; *\/ */
-/*   /\* arl_ptr l = setup_small_list(); *\/ */
+/* void test_arl_move_indexes_by_positive_number_new_length_overflow_failure( */
+/*     void) { */
+/*   arl_ptr l = setup_small_list(); */
+/*   l_error_t err; */
 
-/*   /\* l->size =  *\/ */
+/*   err = arl_move_indexes_by_positive_number(l, 0, L_SIZE_T_MAX); */
+
+/*   TEST_ASSERT_EQUAL(L_ERROR_OVERFLOW, err); */
 /* } */
-/* /\* void test_arl_alloc_array *\/ */
+
+/* void
+ * test_arl_move_indexes_by_positive_number_elements_to_move_amount_underflow_failure(
+ */
+/*     void) { */
+/*   arl_ptr l = setup_small_list(); */
+/*   l_error_t err; */
+
+/*   err = arl_move_indexes_by_positive_number(l, l->length + 1, 0); */
+
+/*   TEST_ASSERT_EQUAL(L_ERROR_OVERFLOW, err); */
+/* } */
+
+/* void test_arl_alloc_array */
