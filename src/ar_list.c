@@ -42,7 +42,7 @@ struct ar_list {
 
 /* static size_t arl_count_new_capacity(size_t current_size, */
 /* size_t current_capacity); */
-/* static bool arl_is_i_too_big(ar_list *l, size_t i); */
+static bool arl_is_i_too_big(arl_ptr l, size_t i);
 /* static l_error_t arl_grow_array_capacity(ar_list *l); */
 /* static void *arl_move_indexes_by_positive_number(ar_list *l, size_t start_i,
  */
@@ -57,7 +57,7 @@ struct ar_list {
 
 /* Returns L_SUCCESS on success. */
 /* Behaviour is undefined if `l` is not a valid pointer. */
-l_error_t arl_create(arl_ptr *l_p, size_t default_capacity) {
+l_error_t arl_create(arl_ptr *l, size_t default_capacity) {
   if (is_overflow_size_t_multi(default_capacity, L_PTR_SIZE))
     return L_ERROR_OVERFLOW;
 
@@ -74,7 +74,7 @@ l_error_t arl_create(arl_ptr *l_p, size_t default_capacity) {
   l_local->array = l_array;
   l_local->capacity = default_capacity;
   l_local->length = 0;
-  *l_p = l_local;
+  *l = l_local;
 
   return L_SUCCESS;
 
@@ -88,29 +88,28 @@ CLEANUP_L_LOCAL_OOM:
  * `l` and `p` have to be valid pointers,
  *  otherwise behaviour is undefined.
  */
-/* l_error_t arl_get(ar_list *l, size_t i, void **p) { */
+l_error_t arl_get(arl_ptr l, size_t i, void **p) {
+  if (arl_is_i_too_big(l, i))
+    return L_ERROR_INDEX_TOO_BIG;
 
-/*   if (arl_is_i_too_big(l, i)) */
-/*     return L_ERROR_INDEX_TOO_BIG; */
+  *p = l->array[i];
 
-/*   *p = l->array[i]; */
-
-/*   return L_SUCCESS; */
-/* } */
+  return L_SUCCESS;
+}
 
 /* Sets value under the index.
  *  Index has to be smaller than list's length.
  *  `l` and `value` have to be valid pointers,
  *  otherwise behaviour is undefined.
  */
-/* l_error_t arl_set(ar_list *l, size_t i, void *value) { */
-/*   if (arl_is_i_too_big(l, i)) */
-/*     return L_ERROR_INVALID_ARGS; */
+l_error_t arl_set(arl_ptr l, size_t i, void *value) {
+  if (arl_is_i_too_big(l, i))
+    return L_ERROR_INDEX_TOO_BIG;
 
-/*   l->array[i] = value; */
+  l->array[i] = value;
 
-/*   return L_SUCCESS; */
-/* } */
+  return L_SUCCESS;
+}
 
 /* void arl_append(ar_list *l, void *value) { */
 /*   /\* Insert value to the last possible index. *\/ */
@@ -176,9 +175,9 @@ CLEANUP_L_LOCAL_OOM:
 /*   return 3 * current_length / 2 + current_capacity; */
 /* } */
 
-/* /\* Checks if index is within list boundaries. *\/ */
-/* /\* The behaviour is undefined if `l` is not a valid pointer. *\/ */
-/* bool arl_is_i_too_big(ar_list *l, size_t i) { return i >= (l->length); } */
+/* Checks if index is within list boundaries. */
+/* The behaviour is undefined if `l` is not a valid pointer. */
+bool arl_is_i_too_big(arl_ptr l, size_t i) { return i >= (l->length); }
 
 /* /\* Grows underlaying array size. *\/ */
 /* /\* If array reached it's maximum, further growing is undefined behaviour.'

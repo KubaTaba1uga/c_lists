@@ -25,14 +25,14 @@
 size_t list_memory_mock_size = 0, array_memory_mock_size = 0;
 void *list_memory_mock = NULL, *array_memory_mock = NULL;
 int arl_small_values[] = {0, 1, 2, 3, 4, 5};
-size_t arl_small_size = sizeof(arl_small_values) / sizeof(int);
+size_t arl_small_length = sizeof(arl_small_values) / sizeof(int);
 
 /*******************************************************************************
  *    SETUP, TEARDOWN
  ******************************************************************************/
 
 void setUp(void) {
-  array_memory_mock_size = sizeof(void *) * 10;
+  array_memory_mock_size = L_PTR_SIZE * 10;
 
   array_memory_mock = malloc(array_memory_mock_size);
   if (!array_memory_mock)
@@ -66,30 +66,31 @@ void tearDown(void) {
  *    TESTS UTILS
  ******************************************************************************/
 
-/* ar_list setup_empty_list() { */
-/*   ar_list l; */
-/*   size_t default_capacity = memory_mock_size / sizeof(void *); */
+arl_ptr setup_empty_list() {
+  arl_ptr l;
+  size_t default_capacity = array_memory_mock_size / L_PTR_SIZE;
 
-/*   app_malloc_ExpectAndReturn(memory_mock_size, memory_mock); */
+  app_malloc_ExpectAndReturn(array_memory_mock_size, array_memory_mock);
+  app_malloc_ExpectAndReturn(list_memory_mock_size, list_memory_mock);
 
-/*   arl_init(&l, default_capacity); */
+  arl_create(&l, default_capacity);
 
-/*   return l; */
-/* } */
-/* ar_list setup_small_list() { */
-/*   ar_list l = setup_empty_list(); */
-/*   size_t i; */
+  return l;
+}
+arl_ptr setup_small_list() {
+  arl_ptr l = setup_empty_list();
+  size_t i;
 
-/*   for (i = 0; i < arl_small_size; i++) { */
-/*     l.array[i] = &arl_small_values[i]; */
-/*     l.length += 1; */
-/*   } */
+  for (i = 0; i < arl_small_length; i++) {
+    l->array[i] = &arl_small_values[i];
+    l->length += 1;
+  }
 
-/*   return l; */
-/* } */
+  return l;
+}
 
-/* void parametrize_test_arl_get_i_too_big_failure(ar_list l); */
-
+void parametrize_test_arl_get_i_too_big_failure(arl_ptr l);
+void parametrize_test_arl_set_i_too_big_failure(arl_ptr l);
 /* /\*******************************************************************************
  */
 /*  *    PUBLIC API TESTS */
@@ -143,36 +144,69 @@ void test_arl_create_success(void) {
   TEST_ASSERT_EQUAL(l->capacity, default_capacity);
 }
 
-/* void test_arl_get_i_too_big_failure(void) { */
-/*   ar_list ls_to_param[] = {setup_empty_list(), setup_small_list()}; */
+void test_arl_get_i_too_big_failure(void) {
+  arl_ptr ls_to_param[] = {setup_empty_list(), setup_small_list()};
 
-/*   for (size_t i = 0; i < sizeof(ls_to_param) / sizeof(ar_list); i++) */
-/*     parametrize_test_arl_get_i_too_big_failure(ls_to_param[i]); */
-/* } */
+  for (size_t i = 0; i < sizeof(ls_to_param) / sizeof(arl_ptr); i++)
+    parametrize_test_arl_get_i_too_big_failure(ls_to_param[i]);
+}
 
-/* void parametrize_test_arl_get_i_too_big_failure(ar_list l) { */
-/*   size_t i, indexes_to_check[] = {l.length, l.length + 1, l.length + 2}; */
-/*   void *p; */
-/*   l_error_t err; */
+void parametrize_test_arl_get_i_too_big_failure(arl_ptr l) {
+  size_t i, indexes_to_check[] = {l->length, l->length + 1, l->length + 2};
+  void *p;
+  l_error_t err;
 
-/*   for (i = 0; i < sizeof(indexes_to_check) / sizeof(size_t); i++) { */
-/*     err = arl_get(&l, indexes_to_check[i], &p); */
-/*     TEST_ASSERT_EQUAL(L_ERROR_INDEX_TOO_BIG, err); */
-/*   } */
-/* } */
+  for (i = 0; i < sizeof(indexes_to_check) / sizeof(size_t); i++) {
+    err = arl_get(l, indexes_to_check[i], &p);
+    TEST_ASSERT_EQUAL(L_ERROR_INDEX_TOO_BIG, err);
+  }
+}
 
-/* void test_arl_get_success(void) { */
-/*   ar_list l = setup_small_list(); */
-/*   int *value, i; */
-/*   l_error_t err; */
+void test_arl_get_success(void) {
+  arl_ptr l = setup_small_list();
+  int *value, i;
+  l_error_t err;
 
-/*   for (i = 0; i < l.length; i++) { */
-/*     err = arl_get(&l, i, (void **)&value); */
+  for (i = 0; i < l->length; i++) {
+    err = arl_get(l, i, (void **)&value);
 
-/*     TEST_ASSERT_EQUAL(L_SUCCESS, err); */
-/*     TEST_ASSERT_EQUAL(arl_small_values[i], *value); */
-/*   } */
-/* } */
+    TEST_ASSERT_EQUAL(L_SUCCESS, err);
+    TEST_ASSERT_EQUAL(arl_small_values[i], *value);
+  }
+}
+
+void test_arl_set_i_too_big_failure(void) {
+  arl_ptr ls_to_param[] = {setup_empty_list(), setup_small_list()};
+
+  for (size_t i = 0; i < sizeof(ls_to_param) / sizeof(arl_ptr); i++)
+    parametrize_test_arl_set_i_too_big_failure(ls_to_param[i]);
+}
+
+void parametrize_test_arl_set_i_too_big_failure(arl_ptr l) {
+  size_t i, indexes_to_check[] = {l->length, l->length + 1, l->length + 2};
+  char value[] = "ABC";
+  l_error_t err;
+
+  for (i = 0; i < sizeof(indexes_to_check) / sizeof(size_t); i++) {
+    err = arl_set(l, indexes_to_check[i], value);
+    TEST_ASSERT_EQUAL(L_ERROR_INDEX_TOO_BIG, err);
+  }
+}
+
+void test_arl_set_success(void) {
+  arl_ptr l = setup_small_list();
+  int value = 13;
+  int i;
+  l_error_t err;
+
+  for (i = 0; i < arl_small_length; i++) {
+    err = arl_set(l, i, (void *)&value);
+
+    TEST_ASSERT_EQUAL(L_SUCCESS, err);
+    TEST_ASSERT_EQUAL_PTR(&value, l->array[i]);
+    TEST_ASSERT_EQUAL(13, *(int *)(l->array[i]));
+  }
+}
 
 /* /\*******************************************************************************
  */
@@ -208,7 +242,7 @@ void test_arl_create_success(void) {
 /* } */
 
 /* void test_arl_is_i_too_big_true(void) { */
-/*   ar_list l = setup_small_list(); */
+/*   arl_ptr l = setup_small_list(); */
 /*   size_t j, i_to_check[] = {l.length, l.length + 1, l.capacity}; */
 /*   bool is_invalid; */
 
@@ -220,7 +254,7 @@ void test_arl_create_success(void) {
 /* } */
 
 /* void test_arl_is_i_too_big_false(void) { */
-/*   ar_list l = setup_small_list(); */
+/*   arl_ptr l = setup_small_list(); */
 /*   size_t j, i_to_check[] = {l.length - 1, 0}; */
 /*   bool is_invalid; */
 
@@ -232,7 +266,7 @@ void test_arl_create_success(void) {
 /* } */
 
 /* void test_arl_grow_array_capacity_memory_failure(void) { */
-/*   ar_list l_cp, l = setup_small_list(); */
+/*   arl_ptr l_cp, l = setup_small_list(); */
 /*   l_error_t err; */
 
 /*   l_cp = l; */
@@ -248,7 +282,7 @@ void test_arl_create_success(void) {
 /* } */
 
 /* void test_arl_grow_array_capacity_max(void) { */
-/*   ar_list l = setup_small_list(); */
+/*   arl_ptr l = setup_small_list(); */
 /*   l_error_t err; */
 
 /*   l.capacity = ARL_CAPACITY_MAX; */
@@ -259,7 +293,7 @@ void test_arl_create_success(void) {
 /* } */
 
 /* void test_arl_grow_array_capacity_success(void) { */
-/*   ar_list l = setup_small_list(); */
+/*   arl_ptr l = setup_small_list(); */
 /*   l_error_t err; */
 /*   void *new_array; */
 /*   size_t new_l_capacity, new_array_size; */
@@ -285,7 +319,7 @@ void test_arl_create_success(void) {
 
 /* void test_arl_move_indexes_by_positive_number_new_size_overflow(void) { */
 /*   /\* int exit_code; *\/ */
-/*   /\* ar_list l = setup_small_list(); *\/ */
+/*   /\* arl_ptr l = setup_small_list(); *\/ */
 
 /*   /\* l.size =  *\/ */
 /* } */
