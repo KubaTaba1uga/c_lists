@@ -227,7 +227,7 @@ void test_arl_count_new_capacity(void) {
   }
 }
 
-void test_arl_count_new_capacity_overflow(void) {
+void test_arl_count_new_capacity_overflow_failure(void) {
   /* Show array growth stop. */
   /* Upper bound of list is well defined. */
   size_t length, capacity;
@@ -263,62 +263,60 @@ void test_arl_is_i_too_big_false(void) {
   }
 }
 
-/* void test_arl_grow_array_capacity_memory_failure(void) { */
-/*   arl_ptr l_cp, l = setup_small_list(); */
-/*   l_error_t err; */
+void test_arl_grow_array_capacity_memory_failure(void) {
+  arl_ptr l = setup_small_list();
+  l_error_t err;
 
-/*   l_cp = l; */
+  app_realloc_IgnoreAndReturn(NULL);
 
-/*   app_realloc_IgnoreAndReturn(NULL); */
+  err = arl_grow_array_capacity(l);
 
-/*   err = arl_grow_array_capacity(&l); */
+  TEST_ASSERT_EQUAL(L_ERROR_OUT_OF_MEMORY, err);
+  TEST_ASSERT_EQUAL_PTR(array_memory_mock, l->array);
+  TEST_ASSERT_EQUAL(arl_small_length, l->length);
+  TEST_ASSERT_EQUAL(array_memory_mock_size / sizeof(void *), l->capacity);
+}
 
-/*   TEST_ASSERT_EQUAL(L_ERROR_OUT_OF_MEMORY, err); */
-/*   TEST_ASSERT_EQUAL_PTR(l_cp.array, l.array); */
-/*   TEST_ASSERT_EQUAL(l_cp.length, l->length); */
-/*   TEST_ASSERT_EQUAL(l_cp.capacity, l->capacity); */
-/* } */
+void test_arl_grow_array_capacity_max_failure(void) {
+  arl_ptr l = setup_small_list();
+  l_error_t err;
 
-/* void test_arl_grow_array_capacity_max(void) { */
-/*   arl_ptr l = setup_small_list(); */
-/*   l_error_t err; */
+  l->capacity = ARL_CAPACITY_MAX;
 
-/*   l->capacity = ARL_CAPACITY_MAX; */
+  err = arl_grow_array_capacity(l);
 
-/*   err = arl_grow_array_capacity(&l); */
+  TEST_ASSERT_EQUAL(L_ERROR_REACHED_CAPACITY_MAX, err);
+}
 
-/*   TEST_ASSERT_EQUAL(L_ERROR_REACHED_CAPACITY_MAX, err); */
-/* } */
+void test_arl_grow_array_capacity_success(void) {
+  arl_ptr l = setup_small_list();
+  l_error_t err;
+  void *new_array;
+  size_t new_l_capacity, new_array_size;
 
-/* void test_arl_grow_array_capacity_success(void) { */
-/*   arl_ptr l = setup_small_list(); */
-/*   l_error_t err; */
-/*   void *new_array; */
-/*   size_t new_l_capacity, new_array_size; */
+  new_l_capacity = arl_count_new_capacity(l->length, l->capacity);
 
-/*   new_l_capacity = arl_count_new_capacity(l->length, l->capacity); */
+  new_array_size = new_l_capacity * L_PTR_SIZE;
 
-/*   new_array_size = new_l_capacity * L_PTR_SIZE; */
+  new_array = realloc(l->array, new_array_size);
+  if (!new_array)
+    TEST_FAIL_MESSAGE("Unable to reallocate memory!");
 
-/*   new_array = realloc(l.array, new_array_size); */
-/*   if (!new_array) */
-/*     TEST_FAIL_MESSAGE("Unable to reallocate memory!"); */
+  array_memory_mock = new_array;
 
-/*   memory_mock = new_array; */
+  app_realloc_ExpectAndReturn(l->array, new_array_size, new_array);
 
-/*   app_realloc_ExpectAndReturn(l.array, new_array_size, new_array); */
+  err = arl_grow_array_capacity(l);
 
-/*   err = arl_grow_array_capacity(&l); */
-
-/*   TEST_ASSERT_EQUAL(L_SUCCESS, err); */
-/*   TEST_ASSERT_EQUAL_PTR(new_array, l.array); */
-/*   TEST_ASSERT_EQUAL(new_l_capacity, l->capacity); */
-/* } */
+  TEST_ASSERT_EQUAL(L_SUCCESS, err);
+  TEST_ASSERT_EQUAL_PTR(new_array, l->array);
+  TEST_ASSERT_EQUAL(new_l_capacity, l->capacity);
+}
 
 /* void test_arl_move_indexes_by_positive_number_new_size_overflow(void) { */
 /*   /\* int exit_code; *\/ */
 /*   /\* arl_ptr l = setup_small_list(); *\/ */
 
-/*   /\* l.size =  *\/ */
+/*   /\* l->size =  *\/ */
 /* } */
 /* /\* void test_arl_alloc_array *\/ */

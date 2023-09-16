@@ -178,30 +178,26 @@ new_size
 /* The behaviour is undefined if `l` is not a valid pointer. */
 bool arl_is_i_too_big(arl_ptr l, size_t i) { return i >= (l->length); }
 
-/* /\* Grows underlaying array size. *\/ */
-/* /\* If array reached it's maximum, further growing is undefined behaviour.'
- * *\/ */
-/* // REMEMBER FUTURE ME */
-/* //  array grows only on insert, insert should validate before assignment */
-/* static l_error_t arl_grow_array_capacity(ar_list *l) { */
-/*   void *p; */
-/*   size_t new_capacity; */
+/* Grows underlaying array. */
+static l_error_t arl_grow_array_capacity(arl_ptr l) {
+  void *p;
+  size_t new_capacity;
 
-/*   if (l->capacity == ARL_CAPACITY_MAX) */
-/*     return L_ERROR_REACHED_CAPACITY_MAX; */
+  if (l->capacity == ARL_CAPACITY_MAX)
+    return L_ERROR_REACHED_CAPACITY_MAX;
 
-/*   new_capacity = arl_count_new_capacity(l->length, l->capacity); */
+  new_capacity = arl_count_new_capacity(l->length, l->capacity);
 
-/*   p = app_realloc(l->array, new_capacity * L_PTR_SIZE); */
-/*   if (!p) { */
-/*     return L_ERROR_OUT_OF_MEMORY; */
-/*   } */
+  p = app_realloc(l->array, new_capacity * L_PTR_SIZE);
+  if (!p) {
+    return L_ERROR_OUT_OF_MEMORY;
+  }
 
-/*   l->capacity = new_capacity; */
-/*   l->array = p; */
+  l->capacity = new_capacity;
+  l->array = p;
 
-/*   return L_SUCCESS; */
-/* }; */
+  return L_SUCCESS;
+};
 
 /* Move elements further by `move_by`, starting from `start_i`.
  * Set NULL on source value.
