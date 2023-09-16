@@ -44,31 +44,22 @@ void setUp(void) {
   if (!list_memory_mock)
     TEST_FAIL_MESSAGE("Unable to allocate memory. Mocking malloc failed!");
 
-  get_pointer_size_IgnoreAndReturn(sizeof(void *));
+  get_pointer_size_IgnoreAndReturn(L_PTR_SIZE);
 }
 
 void tearDown(void) {
-  /* if (!memory_mock) */
-  /*   return; */
 
-  /* free(memory_mock); */
-  /* memory_mock = NULL; */
-  /* memory_mock_size = 0; */
-}
+  if (array_memory_mock)
+    free(array_memory_mock);
 
-void test_arl_create_success(void) {
-  size_t default_capacity = array_memory_mock_size / sizeof(void *);
-  arl_ptr l;
-  l_error_t err;
+  if (list_memory_mock)
+    free(list_memory_mock);
 
-  app_malloc_ExpectAndReturn(list_memory_mock_size, list_memory_mock);
-  app_malloc_ExpectAndReturn(array_memory_mock_size, array_memory_mock);
+  array_memory_mock = NULL;
+  array_memory_mock = 0;
 
-  err = arl_create(&l, default_capacity);
-
-  TEST_ASSERT_EQUAL(L_SUCCESS, err);
-  /* TEST_ASSERT_EQUAL(l->length, 0); */
-  /* TEST_ASSERT_EQUAL(l->capacity, default_capacity); */
+  list_memory_mock = NULL;
+  list_memory_mock = 0;
 }
 
 /*******************************************************************************
@@ -105,25 +96,52 @@ void test_arl_create_success(void) {
 /*  ******************************************************************************\/
  */
 
-/* void test_arl_init_memory_failure(void) { */
-/*   ar_list l; */
-/*   int received; */
+void test_arl_create_memory_failure_array(void) {
+  arl_ptr l;
+  l_error_t err;
 
-/*   app_malloc_IgnoreAndReturn(NULL); */
+  app_malloc_ExpectAndReturn(array_memory_mock_size, NULL);
 
-/*   received = arl_init(&l, 10); */
+  err = arl_create(&l, 10);
 
-/*   TEST_ASSERT_EQUAL(L_ERROR_OUT_OF_MEMORY, received); */
-/* } */
+  TEST_ASSERT_EQUAL(L_ERROR_OUT_OF_MEMORY, err);
+}
+void test_arl_create_memory_failure_list(void) {
+  arl_ptr l;
+  l_error_t err;
 
-/* void test_arl_init_overflow_failure(void) { */
-/*   ar_list l; */
-/*   int received; */
+  app_malloc_ExpectAndReturn(array_memory_mock_size, array_memory_mock);
+  app_malloc_ExpectAndReturn(list_memory_mock_size, NULL);
+  array_memory_mock = NULL;
 
-/*   received = arl_init(&l, ARL_CAPACITY_MAX + 1); */
+  err = arl_create(&l, 10);
 
-/*   TEST_ASSERT_EQUAL(L_ERROR_OVERFLOW, received); */
-/* } */
+  TEST_ASSERT_EQUAL(L_ERROR_OUT_OF_MEMORY, err);
+}
+
+void test_arl_create_overflow_failure(void) {
+  arl_ptr l;
+  l_error_t err;
+
+  err = arl_create(&l, ARL_CAPACITY_MAX + 1);
+
+  TEST_ASSERT_EQUAL(L_ERROR_OVERFLOW, err);
+}
+
+void test_arl_create_success(void) {
+  size_t default_capacity = array_memory_mock_size / sizeof(void *);
+  arl_ptr l;
+  l_error_t err;
+
+  app_malloc_ExpectAndReturn(array_memory_mock_size, array_memory_mock);
+  app_malloc_ExpectAndReturn(list_memory_mock_size, list_memory_mock);
+
+  err = arl_create(&l, default_capacity);
+
+  TEST_ASSERT_EQUAL(L_SUCCESS, err);
+  TEST_ASSERT_EQUAL(l->length, 0);
+  TEST_ASSERT_EQUAL(l->capacity, default_capacity);
+}
 
 /* void test_arl_get_i_too_big_failure(void) { */
 /*   ar_list ls_to_param[] = {setup_empty_list(), setup_small_list()}; */
@@ -155,6 +173,7 @@ void test_arl_create_success(void) {
 /*     TEST_ASSERT_EQUAL(arl_small_values[i], *value); */
 /*   } */
 /* } */
+
 /* /\*******************************************************************************
  */
 /*  *    PRIVATE API TESTS */

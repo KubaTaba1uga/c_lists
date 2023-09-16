@@ -61,25 +61,25 @@ l_error_t arl_create(arl_ptr *l_p, size_t default_capacity) {
   if (is_overflow_size_t_multi(default_capacity, L_PTR_SIZE))
     return L_ERROR_OVERFLOW;
 
-  void *arl_array = app_malloc(default_capacity * L_PTR_SIZE);
+  void *l_array = app_malloc(default_capacity * L_PTR_SIZE);
 
-  if (!arl_array)
+  if (!l_array)
     return L_ERROR_OUT_OF_MEMORY;
 
-  arl_ptr l_p_local = app_malloc(sizeof(struct ar_list));
+  arl_ptr l_local = app_malloc(sizeof(struct ar_list));
 
-  if (!l_p_local)
-    goto CLEANUP_ARRAY;
+  if (!l_local)
+    goto CLEANUP_L_LOCAL_OOM;
 
-  l_p_local->array = arl_array;
-  l_p_local->capacity = default_capacity;
-  l_p_local->length = 0;
-  *l_p = l_p_local;
+  l_local->array = l_array;
+  l_local->capacity = default_capacity;
+  l_local->length = 0;
+  *l_p = l_local;
 
   return L_SUCCESS;
 
-CLEANUP_ARRAY:
-  free(arl_array);
+CLEANUP_L_LOCAL_OOM:
+  free(l_array);
   return L_ERROR_OUT_OF_MEMORY;
 }
 
