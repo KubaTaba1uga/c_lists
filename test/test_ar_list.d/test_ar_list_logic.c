@@ -5,6 +5,7 @@
 #include <limits.h>
 #include <stddef.h>
 #include <stdlib.h>
+#include <string.h>
 
 // Test framework
 #include "ar_list.h"
@@ -290,17 +291,24 @@ void test_arl_grow_array_capacity_max_failure(void) {
 
 void test_arl_grow_array_capacity_success(void) {
   arl_ptr l = setup_small_list();
-  l_error_t err;
-  void *new_array;
   size_t new_l_capacity, new_array_size;
+  void *new_array;
+  l_error_t err;
 
   new_l_capacity = arl_count_new_capacity(l->length, l->capacity);
 
   new_array_size = new_l_capacity * L_PTR_SIZE;
 
-  new_array = realloc(l->array, new_array_size);
+  // Do not use realloc, it would invalidate l->array before
+  //    actual function execution.
+  new_array = malloc(new_array_size);
   if (!new_array)
-    TEST_FAIL_MESSAGE("Unable to reallocate memory!");
+    TEST_FAIL_MESSAGE("Unable to allocate memory for realloc mock!");
+
+  new_array = memcpy(new_array, l->array, l->capacity * L_PTR_SIZE);
+
+  if (!new_array)
+    TEST_FAIL_MESSAGE("Unable to copy memory for realloc mock!");
 
   array_memory_mock = new_array;
 
