@@ -208,62 +208,60 @@ void test_arl_set_success(void) {
   }
 }
 
-/* /\*******************************************************************************
- */
-/*  *    PRIVATE API TESTS */
-/*  ******************************************************************************\/
- */
-/* void test_arl_count_new_capacity(void) { */
-/*   /\* Show array capacity growth ratio by example. *\/ */
-/*   /\* Purpose of this function is mainly documentational. *\/ */
+/*******************************************************************************
+ *    PRIVATE API TESTS
+ ******************************************************************************/
+void test_arl_count_new_capacity(void) {
+  /* Show array capacity growth ratio by example. */
+  /* Purpose of this function is mainly documentational. */
 
-/*   size_t expected_values[] = {1000, 2500, 6250, 15625}; */
-/*   size_t length = 0; */
-/*   size_t capacity = 1000; */
-/*   size_t i; */
+  size_t expected_values[] = {1000, 2500, 6250, 15625};
+  size_t length = 0;
+  size_t capacity = 1000;
+  size_t i;
 
-/*   for (i = 0; i < (sizeof(expected_values) / sizeof(size_t)); i++) { */
-/*     capacity = length = arl_count_new_capacity(length, capacity); */
+  for (i = 0; i < (sizeof(expected_values) / sizeof(size_t)); i++) {
+    capacity = length = arl_count_new_capacity(length, capacity);
 
-/*     TEST_ASSERT_EQUAL(expected_values[i], capacity); */
-/*   } */
-/* } */
+    TEST_ASSERT_EQUAL(expected_values[i], capacity);
+  }
+}
 
-/* void test_arl_count_new_capacity_overflow(void) { */
-/*   /\* Show array growth stop. *\/ */
-/*   /\* Upper bound of list is well defined. *\/ */
-/*   size_t length, capacity; */
+void test_arl_count_new_capacity_overflow(void) {
+  /* Show array growth stop. */
+  /* Upper bound of list is well defined. */
+  size_t length, capacity;
 
-/*   capacity = length = ARL_CAPACITY_MAX; */
+  capacity = length = ARL_CAPACITY_MAX;
 
-/*   capacity = arl_count_new_capacity(length, capacity); */
+  capacity = arl_count_new_capacity(length, capacity);
 
-/*   TEST_ASSERT_EQUAL(ARL_CAPACITY_MAX, capacity); */
-/* } */
+  TEST_ASSERT_EQUAL(ARL_CAPACITY_MAX, capacity);
+}
 
-/* void test_arl_is_i_too_big_true(void) { */
-/*   arl_ptr l = setup_small_list(); */
-/*   size_t j, i_to_check[] = {l.length, l.length + 1, l.capacity}; */
-/*   bool is_invalid; */
+void test_arl_is_i_too_big_true(void) {
+  arl_ptr l = setup_small_list();
+  size_t j, i_to_check[] = {l->length, l->length + 1, l->capacity};
+  bool is_i_too_big;
 
-/*   for (j = 0; j < (sizeof(i_to_check) / sizeof(size_t)); j++) { */
-/*     is_invalid = arl_is_i_too_big(&l, i_to_check[j]); */
+  for (j = 0; j < (sizeof(i_to_check) / sizeof(size_t)); j++) {
+    is_i_too_big = arl_is_i_too_big(l, i_to_check[j]);
 
-/*     TEST_ASSERT_TRUE(is_invalid); */
-/*   } */
-/* } */
+    TEST_ASSERT_TRUE(is_i_too_big);
+  }
+}
 
-/* void test_arl_is_i_too_big_false(void) { */
-/*   arl_ptr l = setup_small_list(); */
-/*   size_t j, i_to_check[] = {l.length - 1, 0}; */
-/*   bool is_invalid; */
+void test_arl_is_i_too_big_false(void) {
+  arl_ptr l = setup_small_list();
+  size_t j, i_to_check[] = {l->length - 1, 0};
+  bool is_i_too_big;
 
-/*   for (j = 0; j < (sizeof(i_to_check) / sizeof(size_t)); j++) { */
-/*     is_invalid = arl_is_i_too_big(&l, i_to_check[j]); */
+  for (j = 0; j < (sizeof(i_to_check) / sizeof(size_t)); j++) {
+    is_i_too_big = arl_is_i_too_big(l, i_to_check[j]);
 
-/*     TEST_ASSERT_FALSE(is_invalid); */
-/*   } */
-/* } */
+    TEST_ASSERT_FALSE(is_i_too_big);
+  }
+}
 
 /* void test_arl_grow_array_capacity_memory_failure(void) { */
 /*   arl_ptr l_cp, l = setup_small_list(); */
@@ -277,15 +275,15 @@ void test_arl_set_success(void) {
 
 /*   TEST_ASSERT_EQUAL(L_ERROR_OUT_OF_MEMORY, err); */
 /*   TEST_ASSERT_EQUAL_PTR(l_cp.array, l.array); */
-/*   TEST_ASSERT_EQUAL(l_cp.length, l.length); */
-/*   TEST_ASSERT_EQUAL(l_cp.capacity, l.capacity); */
+/*   TEST_ASSERT_EQUAL(l_cp.length, l->length); */
+/*   TEST_ASSERT_EQUAL(l_cp.capacity, l->capacity); */
 /* } */
 
 /* void test_arl_grow_array_capacity_max(void) { */
 /*   arl_ptr l = setup_small_list(); */
 /*   l_error_t err; */
 
-/*   l.capacity = ARL_CAPACITY_MAX; */
+/*   l->capacity = ARL_CAPACITY_MAX; */
 
 /*   err = arl_grow_array_capacity(&l); */
 
@@ -298,7 +296,7 @@ void test_arl_set_success(void) {
 /*   void *new_array; */
 /*   size_t new_l_capacity, new_array_size; */
 
-/*   new_l_capacity = arl_count_new_capacity(l.length, l.capacity); */
+/*   new_l_capacity = arl_count_new_capacity(l->length, l->capacity); */
 
 /*   new_array_size = new_l_capacity * L_PTR_SIZE; */
 
@@ -314,7 +312,7 @@ void test_arl_set_success(void) {
 
 /*   TEST_ASSERT_EQUAL(L_SUCCESS, err); */
 /*   TEST_ASSERT_EQUAL_PTR(new_array, l.array); */
-/*   TEST_ASSERT_EQUAL(new_l_capacity, l.capacity); */
+/*   TEST_ASSERT_EQUAL(new_l_capacity, l->capacity); */
 /* } */
 
 /* void test_arl_move_indexes_by_positive_number_new_size_overflow(void) { */

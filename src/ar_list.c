@@ -150,7 +150,7 @@ l_error_t arl_set(arl_ptr l, size_t i, void *value) {
  *    PRIVATE API
  ******************************************************************************/
 
-// SHRINK IS ONLY IN POP
+// SHRINK ONLY IN POP
 // IF SIZE < CAPACITY / 3
 //     CAPACITY = CAPACITY / 2
 
@@ -159,21 +159,20 @@ l_error_t arl_set(arl_ptr l, size_t i, void *value) {
  * Prevents overflow by assigning L_MAX_SIZE_CAPACITY, whenever overflow
  *   would occur. At some point list will be prevented from growing.
  */
-/* size_t arl_count_new_capacity(size_t current_length, size_t current_capacity)
- * { */
+size_t arl_count_new_capacity(size_t current_length, size_t current_capacity) {
 
-/*   /\* Size is always smaller than capacity. There is no need in checking
- * new_size */
-/*    * divided by cur_size overflow. */
-/*    *\/ */
-/*   if (is_overflow_l_capacity_multi(current_length, 3) || */
-/*       is_overflow_l_capacity_add(current_capacity, 2)) { */
+  /* Size is always smaller than capacity. There is no need in checking
+new_size
+   * divided by cur_size overflow.
+   */
+  if (is_overflow_l_capacity_multi(current_length, 3) ||
+      is_overflow_l_capacity_add(current_capacity, 2)) {
 
-/*     return ARL_CAPACITY_MAX; */
-/*   } */
+    return ARL_CAPACITY_MAX;
+  }
 
-/*   return 3 * current_length / 2 + current_capacity; */
-/* } */
+  return 3 * current_length / 2 + current_capacity;
+}
 
 /* Checks if index is within list boundaries. */
 /* The behaviour is undefined if `l` is not a valid pointer. */
