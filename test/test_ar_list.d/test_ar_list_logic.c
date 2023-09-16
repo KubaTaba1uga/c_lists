@@ -310,6 +310,8 @@ void test_arl_grow_array_capacity_success(void) {
   if (!new_array)
     TEST_FAIL_MESSAGE("Unable to copy memory for realloc mock!");
 
+  free(array_memory_mock);
+
   array_memory_mock = new_array;
 
   app_realloc_ExpectAndReturn(l->array, new_array_size, new_array);
@@ -348,6 +350,54 @@ void test_arl_move_indexes_by_positive_number_elements_to_move_amount_underflow_
   err = arl_move_indexes_by_positive_number(l, l->length + 1, 0);
 
   TEST_ASSERT_EQUAL(L_ERROR_OVERFLOW, err);
+}
+
+void test_arl_move_indexes_by_positive_number_no_elements_to_move(void) {
+  arl_ptr l = setup_small_list();
+  l_error_t err;
+
+  err = arl_move_indexes_by_positive_number(l, l->length, 0);
+
+  TEST_ASSERT_EQUAL(L_SUCCESS, err);
+}
+
+// TO-DO: refactor!!! my eyees burn!!!
+/* Confirms:
+ *    INPUT  l.array {0, 1, 2, 3, 4, 5, , , , }, start_i 1, move_by 2
+ *    OUTPUT l.array {0, NULL, NULL, 1, 2, 3, 4, 5, , }
+ */
+void test_arl_move_indexes_by_positive_number_success(void) {
+  int null_indexes[] = {1, 2};
+  size_t null_i_length = sizeof(null_indexes) / sizeof(int);
+  arl_ptr l = setup_small_list();
+  size_t i;
+  int *value;
+  l_error_t err;
+
+  err = arl_move_indexes_by_positive_number(l, 1, 2);
+
+  TEST_ASSERT_EQUAL(L_SUCCESS, err);
+
+  for (i = 0; i < null_i_length; i++) {
+    err = arl_get(l, null_indexes[i], (void **)&value);
+    TEST_ASSERT_NULL(value);
+  }
+
+  for (i = 0; i < null_indexes[0]; i++) {
+    err = arl_get(l, i, (void **)&value);
+    TEST_ASSERT_EQUAL(L_SUCCESS, err);
+
+    TEST_ASSERT_EQUAL(arl_small_values[i], *value);
+  }
+
+  int last_null_index = null_indexes[null_i_length - 1];
+
+  for (i = last_null_index + 1; i < l->length; i++) {
+    err = arl_get(l, i, (void **)&value);
+    TEST_ASSERT_EQUAL(L_SUCCESS, err);
+
+    TEST_ASSERT_EQUAL(arl_small_values[i - last_null_index], *value);
+  }
 }
 
 /* void test_arl_alloc_array */
