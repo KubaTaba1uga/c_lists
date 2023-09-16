@@ -218,7 +218,7 @@ l_error_t arl_move_indexes_by_positive_number(arl_ptr l, size_t start_i,
 
   old_length = l->length, new_length = l->length + move_by;
 
-  if (new_length > (l->capacity) || new_length < (l->length))
+  if (new_length > (l->capacity))
     return L_ERROR_INVALID_ARGS;
 
   if (is_underflow_size_t_sub(old_length, start_i))
