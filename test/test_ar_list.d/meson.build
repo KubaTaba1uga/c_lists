@@ -3,20 +3,20 @@ src = join_paths(root, 'src')
 utils = join_paths(src, 'utils')
 test_utils = join_paths('..', 'utils')
 
-test_name = 'test_ar_list_logic.c'
+test_file_name = 'test_ar_list_logic.c'
+test_name = 'test_ar_list_logic'
 
 cmock_test_src = files([
-  test_name,
+  test_file_name,
   src / 'ar_list.h', src / 'ar_list.c',
   src / 'l_error.h', src / 'l_error.c',
   utils / 'overflow_utils.h', utils / 'overflow_utils.c',
-  test_utils / 'test_utils.h', test_utils / 'test_utils.c',
 ])
 
-test_ar_list_exe = executable('test_ar_list_logic',
+test_ar_list_exe = executable(test_name,
   sources: [
    cmock_test_src,
-   cmock_gen_runner.process('test_ar_list_logic.c'),
+   cmock_gen_runner.process(test_file_name),
    cmock_gen_mock.process(utils / 'std_lib_utils.h')
   ],
   include_directories: [src, utils, test_utils],
@@ -30,4 +30,4 @@ test_ar_list_exe = executable('test_ar_list_logic',
              
 )
 
-test('test_ar_list_logic', test_ar_list_exe)
+test(test_name, test_ar_list_exe)

@@ -6,19 +6,12 @@
 /* #include "l_def.h" */
 #include "l_error.h"
 
-typedef struct {
-  /* Number of elements.*/
-  size_t length;
+typedef struct ar_list *arl_ptr;
 
-  /* Maximum number of elements. */
-  size_t capacity;
+l_error_t arl_create(arl_ptr *l_p, size_t default_size);
+void arl_destroy(arl_ptr l);
 
-  /* Storage. */
-  void **array;
-} ar_list;
-
-l_error_t arl_init(ar_list *l, size_t default_size);
-l_error_t arl_get(ar_list *l, size_t i, void **p);
-l_error_t arl_set(ar_list *l, size_t i, void *value);
+l_error_t arl_get(arl_ptr l, size_t i, void **p);
+l_error_t arl_set(arl_ptr l, size_t i, void *value);
 
 #endif

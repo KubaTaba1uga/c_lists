@@ -29,9 +29,20 @@
 /*******************************************************************************
  *    PRIVATE API DECLARATIONS
  ******************************************************************************/
-static size_t arl_count_new_capacity(size_t current_size,
-                                     size_t current_capacity);
-static bool arl_is_i_too_big(ar_list *l, size_t i);
+struct ar_list {
+  /* Number of elements.*/
+  size_t length;
+
+  /* Maximum number of elements. */
+  size_t capacity;
+
+  /* Storage. */
+  void **array;
+};
+
+/* static size_t arl_count_new_capacity(size_t current_size, */
+/* size_t current_capacity); */
+/* static bool arl_is_i_too_big(ar_list *l, size_t i); */
 /* static l_error_t arl_grow_array_capacity(ar_list *l); */
 /* static void *arl_move_indexes_by_positive_number(ar_list *l, size_t start_i,
  */
@@ -46,7 +57,7 @@ static bool arl_is_i_too_big(ar_list *l, size_t i);
 
 /* Returns L_SUCCESS on success. */
 /* Behaviour is undefined if `l` is not a valid pointer. */
-l_error_t arl_init(ar_list *l, size_t default_capacity) {
+l_error_t arl_create(arl_ptr *l_p, size_t default_capacity) {
   if (is_overflow_size_t_multi(default_capacity, L_PTR_SIZE))
     return L_ERROR_OVERFLOW;
 
@@ -55,11 +66,21 @@ l_error_t arl_init(ar_list *l, size_t default_capacity) {
   if (!arl_array)
     return L_ERROR_OUT_OF_MEMORY;
 
-  l->array = arl_array;
-  l->capacity = default_capacity;
-  l->length = 0;
+  arl_ptr l_p_local = app_malloc(sizeof(struct ar_list));
+
+  if (!l_p_local)
+    goto CLEANUP_ARRAY;
+
+  l_p_local->array = arl_array;
+  l_p_local->capacity = default_capacity;
+  l_p_local->length = 0;
+  *l_p = l_p_local;
 
   return L_SUCCESS;
+
+CLEANUP_ARRAY:
+  free(arl_array);
+  return L_ERROR_OUT_OF_MEMORY;
 }
 
 /* Gets pointer to the value under the index.
@@ -67,15 +88,15 @@ l_error_t arl_init(ar_list *l, size_t default_capacity) {
  * `l` and `p` have to be valid pointers,
  *  otherwise behaviour is undefined.
  */
-l_error_t arl_get(ar_list *l, size_t i, void **p) {
+/* l_error_t arl_get(ar_list *l, size_t i, void **p) { */
 
-  if (arl_is_i_too_big(l, i))
-    return L_ERROR_INDEX_TOO_BIG;
+/*   if (arl_is_i_too_big(l, i)) */
+/*     return L_ERROR_INDEX_TOO_BIG; */
 
-  *p = l->array[i];
+/*   *p = l->array[i]; */
 
-  return L_SUCCESS;
-}
+/*   return L_SUCCESS; */
+/* } */
 
 /* Sets value under the index.
  *  Index has to be smaller than list's length.
@@ -83,14 +104,7 @@ l_error_t arl_get(ar_list *l, size_t i, void **p) {
  *  otherwise behaviour is undefined.
  */
 /* l_error_t arl_set(ar_list *l, size_t i, void *value) { */
-/*   bool i_is_invalid; */
-
-/*   if (!l || !value) */
-/*     return L_ERROR_INVALID_ARGS; */
-
-/*   arl_is_i_too_big(l, i, &i_is_invalid); */
-
-/*   if (i_is_invalid) */
+/*   if (arl_is_i_too_big(l, i)) */
 /*     return L_ERROR_INVALID_ARGS; */
 
 /*   l->array[i] = value; */
@@ -146,47 +160,50 @@ l_error_t arl_get(ar_list *l, size_t i, void **p) {
  * Prevents overflow by assigning L_MAX_SIZE_CAPACITY, whenever overflow
  *   would occur. At some point list will be prevented from growing.
  */
-size_t arl_count_new_capacity(size_t current_length, size_t current_capacity) {
+/* size_t arl_count_new_capacity(size_t current_length, size_t current_capacity)
+ * { */
 
-  /* Size is always smaller than capacity. There is no need in checking new_size
-   * divided by cur_size overflow.
-   */
-  if (is_overflow_l_capacity_multi(current_length, 3) ||
-      is_overflow_l_capacity_add(current_capacity, 2)) {
+/*   /\* Size is always smaller than capacity. There is no need in checking
+ * new_size */
+/*    * divided by cur_size overflow. */
+/*    *\/ */
+/*   if (is_overflow_l_capacity_multi(current_length, 3) || */
+/*       is_overflow_l_capacity_add(current_capacity, 2)) { */
 
-    return ARL_CAPACITY_MAX;
-  }
+/*     return ARL_CAPACITY_MAX; */
+/*   } */
 
-  return 3 * current_length / 2 + current_capacity;
-}
+/*   return 3 * current_length / 2 + current_capacity; */
+/* } */
 
-/* Checks if index is within list boundaries. */
-/* The behaviour is undefined if `l` is not a valid pointer. */
-bool arl_is_i_too_big(ar_list *l, size_t i) { return i >= (l->length); }
+/* /\* Checks if index is within list boundaries. *\/ */
+/* /\* The behaviour is undefined if `l` is not a valid pointer. *\/ */
+/* bool arl_is_i_too_big(ar_list *l, size_t i) { return i >= (l->length); } */
 
-/* Grows underlaying array size. */
-/* If array reached it's maximum, further growing is undefined behaviour.' */
-// REMEMBER FUTURE ME
-//  array grows only on insert, insert should validate before assignment
-static l_error_t arl_grow_array_capacity(ar_list *l) {
-  void *p;
-  size_t new_capacity;
+/* /\* Grows underlaying array size. *\/ */
+/* /\* If array reached it's maximum, further growing is undefined behaviour.'
+ * *\/ */
+/* // REMEMBER FUTURE ME */
+/* //  array grows only on insert, insert should validate before assignment */
+/* static l_error_t arl_grow_array_capacity(ar_list *l) { */
+/*   void *p; */
+/*   size_t new_capacity; */
 
-  if (l->capacity == ARL_CAPACITY_MAX)
-    return L_ERROR_REACHED_CAPACITY_MAX;
+/*   if (l->capacity == ARL_CAPACITY_MAX) */
+/*     return L_ERROR_REACHED_CAPACITY_MAX; */
 
-  new_capacity = arl_count_new_capacity(l->length, l->capacity);
+/*   new_capacity = arl_count_new_capacity(l->length, l->capacity); */
 
-  p = app_realloc(l->array, new_capacity * L_PTR_SIZE);
-  if (!p) {
-    return L_ERROR_OUT_OF_MEMORY;
-  }
+/*   p = app_realloc(l->array, new_capacity * L_PTR_SIZE); */
+/*   if (!p) { */
+/*     return L_ERROR_OUT_OF_MEMORY; */
+/*   } */
 
-  l->capacity = new_capacity;
-  l->array = p;
+/*   l->capacity = new_capacity; */
+/*   l->array = p; */
 
-  return L_SUCCESS;
-};
+/*   return L_SUCCESS; */
+/* }; */
 
 /* Move elements further by `move_by`, starting from `start_i`.
  * Set NULL on source value.
