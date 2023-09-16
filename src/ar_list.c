@@ -82,7 +82,6 @@ l_error_t arl_get(ar_list *l, size_t i, void **p) {
  *  `l` and `value` have to be valid pointers,
  *  otherwise behaviour is undefined.
  */
-
 /* l_error_t arl_set(ar_list *l, size_t i, void *value) { */
 /*   bool i_is_invalid; */
 

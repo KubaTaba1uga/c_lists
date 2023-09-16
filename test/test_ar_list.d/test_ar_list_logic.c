@@ -77,6 +77,8 @@ ar_list setup_small_list() {
   return l;
 }
 
+void parametrize_test_arl_get_i_too_big_failure(ar_list l);
+
 /*******************************************************************************
  *    PUBLIC API TESTS
  ******************************************************************************/
@@ -115,6 +117,13 @@ void test_arl_init_success(void) {
   TEST_ASSERT_EQUAL(l.capacity, default_capacity);
 }
 
+void test_arl_get_i_too_big_failure(void) {
+  ar_list ls_to_param[] = {setup_empty_list(), setup_small_list()};
+
+  for (size_t i = 0; i < sizeof(ls_to_param) / sizeof(ar_list); i++)
+    parametrize_test_arl_get_i_too_big_failure(ls_to_param[i]);
+}
+
 void parametrize_test_arl_get_i_too_big_failure(ar_list l) {
   size_t i, indexes_to_check[] = {l.length, l.length + 1, l.length + 2};
   void *p;
@@ -126,13 +135,18 @@ void parametrize_test_arl_get_i_too_big_failure(ar_list l) {
   }
 }
 
-void test_arl_get_i_too_big_failure(void) {
-  ar_list ls_to_param[] = {setup_empty_list(), setup_small_list()};
+void test_arl_get_success(void) {
+  ar_list l = setup_small_list();
+  int *value, i;
+  l_error_t err;
 
-  for (size_t i = 0; i < sizeof(ls_to_param) / sizeof(ar_list); i++)
-    parametrize_test_arl_get_i_too_big_failure(ls_to_param[i]);
+  for (i = 0; i < l.length; i++) {
+    err = arl_get(&l, i, (void **)&value);
+
+    TEST_ASSERT_EQUAL(L_SUCCESS, err);
+    TEST_ASSERT_EQUAL(arl_small_values[i], *value);
+  }
 }
-
 /*******************************************************************************
  *    PRIVATE API TESTS
  ******************************************************************************/
