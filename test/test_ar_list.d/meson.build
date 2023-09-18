@@ -1,6 +1,7 @@
 root = join_paths('..', '..')
 src = join_paths(root, 'src')
 utils = join_paths(src, 'utils')
+interfaces = join_paths(src, 'interfaces')
 test_utils = join_paths('..', 'utils')
 
 test_file_name = 'test_ar_list_logic.c'
@@ -17,9 +18,9 @@ test_ar_list_exe = executable(test_name,
   sources: [
    cmock_test_src,
    cmock_gen_runner.process(test_file_name),
-   cmock_gen_mock.process(utils / 'std_lib_utils.h')
+   cmock_gen_mock.process( interfaces / 'std_lib_interface.h')
   ],
-  include_directories: [src, utils, test_utils],
+  include_directories: [src, utils, interfaces, test_utils],
   dependencies: [unity_dependency, cmock_dependency],
   link_args: [
     # allow static functions testing

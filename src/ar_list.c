@@ -23,8 +23,9 @@
 #include "l_def.h"
 #include "l_error.h"
 #include "l_limits.h"
+
+#include "interfaces/std_lib_interface.h"
 #include "utils/overflow_utils.h"
-#include "utils/std_lib_utils.h"
 
 /*******************************************************************************
  *    PRIVATE API DECLARATIONS

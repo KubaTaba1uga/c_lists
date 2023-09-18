@@ -9,7 +9,7 @@
 
 // Test framework
 #include "ar_list.h"
-#include "mock_std_lib_utils.h"
+#include "mock_std_lib_interface.h"
 #include <unity.h>
 
 // App
@@ -37,15 +37,15 @@ void setUp(void) {
 
   array_memory_mock = malloc(array_memory_mock_size);
   if (!array_memory_mock)
-    TEST_FAIL_MESSAGE("Unable to allocate memory. Mocking malloc failed!");
+    TEST_FAIL_MESSAGE("Unable to allocate memory for `array_memory_mock`. "
+                      "Mocking malloc failed!");
 
   list_memory_mock_size = sizeof(struct ar_list);
 
   list_memory_mock = malloc(list_memory_mock_size);
   if (!list_memory_mock)
-    TEST_FAIL_MESSAGE("Unable to allocate memory. Mocking malloc failed!");
-
-  get_pointer_size_IgnoreAndReturn(L_PTR_SIZE);
+    TEST_FAIL_MESSAGE("Unable to allocate memory for `list_memory_mock`. "
+                      "Mocking malloc failed!");
 }
 
 void tearDown(void) {
