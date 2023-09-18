@@ -8,7 +8,6 @@
 #include <string.h>
 
 // Test framework
-#include "ar_list.h"
 #include "mock_std_lib_interface.h"
 #include <unity.h>
 
@@ -374,7 +373,17 @@ void test_arl_move_indexes_by_positive_number_success(void) {
   int *value;
   l_error_t err;
 
+  for (size_t i = 0; i < l->length; i++) {
+    printf("%p\n", l->array[i]);
+  }
+
+  puts("\n\n");
+
   err = arl_move_indexes_by_positive_number(l, 1, 2);
+
+  for (size_t i = 0; i < l->length; i++) {
+    printf("%p\n", l->array[i]);
+  }
 
   TEST_ASSERT_EQUAL(L_SUCCESS, err);
 

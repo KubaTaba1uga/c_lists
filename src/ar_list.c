@@ -17,6 +17,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdlib.h>
+#include <string.h>
 
 // App
 #include "ar_list.h"
@@ -44,6 +45,8 @@ struct ar_list {
 /* static size_t arl_count_new_capacity(size_t current_size, */
 /* size_t current_capacity); */
 static bool arl_is_i_too_big(arl_ptr l, size_t i);
+static void _arl_get(arl_ptr l, size_t i, void **p);
+static void _arl_set(arl_ptr l, size_t i, void *value);
 /* static l_error_t arl_grow_array_capacity(ar_list *l); */
 /* static void *arl_move_indexes_by_positive_number(ar_list *l, size_t start_i,
  */
@@ -93,7 +96,7 @@ l_error_t arl_get(arl_ptr l, size_t i, void **p) {
   if (arl_is_i_too_big(l, i))
     return L_ERROR_INDEX_TOO_BIG;
 
-  *p = l->array[i];
+  _arl_get(l, i, p);
 
   return L_SUCCESS;
 }
@@ -107,7 +110,7 @@ l_error_t arl_set(arl_ptr l, size_t i, void *value) {
   if (arl_is_i_too_big(l, i))
     return L_ERROR_INDEX_TOO_BIG;
 
-  l->array[i] = value;
+  _arl_set(l, i, value);
 
   return L_SUCCESS;
 }
@@ -150,6 +153,9 @@ l_error_t arl_set(arl_ptr l, size_t i, void *value) {
 /*******************************************************************************
  *    PRIVATE API
  ******************************************************************************/
+
+void _arl_get(arl_ptr l, size_t i, void **p) { *p = l->array[i]; }
+void _arl_set(arl_ptr l, size_t i, void *value) { l->array[i] = value; }
 
 // SHRINK ONLY IN POP
 // IF SIZE < CAPACITY / 3
@@ -230,16 +236,23 @@ l_error_t arl_move_indexes_by_positive_number(arl_ptr l, size_t start_i,
   if (elements_to_move_amount == 0)
     return L_SUCCESS;
 
-  l->length = new_length, start_i--;
+  // Arrays parts' overlap so safer is to move than to cpy.
+  memmove(l->array + start_i + move_by, l->array + start_i,
+          elements_to_move_amount);
 
-  for (; elements_to_move_amount > 0; elements_to_move_amount--) {
-    i_source = start_i + elements_to_move_amount;
-    i_dest = i_source + move_by;
+  for (size_t i = start_i; i < start_i + move_by; i++)
+    l->array[i] = NULL;
 
-    arl_get(l, i_source, &p);
-    arl_set(l, i_dest, p);
-    arl_set(l, i_source, NULL);
-  }
+  l->length = new_length;
+
+  /* for (; elements_to_move_amount > 0; elements_to_move_amount--) { */
+  /*   i_source = start_i + elements_to_move_amount; */
+  /*   i_dest = i_source + move_by; */
+
+  /*   arl_get(l, i_source, &p); */
+  /*   arl_set(l, i_dest, p); */
+  /*   arl_set(l, i_source, NULL); */
+  /* } */
 
   return L_SUCCESS;
 }
