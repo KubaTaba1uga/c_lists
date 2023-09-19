@@ -62,26 +62,26 @@ void tearDown() {
 }
 
 void test_pointers_copy_value(void) {
-  /* char **dest = memory_mock_values, **src = values; */
+  char **dest = memory_mock_values, **src = values;
 
-  /* move_pointers_array((void **)dest, (void **)src, values_len); */
+  move_pointers_array((void **)dest, (void **)src, values_len);
 
-  /* TEST_ASSERT_EQUAL_PTR_ARRAY(values_ptr_cp, dest, values_len); */
+  TEST_ASSERT_EQUAL_PTR_ARRAY(values_ptr_cp, dest, values_len);
 
-  /* for (size_t i = 0; i < values_len; i++) */
-  /*   TEST_ASSERT_NULL(src[i]); */
+  for (size_t i = 0; i < values_len; i++)
+    TEST_ASSERT_NULL(src[i]);
 }
 
-/* void test_pointers_copy_2(void) { */
-/*   char **dest = memory_mock_values, **src = values; */
+void test_pointers_copy_2(void) {
+  char **dest = memory_mock_values, **src = values;
 
-/*   move_pointers_array((void **)dest, (void **)src, values_len); */
+  move_pointers_array((void **)dest, (void **)src, values_len);
 
-/*   TEST_ASSERT_EQUAL_PTR_ARRAY(values_ptr_cp, dest, values_len); */
+  TEST_ASSERT_EQUAL_PTR_ARRAY(values_ptr_cp, dest, values_len);
 
-/*   for (size_t i = 0; i < values_len; i++) */
-/*     TEST_ASSERT_NULL(src[i]); */
-/* } */
+  for (size_t i = 0; i < values_len; i++)
+    TEST_ASSERT_NULL(src[i]);
+}
 
 /* void test_move_pointers_array_overlapping_src_one_element_before_dest(void)
  * {} */
