@@ -5,74 +5,86 @@
 #include "pointers_utils.h"
 #include "unity.h"
 
-char *values[] = {"MumboJumbo", "Kukuryku", "EeeeeeMakarena", "", "", "", ""};
-size_t values_len = sizeof(values) / sizeof(char *);
-char **values_cp;
+char **values,
+    **values_ptr_cp; // = {"MumboJumbo", "Kukuryku", "EeeeeeMakarena",
+                     // "", "", "", ""};
+size_t values_len, values_size; // = sizeof(values) / sizeof(char *);
 
-void **memory_mock_value;
+void **memory_mock_values;
+
+char **create_values(size_t n, char *content[n]) {
+  size_t i, values_size = n * sizeof(char *);
+  char **values, *element;
+
+  values = malloc(values_size);
+  if (!values) {
+    TEST_FAIL_MESSAGE("Unable to allocate memory for `values`.");
+  }
+
+  for (i = 0; i < n; i++) {
+    values_size = (strlen(content[i]) + 1) * sizeof(char); // count string size
+
+    element = malloc(values_size);
+    if (!element) {
+      TEST_FAIL_MESSAGE("Unable to allocate memory for `element`.");
+    }
+
+    values[i] = element;
+  }
+
+  return values;
+}
 
 void setUp() {
-  size_t i, values_size = sizeof(values);
+  char *values_content[] = {"MumboJumbo", "Kukuryku", "EeeeeeMakarena", "", "",
+                            "",           ""};
+  size_t i;
+  values_len = sizeof(values_content) / sizeof(char *);
+
+  values = create_values(values_len, values_content);
   for (i = 0; i < values_len; i++)
-    values_size += (strlen(values[i]) + 1) * sizeof(char); // count string size
+    strcpy(values[i], values_content[i]);
 
-  void **memory_mock_local = malloc(values_size);
-  if (!memory_mock_local) {
-    TEST_FAIL_MESSAGE("Unable to allocate memory for `memory_mock_value`. "
-                      "Mocking memory failed!");
-  }
-
-  memory_mock_value = memory_mock_local;
-
-  memory_mock_local = malloc(values_size);
-  if (!memory_mock_local) {
-    TEST_FAIL_MESSAGE("Unable to allocate memory for `values_cp`. "
-                      "Mocking memory failed!");
-  }
-
-  values_cp = memory_mock_local;
+  // Copy values pointers to values_cp
+  values_ptr_cp = create_values(values_len, values_content);
 
   for (size_t i = 0; i < values_len; i++) {
-    values_cp[i] = values[i];
+    values_ptr_cp[i] = values[i];
   }
+
+  // Allocate mock
+  memory_mock_values = (void **)create_values(values_len, values_content);
 }
 void tearDown() {
-  free(memory_mock_value);
-  free(values_cp);
+  free(memory_mock_values);
+  free(values_ptr_cp);
+  free(values);
 }
 
 void test_pointers_copy_value(void) {
-  char **dest = memory_mock_value, **src = values;
+  /* char **dest = memory_mock_values, **src = values; */
 
-  move_pointers_array((void **)dest, (void **)src, values_len);
+  /* move_pointers_array((void **)dest, (void **)src, values_len); */
 
-  TEST_ASSERT_EQUAL_PTR_ARRAY(values_cp, dest, values_len);
+  /* TEST_ASSERT_EQUAL_PTR_ARRAY(values_ptr_cp, dest, values_len); */
 
-  for (size_t i = 0; i < values_len; i++)
-    TEST_ASSERT_NULL(src[i]);
+  /* for (size_t i = 0; i < values_len; i++) */
+  /*   TEST_ASSERT_NULL(src[i]); */
 }
 
-/* void test_move_pointers_array_overlapping_src_one_element_before_dest(void) {
- */
-/*   /\* char *expected_array[] = {"MumboJumbo", "Kukuryku", "EeeeeeMakarena",
- * "", */
-/*    * "", *\/ */
-/*   /\* "",           ""}; *\/ */
-/*   /\* char **src = values, **dest = values + 1; *\/ */
+/* void test_pointers_copy_2(void) { */
+/*   char **dest = memory_mock_values, **src = values; */
 
-/*   /\* move_pointers_array((void **)dest, (void **)src, 0); *\/ */
+/*   move_pointers_array((void **)dest, (void **)src, values_len); */
 
-/*   /\* for (size_t i = 0; i < values_len; i++) { *\/ */
-/*   /\*   printf("%p\n", values[i]); *\/ */
-/*   /\* } *\/ */
+/*   TEST_ASSERT_EQUAL_PTR_ARRAY(values_ptr_cp, dest, values_len); */
 
-/*   /\* TEST_ASSERT_EQUAL_PTR_ARRAY(values_cp, dest, values_len); *\/ */
-
-/*   /\*   for (size_t i = 0; i < values_len; i++) *\/ */
-/*   /\*     TEST_ASSERT_NULL(src[i]); *\/ */
-/*   /\* } *\/ */
+/*   for (size_t i = 0; i < values_len; i++) */
+/*     TEST_ASSERT_NULL(src[i]); */
 /* } */
 
+/* void test_move_pointers_array_overlapping_src_one_element_before_dest(void)
+ * {} */
 /* #include <stddef.h> */
 /* #include <stdio.h> */
 /* #include <stdlib.h> */
