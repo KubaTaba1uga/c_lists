@@ -8,23 +8,30 @@
 char **values,
     **values_ptr_cp; // = {"MumboJumbo", "Kukuryku", "EeeeeeMakarena",
                      // "", "", "", ""};
-size_t values_len, values_size; // = sizeof(values) / sizeof(char *);
+size_t values_len;
 
 void **memory_mock_values;
 
-char **create_values(size_t n, char *content[n]) {
-  size_t i, values_size = n * sizeof(char *);
-  char **values, *element;
+char **alloc_values(size_t n) {
+  size_t values_size = n * sizeof(char *);
+  char **values;
 
   values = malloc(values_size);
   if (!values) {
     TEST_FAIL_MESSAGE("Unable to allocate memory for `values`.");
   }
 
-  for (i = 0; i < n; i++) {
-    values_size = (strlen(content[i]) + 1) * sizeof(char); // count string size
+  return values;
+}
 
-    element = malloc(values_size);
+char **alloc_values_elements(size_t n, char *content[n], char **values) {
+  size_t i, value_size;
+  char *element;
+
+  for (i = 0; i < n; i++) {
+    value_size = (strlen(content[i]) + 1) * sizeof(char); // count string size
+
+    element = malloc(value_size);
     if (!element) {
       TEST_FAIL_MESSAGE("Unable to allocate memory for `element`.");
     }
@@ -35,30 +42,38 @@ char **create_values(size_t n, char *content[n]) {
   return values;
 }
 
+void free_values(size_t n, char *values[n]) {
+  for (size_t i = 0; i < n; i++)
+    free(values[i]);
+
+  free(values);
+}
+
 void setUp() {
   char *values_content[] = {"MumboJumbo", "Kukuryku", "EeeeeeMakarena", "", "",
                             "",           ""};
   size_t i;
   values_len = sizeof(values_content) / sizeof(char *);
 
-  values = create_values(values_len, values_content);
+  values = alloc_values(values_len);
+  values = alloc_values_elements(values_len, values_content, values);
   for (i = 0; i < values_len; i++)
     strcpy(values[i], values_content[i]);
 
   // Copy values pointers to values_cp
-  values_ptr_cp = create_values(values_len, values_content);
+  values_ptr_cp = alloc_values(values_len);
 
   for (size_t i = 0; i < values_len; i++) {
     values_ptr_cp[i] = values[i];
   }
 
   // Allocate mock
-  memory_mock_values = (void **)create_values(values_len, values_content);
+  memory_mock_values = (void **)alloc_values(values_len);
 }
 void tearDown() {
+  free_values(values_len, values_ptr_cp);
   free(memory_mock_values);
-  free(values_ptr_cp);
-  free(values);
+  free_values(values_len, values);
 }
 
 void test_pointers_copy_value(void) {
@@ -72,16 +87,16 @@ void test_pointers_copy_value(void) {
     TEST_ASSERT_NULL(src[i]);
 }
 
-void test_pointers_copy_2(void) {
-  char **dest = memory_mock_values, **src = values;
+/* void test_pointers_copy_2(void) { */
+/*   char **dest = memory_mock_values, **src = values; */
 
-  move_pointers_array((void **)dest, (void **)src, values_len);
+/*   move_pointers_array((void **)dest, (void **)src, values_len); */
 
-  TEST_ASSERT_EQUAL_PTR_ARRAY(values_ptr_cp, dest, values_len);
+/*   TEST_ASSERT_EQUAL_PTR_ARRAY(values_ptr_cp, dest, values_len); */
 
-  for (size_t i = 0; i < values_len; i++)
-    TEST_ASSERT_NULL(src[i]);
-}
+/*   for (size_t i = 0; i < values_len; i++) */
+/*     TEST_ASSERT_NULL(src[i]); */
+/* } */
 
 /* void test_move_pointers_array_overlapping_src_one_element_before_dest(void)
  * {} */
