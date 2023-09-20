@@ -1,4 +1,5 @@
 #include <stddef.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -49,6 +50,8 @@ void free_values(size_t n, char *values[n]) {
   free(values);
 }
 
+// TO-DO refacotr setUp and tearDown, setUp make mallocs tearDown make frees
+//            configure their own environment using memory mocks.
 void setUp() {
   char *values_content[] = {"MumboJumbo", "Kukuryku", "EeeeeeMakarena", "", "",
                             "",           ""};
@@ -71,12 +74,22 @@ void setUp() {
   memory_mock_values = (void **)alloc_values(values_len);
 }
 void tearDown() {
-  free_values(values_len, values_ptr_cp);
-  free(memory_mock_values);
-  free_values(values_len, values);
+
+  /* free_values(values_len, values); */
+  /* free_values(values_len, values_ptr_cp); */
+  /* free(memory_mock_values); */
 }
 
-void test_pointers_copy_value(void) {
+void print_values(size_t n, char *values[n]) {
+  for (size_t i = 0; i < n; i++) {
+    if (!values[i])
+      puts("NULL, ");
+    else
+      printf("%s, \n", values[i]);
+  }
+}
+
+void test_move_pointers_array_success(void) {
   char **dest = memory_mock_values, **src = values;
 
   move_pointers_array((void **)dest, (void **)src, values_len);
@@ -87,16 +100,63 @@ void test_pointers_copy_value(void) {
     TEST_ASSERT_NULL(src[i]);
 }
 
-/* void test_pointers_copy_2(void) { */
-/*   char **dest = memory_mock_values, **src = values; */
+void test_move_pointers_array_overlapping_src_one_element_before_dest(void) {
+  char *expected[] = {
+      NULL, "MumboJumbo", "Kukuryku", "EeeeeeMakarena", "", "", "",
+  };
 
-/*   move_pointers_array((void **)dest, (void **)src, values_len); */
+  char **dest, **src = values;
+  dest = src + 1;
 
-/*   TEST_ASSERT_EQUAL_PTR_ARRAY(values_ptr_cp, dest, values_len); */
+  move_pointers_array((void **)dest, (void **)src, values_len - 1);
 
-/*   for (size_t i = 0; i < values_len; i++) */
-/*     TEST_ASSERT_NULL(src[i]); */
-/* } */
+  TEST_ASSERT_NULL(src[0]);
+
+  for (size_t i = 1; i < values_len; i++)
+    TEST_ASSERT_EQUAL_STRING(expected[i], src[i]);
+}
+
+/* This scenario is hard to follow and pretty misleading, function name
+ *  is not `nullify_array` afterall. That's why it's described as undefined.
+ * Key to understand why all values are NULL, is in first two iterations.
+ * 1. values = {"MumboJumbo", "Kukuryku", "EeeeeeMakarena", "", "", NULL,}
+ * 2. values = {"MumboJumbo", "Kukuryku", "EeeeeeMakarena", "", NULL, NULL,}
+ */
+void test_move_pointers_array_overlapping_dest_one_element_before_src(void) {
+  char *expected[] = {"", NULL, NULL, NULL, NULL, NULL, NULL};
+
+  char **src, **dest = values;
+  src = dest + 1;
+
+  move_pointers_array((void **)dest, (void **)src, values_len - 1);
+
+  TEST_ASSERT_EQUAL_STRING(expected[0], values[0]);
+
+  for (size_t i = 1; i < values_len; i++)
+    TEST_ASSERT_NULL(values[i]);
+}
+
+void test_move_pointers_array_overlapping_src_multi_element_before_dest(void) {
+  char *expected[] = {
+      NULL, NULL, NULL, "MumboJumbo", "Kukuryku", "EeeeeeMakarena", "",
+  };
+
+  char **dest, **src = values;
+  dest = src + 3;
+
+  move_pointers_array((void **)dest, (void **)src, values_len - 3);
+
+  print_values(values_len, values);
+
+  TEST_ASSERT_NULL(src[0]);
+
+  for (size_t i = 0; i < values_len; i++) {
+    if (!expected[i])
+      TEST_ASSERT_NULL(expected[i]);
+    else
+      TEST_ASSERT_EQUAL_STRING(expected[i], values[i]);
+  }
+}
 
 /* void test_move_pointers_array_overlapping_src_one_element_before_dest(void)
  * {} */

@@ -12,7 +12,7 @@
  *  Moving starts from end to allow for some arrays overlapping.
  *  For example in algorithm for `move_indexes_by_positive_number`
  *     where pointers are moved within one array.
- *  Overlapping examples are shown in `move_pointers_array`'s tests.
+ *  In overlapping situation if dest is before src behaviour is undefined.
  */
 void move_pointers_array(void *dest[], void *src[], size_t n) {
   while (n-- > 0) {
