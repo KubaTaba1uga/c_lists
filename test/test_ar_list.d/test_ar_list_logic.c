@@ -360,7 +360,6 @@ void test_arl_move_indexes_by_positive_number_no_elements_to_move(void) {
   TEST_ASSERT_EQUAL(L_SUCCESS, err);
 }
 
-// TO-DO: refactor!!! my eyees burn!!!
 /* Confirms:
  *    INPUT  l.array {0, 1, 2, 3, 4, 5, , , , }, start_i 1, move_by 2
  *    OUTPUT l.array {0, NULL, NULL, 1, 2, 3, 4, 5, , }
@@ -373,17 +372,7 @@ void test_arl_move_indexes_by_positive_number_success(void) {
   int *value;
   l_error_t err;
 
-  for (size_t i = 0; i < l->length; i++) {
-    printf("%p\n", l->array[i]);
-  }
-
-  puts("\n\n");
-
   err = arl_move_indexes_by_positive_number(l, 1, 2);
-
-  for (size_t i = 0; i < l->length; i++) {
-    printf("%p\n", l->array[i]);
-  }
 
   TEST_ASSERT_EQUAL(L_SUCCESS, err);
 
