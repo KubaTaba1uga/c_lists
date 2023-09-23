@@ -12,6 +12,7 @@ cmock_test_src = files([
   src / 'ar_list.h', src / 'ar_list.c',
   src / 'l_error.h', src / 'l_error.c',
   utils / 'overflow_utils.h', utils / 'overflow_utils.c',
+  utils / 'pointers_utils.h', utils / 'pointers_utils.c',
 ])
 
 test_ar_list_exe = executable(test_name,

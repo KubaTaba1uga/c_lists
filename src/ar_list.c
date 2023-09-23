@@ -23,10 +23,10 @@
 #include "ar_list.h"
 #include "l_def.h"
 #include "l_error.h"
-#include "l_limits.h"
 
 #include "interfaces/std_lib_interface.h"
 #include "utils/overflow_utils.h"
+#include "utils/pointers_utils.h"
 
 /*******************************************************************************
  *    PRIVATE API DECLARATIONS
@@ -215,8 +215,7 @@ static l_error_t arl_grow_array_capacity(arl_ptr l) {
 l_error_t arl_move_indexes_by_positive_number(arl_ptr l, size_t start_i,
                                               size_t move_by) {
 
-  size_t old_length, new_length, i_source, i_dest, elements_to_move_amount;
-  void *p;
+  size_t old_length, new_length, elements_to_move_amount;
 
   // Idea is to detect all failures upfront so recovery from half moved array
   //  is not required.
@@ -236,23 +235,10 @@ l_error_t arl_move_indexes_by_positive_number(arl_ptr l, size_t start_i,
   if (elements_to_move_amount == 0)
     return L_SUCCESS;
 
-  // Arrays parts' overlap so safer is to move than to cpy.
-  memmove(l->array + start_i + move_by, l->array + start_i,
-          elements_to_move_amount);
-
-  for (size_t i = start_i; i < start_i + move_by; i++)
-    l->array[i] = NULL;
+  move_pointers_array(l->array + start_i + move_by, l->array + start_i,
+                      elements_to_move_amount);
 
   l->length = new_length;
-
-  /* for (; elements_to_move_amount > 0; elements_to_move_amount--) { */
-  /*   i_source = start_i + elements_to_move_amount; */
-  /*   i_dest = i_source + move_by; */
-
-  /*   arl_get(l, i_source, &p); */
-  /*   arl_set(l, i_dest, p); */
-  /*   arl_set(l, i_source, NULL); */
-  /* } */
 
   return L_SUCCESS;
 }

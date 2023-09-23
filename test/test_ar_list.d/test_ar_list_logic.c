@@ -408,5 +408,3 @@ void test_arl_move_indexes_by_positive_number_success(void) {
     TEST_ASSERT_EQUAL(arl_small_values[i - last_null_index], *value);
   }
 }
-
-/* void test_arl_alloc_array */
