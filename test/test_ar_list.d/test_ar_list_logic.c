@@ -8,6 +8,7 @@
 #include <string.h>
 
 // Test framework
+#include "ar_list.h"
 #include "mock_std_lib_interface.h"
 #include <unity.h>
 
@@ -89,13 +90,211 @@ arl_ptr setup_small_list() {
   return l;
 }
 
+void mock_app_realloc(arl_ptr l, size_t new_array_size) {
+  // Do not use realloc, it would invalidate l->array
+  // before actual function execution.
+  void *new_array;
+
+  new_array = malloc(new_array_size);
+  if (!new_array)
+    TEST_FAIL_MESSAGE("Unable to allocate memory for realloc mock!");
+
+  new_array = memcpy(new_array, l->array, l->capacity * L_PTR_SIZE);
+
+  if (!new_array)
+    TEST_FAIL_MESSAGE("Unable to copy memory for realloc mock!");
+
+  free(array_memory_mock);
+
+  array_memory_mock = new_array;
+
+  app_realloc_ExpectAndReturn(l->array, new_array_size, new_array);
+}
+
 void parametrize_test_arl_get_i_too_big_failure(arl_ptr l);
 void parametrize_test_arl_set_i_too_big_failure(arl_ptr l);
-/* /\*******************************************************************************
+/*******************************************************************************
+ *    PRIVATE API TESTS
+ ******************************************************************************/
+void test_arl_count_new_capacity(void) {
+  /* Show array capacity growth ratio by example. */
+  /* Purpose of this function is mainly documentational. */
+
+  size_t expected_values[] = {1000, 2500, 6250, 15625};
+  size_t length = 0;
+  size_t capacity = 1000;
+  size_t i;
+
+  for (i = 0; i < (sizeof(expected_values) / sizeof(size_t)); i++) {
+    capacity = length = arl_count_new_capacity(length, capacity);
+
+    TEST_ASSERT_EQUAL(expected_values[i], capacity);
+  }
+}
+
+void test_arl_count_new_capacity_overflow_failure(void) {
+  /* Show array growth stop. */
+  /* Upper bound of list is well defined. */
+  size_t length, capacity;
+
+  capacity = length = ARL_CAPACITY_MAX;
+
+  capacity = arl_count_new_capacity(length, capacity);
+
+  TEST_ASSERT_EQUAL(ARL_CAPACITY_MAX, capacity);
+}
+
+void test_arl_is_i_too_big_true(void) {
+  arl_ptr l = setup_small_list();
+  size_t j, i_to_check[] = {l->length, l->length + 1, l->capacity};
+  bool is_i_too_big;
+
+  for (j = 0; j < (sizeof(i_to_check) / sizeof(size_t)); j++) {
+    is_i_too_big = arl_is_i_too_big(l, i_to_check[j]);
+
+    TEST_ASSERT_TRUE(is_i_too_big);
+  }
+}
+
+void test_arl_is_i_too_big_false(void) {
+  arl_ptr l = setup_small_list();
+  size_t j, i_to_check[] = {l->length - 1, 0};
+  bool is_i_too_big;
+
+  for (j = 0; j < (sizeof(i_to_check) / sizeof(size_t)); j++) {
+    is_i_too_big = arl_is_i_too_big(l, i_to_check[j]);
+
+    TEST_ASSERT_FALSE(is_i_too_big);
+  }
+}
+
+void test_arl_grow_array_capacity_memory_failure(void) {
+  arl_ptr l = setup_small_list();
+  l_error_t err;
+
+  app_realloc_IgnoreAndReturn(NULL);
+
+  err = arl_grow_array_capacity(l);
+
+  TEST_ASSERT_EQUAL(L_ERROR_OUT_OF_MEMORY, err);
+  TEST_ASSERT_EQUAL_PTR(array_memory_mock, l->array);
+  TEST_ASSERT_EQUAL(arl_small_length, l->length);
+  TEST_ASSERT_EQUAL(array_memory_mock_size / sizeof(void *), l->capacity);
+}
+
+void test_arl_grow_array_capacity_max_failure(void) {
+  arl_ptr l = setup_small_list();
+  l_error_t err;
+
+  l->capacity = ARL_CAPACITY_MAX;
+
+  err = arl_grow_array_capacity(l);
+
+  TEST_ASSERT_EQUAL(L_ERROR_REACHED_CAPACITY_MAX, err);
+}
+
+void test_arl_grow_array_capacity_success(void) {
+  arl_ptr l = setup_small_list();
+  size_t new_l_capacity, new_array_size;
+  l_error_t err;
+
+  new_l_capacity = arl_count_new_capacity(l->length, l->capacity);
+
+  new_array_size = new_l_capacity * L_PTR_SIZE;
+
+  mock_app_realloc(l, new_array_size);
+
+  err = arl_grow_array_capacity(l);
+
+  TEST_ASSERT_EQUAL(L_SUCCESS, err);
+  TEST_ASSERT_EQUAL_PTR(array_memory_mock, l->array);
+  TEST_ASSERT_EQUAL(new_l_capacity, l->capacity);
+}
+
+void test_arl_move_indexes_by_positive_number_new_length_overflow_failure(
+    void) {
+  arl_ptr l = setup_small_list();
+  l_error_t err;
+
+  err = arl_move_indexes_by_positive_number(l, 0, L_SIZE_T_MAX);
+
+  TEST_ASSERT_EQUAL(L_ERROR_OVERFLOW, err);
+}
+
+void test_arl_move_indexes_by_positive_number_new_length_invalid(void) {
+  arl_ptr l = setup_small_list();
+  l_error_t err;
+
+  err = arl_move_indexes_by_positive_number(l, 0, l->capacity + 1);
+
+  TEST_ASSERT_EQUAL(L_ERROR_INVALID_ARGS, err);
+}
+
+void test_arl_move_indexes_by_positive_number_elements_to_move_amount_underflow_failure(
+    void) {
+  arl_ptr l = setup_small_list();
+  l_error_t err;
+
+  err = arl_move_indexes_by_positive_number(l, l->length + 1, 0);
+
+  TEST_ASSERT_EQUAL(L_ERROR_OVERFLOW, err);
+}
+
+void test_arl_move_indexes_by_positive_number_no_elements_to_move(void) {
+  arl_ptr l = setup_small_list();
+  l_error_t err;
+
+  err = arl_move_indexes_by_positive_number(l, l->length, 0);
+
+  TEST_ASSERT_EQUAL(L_SUCCESS, err);
+}
+
+/* Confirms:
+ *    INPUT  l.array {0, 1, 2, 3, 4, 5, , , , }, start_i 1, move_by 2
+ *    OUTPUT l.array {0, NULL, NULL, 1, 2, 3, 4, 5, , }
  */
-/*  *    PUBLIC API TESTS */
-/*  ******************************************************************************\/
- */
+void test_arl_move_indexes_by_positive_number_success(void) {
+  int null_indexes[] = {1, 2, 3};
+  size_t null_i_length = sizeof(null_indexes) / sizeof(int);
+
+  arl_ptr l = setup_small_list();
+  size_t i;
+  int *value;
+  l_error_t err;
+
+  err = arl_move_indexes_by_positive_number(l, 1, 3);
+
+  TEST_ASSERT_EQUAL(L_SUCCESS, err);
+  TEST_ASSERT_EQUAL(9, l->length);
+
+  // Values before start_i should'n be changed
+  for (i = 0; i < null_indexes[0]; i++) {
+    err = arl_get(l, i, (void **)&value);
+    TEST_ASSERT_EQUAL(L_SUCCESS, err);
+
+    TEST_ASSERT_EQUAL(arl_small_values[i], *value);
+  }
+
+  // NULLs should be inserted inplace of old values
+  for (i = 0; i < null_i_length; i++) {
+    err = arl_get(l, null_indexes[i], (void **)&value);
+    TEST_ASSERT_NULL(value);
+  }
+
+  // Old values are moved by move_by
+  int last_null_index = null_indexes[null_i_length - 1];
+
+  for (i = last_null_index + 1; i < l->length; i++) {
+    err = arl_get(l, i, (void **)&value);
+    TEST_ASSERT_EQUAL(L_SUCCESS, err);
+
+    TEST_ASSERT_EQUAL(arl_small_values[i - last_null_index], *value);
+  }
+}
+
+/*******************************************************************************
+ *    PUBLIC API TESTS
+ ******************************************************************************/
 
 void test_arl_create_memory_failure_array(void) {
   arl_ptr l;
@@ -195,8 +394,7 @@ void parametrize_test_arl_set_i_too_big_failure(arl_ptr l) {
 
 void test_arl_set_success(void) {
   arl_ptr l = setup_small_list();
-  int value = 13;
-  int i;
+  int i, value = 13;
   l_error_t err;
 
   for (i = 0; i < arl_small_length; i++) {
@@ -204,196 +402,58 @@ void test_arl_set_success(void) {
 
     TEST_ASSERT_EQUAL(L_SUCCESS, err);
     TEST_ASSERT_EQUAL_PTR(&value, l->array[i]);
-    TEST_ASSERT_EQUAL(13, *(int *)(l->array[i]));
+    TEST_ASSERT_EQUAL(value, *(int *)(l->array[i]));
   }
 }
 
-/*******************************************************************************
- *    PRIVATE API TESTS
- ******************************************************************************/
-void test_arl_count_new_capacity(void) {
-  /* Show array capacity growth ratio by example. */
-  /* Purpose of this function is mainly documentational. */
+void test_arl_append_grow_array_capacity(void) {
 
-  size_t expected_values[] = {1000, 2500, 6250, 15625};
-  size_t length = 0;
-  size_t capacity = 1000;
-  size_t i;
-
-  for (i = 0; i < (sizeof(expected_values) / sizeof(size_t)); i++) {
-    capacity = length = arl_count_new_capacity(length, capacity);
-
-    TEST_ASSERT_EQUAL(expected_values[i], capacity);
-  }
-}
-
-void test_arl_count_new_capacity_overflow_failure(void) {
-  /* Show array growth stop. */
-  /* Upper bound of list is well defined. */
-  size_t length, capacity;
-
-  capacity = length = ARL_CAPACITY_MAX;
-
-  capacity = arl_count_new_capacity(length, capacity);
-
-  TEST_ASSERT_EQUAL(ARL_CAPACITY_MAX, capacity);
-}
-
-void test_arl_is_i_too_big_true(void) {
   arl_ptr l = setup_small_list();
-  size_t j, i_to_check[] = {l->length, l->length + 1, l->capacity};
-  bool is_i_too_big;
-
-  for (j = 0; j < (sizeof(i_to_check) / sizeof(size_t)); j++) {
-    is_i_too_big = arl_is_i_too_big(l, i_to_check[j]);
-
-    TEST_ASSERT_TRUE(is_i_too_big);
-  }
-}
-
-void test_arl_is_i_too_big_false(void) {
-  arl_ptr l = setup_small_list();
-  size_t j, i_to_check[] = {l->length - 1, 0};
-  bool is_i_too_big;
-
-  for (j = 0; j < (sizeof(i_to_check) / sizeof(size_t)); j++) {
-    is_i_too_big = arl_is_i_too_big(l, i_to_check[j]);
-
-    TEST_ASSERT_FALSE(is_i_too_big);
-  }
-}
-
-void test_arl_grow_array_capacity_memory_failure(void) {
-  arl_ptr l = setup_small_list();
+  int value = 13;
+  size_t i, new_capacity, new_array_size;
   l_error_t err;
 
-  app_realloc_IgnoreAndReturn(NULL);
+  void *expected[] = {&arl_small_values[0],
+                      &arl_small_values[1],
+                      &arl_small_values[2],
+                      &arl_small_values[3],
+                      &arl_small_values[4],
+                      &arl_small_values[5],
+                      &value,
+                      &value,
+                      &value,
+                      &value,
+                      &value};
+  size_t expected_length = sizeof(expected) / sizeof(void *);
 
-  err = arl_grow_array_capacity(l);
-
-  TEST_ASSERT_EQUAL(L_ERROR_OUT_OF_MEMORY, err);
-  TEST_ASSERT_EQUAL_PTR(array_memory_mock, l->array);
-  TEST_ASSERT_EQUAL(arl_small_length, l->length);
-  TEST_ASSERT_EQUAL(array_memory_mock_size / sizeof(void *), l->capacity);
-}
-
-void test_arl_grow_array_capacity_max_failure(void) {
-  arl_ptr l = setup_small_list();
-  l_error_t err;
-
-  l->capacity = ARL_CAPACITY_MAX;
-
-  err = arl_grow_array_capacity(l);
-
-  TEST_ASSERT_EQUAL(L_ERROR_REACHED_CAPACITY_MAX, err);
-}
-
-void test_arl_grow_array_capacity_success(void) {
-  arl_ptr l = setup_small_list();
-  size_t new_l_capacity, new_array_size;
-  void *new_array;
-  l_error_t err;
-
-  new_l_capacity = arl_count_new_capacity(l->length, l->capacity);
-
-  new_array_size = new_l_capacity * L_PTR_SIZE;
-
-  // Do not use realloc, it would invalidate l->array before
-  //    actual function execution.
-  new_array = malloc(new_array_size);
-  if (!new_array)
-    TEST_FAIL_MESSAGE("Unable to allocate memory for realloc mock!");
-
-  new_array = memcpy(new_array, l->array, l->capacity * L_PTR_SIZE);
-
-  if (!new_array)
-    TEST_FAIL_MESSAGE("Unable to copy memory for realloc mock!");
-
-  free(array_memory_mock);
-
-  array_memory_mock = new_array;
-
-  app_realloc_ExpectAndReturn(l->array, new_array_size, new_array);
-
-  err = arl_grow_array_capacity(l);
-
-  TEST_ASSERT_EQUAL(L_SUCCESS, err);
-  TEST_ASSERT_EQUAL_PTR(new_array, l->array);
-  TEST_ASSERT_EQUAL(new_l_capacity, l->capacity);
-}
-
-void test_arl_move_indexes_by_positive_number_new_length_overflow_failure(
-    void) {
-  arl_ptr l = setup_small_list();
-  l_error_t err;
-
-  err = arl_move_indexes_by_positive_number(l, 0, L_SIZE_T_MAX);
-
-  TEST_ASSERT_EQUAL(L_ERROR_OVERFLOW, err);
-}
-
-void test_arl_move_indexes_by_positive_number_new_length_invalid(void) {
-  arl_ptr l = setup_small_list();
-  l_error_t err;
-
-  err = arl_move_indexes_by_positive_number(l, 0, l->capacity + 1);
-
-  TEST_ASSERT_EQUAL(L_ERROR_INVALID_ARGS, err);
-}
-
-void test_arl_move_indexes_by_positive_number_elements_to_move_amount_underflow_failure(
-    void) {
-  arl_ptr l = setup_small_list();
-  l_error_t err;
-
-  err = arl_move_indexes_by_positive_number(l, l->length + 1, 0);
-
-  TEST_ASSERT_EQUAL(L_ERROR_OVERFLOW, err);
-}
-
-void test_arl_move_indexes_by_positive_number_no_elements_to_move(void) {
-  arl_ptr l = setup_small_list();
-  l_error_t err;
-
-  err = arl_move_indexes_by_positive_number(l, l->length, 0);
-
-  TEST_ASSERT_EQUAL(L_SUCCESS, err);
-}
-
-/* Confirms:
- *    INPUT  l.array {0, 1, 2, 3, 4, 5, , , , }, start_i 1, move_by 2
- *    OUTPUT l.array {0, NULL, NULL, 1, 2, 3, 4, 5, , }
- */
-void test_arl_move_indexes_by_positive_number_success(void) {
-  int null_indexes[] = {1, 2};
-  size_t null_i_length = sizeof(null_indexes) / sizeof(int);
-  arl_ptr l = setup_small_list();
-  size_t i;
-  int *value;
-  l_error_t err;
-
-  err = arl_move_indexes_by_positive_number(l, 1, 2);
-
-  TEST_ASSERT_EQUAL(L_SUCCESS, err);
-
-  for (i = 0; i < null_i_length; i++) {
-    err = arl_get(l, null_indexes[i], (void **)&value);
-    TEST_ASSERT_NULL(value);
-  }
-
-  for (i = 0; i < null_indexes[0]; i++) {
-    err = arl_get(l, i, (void **)&value);
+  for (i = l->length; i < l->capacity; i++) {
+    err = arl_append(l, expected[i]);
     TEST_ASSERT_EQUAL(L_SUCCESS, err);
-
-    TEST_ASSERT_EQUAL(arl_small_values[i], *value);
   }
 
-  int last_null_index = null_indexes[null_i_length - 1];
+  new_capacity = arl_count_new_capacity(l->length, l->capacity);
+  new_array_size = new_capacity * L_PTR_SIZE;
 
-  for (i = last_null_index + 1; i < l->length; i++) {
-    err = arl_get(l, i, (void **)&value);
-    TEST_ASSERT_EQUAL(L_SUCCESS, err);
+  mock_app_realloc(l, new_array_size);
 
-    TEST_ASSERT_EQUAL(arl_small_values[i - last_null_index], *value);
-  }
+  err = arl_append(l, &value);
+
+  TEST_ASSERT_EQUAL(L_SUCCESS, err);
+  TEST_ASSERT_EQUAL(new_capacity, l->capacity);
+  TEST_ASSERT_EQUAL(expected_length, l->length);
+  TEST_ASSERT_EQUAL_INT_ARRAY(expected, l->array, expected_length);
+}
+
+void test_arl_append_success(void) {
+  arl_ptr l = setup_small_list();
+  size_t old_len = l->length;
+  int value = 13;
+  l_error_t err;
+
+  err = arl_append(l, &value);
+
+  TEST_ASSERT_EQUAL(L_SUCCESS, err);
+  TEST_ASSERT_EQUAL(old_len + 1, l->length);
+  TEST_ASSERT_EQUAL_PTR(&value, l->array[old_len]);
+  TEST_ASSERT_EQUAL(value, *(int *)(l->array[old_len]));
 }

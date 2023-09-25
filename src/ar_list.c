@@ -47,7 +47,7 @@ struct ar_list {
 static bool arl_is_i_too_big(arl_ptr l, size_t i);
 static void _arl_get(arl_ptr l, size_t i, void **p);
 static void _arl_set(arl_ptr l, size_t i, void *value);
-/* static l_error_t arl_grow_array_capacity(ar_list *l); */
+static l_error_t arl_grow_array_capacity(arl_ptr l);
 /* static void *arl_move_indexes_by_positive_number(ar_list *l, size_t start_i,
  */
 /* size_t move_by); */
@@ -115,15 +115,25 @@ l_error_t arl_set(arl_ptr l, size_t i, void *value) {
   return L_SUCCESS;
 }
 
-/* void arl_append(ar_list *l, void *value) { */
-/*   /\* Insert value to the last possible index. *\/ */
-/*   /\* If no enough capacity, realloc array. *\/ */
+l_error_t arl_append(arl_ptr l, void *value) {
 
-/*   /\* size_t last_i = l->size; *\/ */
+  size_t new_element_i;
+  l_error_t err;
 
-/*   /\* if (arl_is_i_too_big(l, last_i)) *\/ */
-/*   arl_grow_array_capacity(l); */
-/* } */
+  new_element_i = l->length;
+
+  if (new_element_i >= l->capacity) {
+    err = arl_grow_array_capacity(l);
+    if (err)
+      return err;
+  }
+
+  _arl_set(l, new_element_i, value);
+
+  l->length++;
+
+  return L_SUCCESS;
+}
 
 /* l_error_t arl_insert(ar_list *l, size_t i, void *value) { */
 /*   /\* Insert value to the index. *\/ */

@@ -13,5 +13,6 @@ void arl_destroy(arl_ptr l);
 
 l_error_t arl_get(arl_ptr l, size_t i, void **p);
 l_error_t arl_set(arl_ptr l, size_t i, void *value);
+l_error_t arl_append(arl_ptr l, void *value);
 
 #endif
