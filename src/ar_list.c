@@ -56,8 +56,7 @@ static l_error_t arl_grow_array_capacity(arl_ptr l);
  *    PUBLIC API
  ******************************************************************************/
 
-/* TO-DO */
-/* 1. set up errno on failure */
+void arl_length(arl_ptr l, size_t *p) { *p = l->length; }
 
 /* Returns L_SUCCESS on success. */
 /* Behaviour is undefined if `l` is not a valid pointer. */
@@ -115,6 +114,7 @@ l_error_t arl_set(arl_ptr l, size_t i, void *value) {
   return L_SUCCESS;
 }
 
+// TO-DO append should be done, using insert for last element
 l_error_t arl_append(arl_ptr l, void *value) {
 
   size_t new_element_i;
@@ -134,6 +134,27 @@ l_error_t arl_append(arl_ptr l, void *value) {
 
   return L_SUCCESS;
 }
+
+// TO-DO if i bigger than length nassume i = length
+/* l_error_t arl_insert(arl_ptr l, void *value) { */
+
+/*   size_t new_element_i; */
+/*   l_error_t err; */
+
+/*   new_element_i = l->length; */
+
+/*   if (new_element_i >= l->capacity) { */
+/*     err = arl_grow_array_capacity(l); */
+/*     if (err) */
+/*       return err; */
+/*   } */
+
+/*   _arl_set(l, new_element_i, value); */
+
+/*   l->length++; */
+
+/*   return L_SUCCESS; */
+/* } */
 
 /* l_error_t arl_insert(ar_list *l, size_t i, void *value) { */
 /*   /\* Insert value to the index. *\/ */
