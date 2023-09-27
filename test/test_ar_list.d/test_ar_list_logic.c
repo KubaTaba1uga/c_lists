@@ -66,7 +66,6 @@ void tearDown(void) {
 /*******************************************************************************
  *    TESTS UTILS
  ******************************************************************************/
-
 arl_ptr setup_empty_list() {
   arl_ptr l;
   size_t default_capacity = array_memory_mock_size / L_PTR_SIZE;
@@ -113,6 +112,8 @@ void mock_app_realloc(arl_ptr l, size_t new_array_size) {
 
 void parametrize_test_arl_get_i_too_big_failure(arl_ptr l);
 void parametrize_test_arl_set_i_too_big_failure(arl_ptr l);
+void parametrize_test_arl_insert_success(arl_ptr l, size_t i, int value);
+
 /*******************************************************************************
  *    PRIVATE API TESTS
  ******************************************************************************/
@@ -410,7 +411,7 @@ void test_arl_append_grow_array_capacity(void) {
 
   arl_ptr l = setup_small_list();
   int value = 13;
-  size_t i, new_capacity, new_array_size;
+  size_t i, j, new_capacity, new_array_size;
   l_error_t err;
 
   void *expected[] = {&arl_small_values[0],
@@ -425,7 +426,9 @@ void test_arl_append_grow_array_capacity(void) {
                       &value,
                       &value};
   size_t expected_length = sizeof(expected) / sizeof(void *);
+  j = l->capacity - l->length;
 
+  // Fill array, so next append means growing
   for (i = l->length; i < l->capacity; i++) {
     err = arl_append(l, expected[i]);
     TEST_ASSERT_EQUAL(L_SUCCESS, err);
@@ -436,6 +439,7 @@ void test_arl_append_grow_array_capacity(void) {
 
   mock_app_realloc(l, new_array_size);
 
+  // Growing
   err = arl_append(l, &value);
 
   TEST_ASSERT_EQUAL(L_SUCCESS, err);
@@ -456,4 +460,41 @@ void test_arl_append_success(void) {
   TEST_ASSERT_EQUAL(old_len + 1, l->length);
   TEST_ASSERT_EQUAL_PTR(&value, l->array[old_len]);
   TEST_ASSERT_EQUAL(value, *(int *)(l->array[old_len]));
+}
+
+void test_arl_insert_success(void) {
+  int value = 13;
+  size_t i, is_to_check[] = {0, 1, 2, 3, 4, 5};
+  arl_ptr l;
+
+  for (i = 0; i < sizeof(is_to_check) / sizeof(size_t); i++) {
+    l = setup_small_list();
+
+    parametrize_test_arl_insert_success(l, is_to_check[i], value);
+
+    resetTest();
+  }
+}
+
+void parametrize_test_arl_insert_success(arl_ptr l, size_t i, int value) {
+
+  size_t k, old_len = l->length;
+  l_error_t err;
+
+  err = arl_insert(l, i, &value);
+
+  TEST_ASSERT_EQUAL(L_SUCCESS, err);
+  TEST_ASSERT_EQUAL(old_len + 1, l->length);
+  TEST_ASSERT_EQUAL_PTR(&value, l->array[i]);
+  TEST_ASSERT_EQUAL(value, *(int *)(l->array[i]));
+
+  // Check not moved values
+  for (k = 0; k < i; k++) {
+    TEST_ASSERT_NOT_NULL(l->array[k]);
+    TEST_ASSERT_EQUAL(arl_small_values[k], *(int *)l->array[k]);
+  }
+  for (k = i + 1; k < l->length; k++) {
+    TEST_ASSERT_NOT_NULL(l->array[k]);
+    TEST_ASSERT_EQUAL(arl_small_values[k - 1], *(int *)l->array[k]);
+  }
 }

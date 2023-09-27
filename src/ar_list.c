@@ -48,10 +48,8 @@ static bool arl_is_i_too_big(arl_ptr l, size_t i);
 static void _arl_get(arl_ptr l, size_t i, void **p);
 static void _arl_set(arl_ptr l, size_t i, void *value);
 static l_error_t arl_grow_array_capacity(arl_ptr l);
-/* static void *arl_move_indexes_by_positive_number(ar_list *l, size_t start_i,
- */
-/* size_t move_by); */
-
+static l_error_t arl_move_indexes_by_positive_number(arl_ptr l, size_t start_i,
+                                                     size_t move_by);
 /*******************************************************************************
  *    PUBLIC API
  ******************************************************************************/
@@ -114,72 +112,36 @@ l_error_t arl_set(arl_ptr l, size_t i, void *value) {
   return L_SUCCESS;
 }
 
-// TO-DO append should be done, using insert for last element
-l_error_t arl_append(arl_ptr l, void *value) {
-
-  size_t new_element_i;
+// TO-DO if i bigger than length n, assume i = length
+l_error_t arl_insert(arl_ptr l, size_t i, void *value) {
+  size_t new_length, move_by = 1;
   l_error_t err;
 
-  new_element_i = l->length;
+  if (arl_is_i_too_big(l, i))
+    i = l->length;
 
-  if (new_element_i >= l->capacity) {
+  new_length = l->length + move_by;
+
+  if (new_length > l->capacity) {
     err = arl_grow_array_capacity(l);
     if (err)
       return err;
   }
 
-  _arl_set(l, new_element_i, value);
+  err = arl_move_indexes_by_positive_number(l, i, move_by);
+  if (err)
+    return err;
 
-  l->length++;
+  _arl_set(l, i, value);
+
+  l->length = new_length;
 
   return L_SUCCESS;
 }
 
-// TO-DO if i bigger than length nassume i = length
-/* l_error_t arl_insert(arl_ptr l, void *value) { */
-
-/*   size_t new_element_i; */
-/*   l_error_t err; */
-
-/*   new_element_i = l->length; */
-
-/*   if (new_element_i >= l->capacity) { */
-/*     err = arl_grow_array_capacity(l); */
-/*     if (err) */
-/*       return err; */
-/*   } */
-
-/*   _arl_set(l, new_element_i, value); */
-
-/*   l->length++; */
-
-/*   return L_SUCCESS; */
-/* } */
-
-/* l_error_t arl_insert(ar_list *l, size_t i, void *value) { */
-/*   /\* Insert value to the index. *\/ */
-/*   /\* Return NULL on failure. *\/ */
-/*   /\* If no enough capacity, realloc array. *\/ */
-/*   void *p; */
-/*   l_error_t err; */
-/*   bool i_is_too_big; */
-
-/*   arl_is_i_too_big(l, i, &i_is_too_big); */
-
-/*   if (i_is_too_big) { */
-/*     return L_ERROR_INDEX_TOO_BIG; */
-/*   } */
-
-/*   p = arl_move_indexes_by_positive_number(l, i, 1); */
-/*   if (!p) */
-/*     return L_ERROR_MEMORY_SHORTAGE; */
-
-/*   err = arl_set(l, i, value); */
-/*   if (err) */
-/*     return err; */
-
-/*   return L_SUCCESS; */
-/* } */
+l_error_t arl_append(arl_ptr l, void *value) {
+  return arl_insert(l, l->length + 1, value);
+}
 
 /*******************************************************************************
  *    PRIVATE API
