@@ -93,10 +93,10 @@ void print_values(size_t n, char *values[n]) {
   }
 }
 
-void test_move_pointers_array_success(void) {
+void test_move_pointers_array_right_success(void) {
   char **dest = values_empty, **src = values;
 
-  move_pointers_array((void **)dest, (void **)src, values_len);
+  move_pointers_array_right((void **)dest, (void **)src, values_len);
 
   for (size_t i = 0; i < values_len; i++)
     TEST_ASSERT_NULL(src[i]);
@@ -105,7 +105,8 @@ void test_move_pointers_array_success(void) {
     TEST_ASSERT_EQUAL_STRING(values_content[i], dest[i]);
 }
 
-void test_move_pointers_array_overlapping_src_one_element_before_dest(void) {
+void test_move_pointers_array_right_overlapping_src_one_element_before_dest(
+    void) {
   char *expected[] = {
       NULL, "MumboJumbo", "Kukuryku", "EeeeeeMakarena", "", "", "",
   };
@@ -115,7 +116,7 @@ void test_move_pointers_array_overlapping_src_one_element_before_dest(void) {
 
   // First element will be deleted
 
-  move_pointers_array((void **)dest, (void **)src, values_len - 1);
+  move_pointers_array_right((void **)dest, (void **)src, values_len - 1);
 
   TEST_ASSERT_NULL(src[0]);
 
@@ -133,23 +134,44 @@ void test_move_pointers_array_overlapping_src_one_element_before_dest(void) {
  * 1. values = {"MumboJumbo", "Kukuryku", "EeeeeeMakarena", "", "", NULL,}
  * 2. values = {"MumboJumbo", "Kukuryku", "EeeeeeMakarena", "", NULL, NULL,}
  */
-void test_move_pointers_array_overlapping_dest_one_element_before_src(void) {
+void test_move_pointers_array_right_overlapping_dest_one_element_before_src(
+    void) {
   char *expected[] = {"", NULL, NULL, NULL, NULL, NULL, NULL};
 
   char **src, **dest = values;
   src = dest + 1;
 
-  move_pointers_array((void **)dest, (void **)src, values_len - 1);
+  move_pointers_array_right((void **)dest, (void **)src, values_len - 1);
 
   for (size_t i = 0; i < values_len; i++) {
     if (!expected[i])
-      TEST_ASSERT_NULL(expected[i]);
+      TEST_ASSERT_NULL(values[i]);
     else
       TEST_ASSERT_EQUAL_STRING(expected[i], values[i]);
   }
 }
 
-void test_move_pointers_array_overlapping_src_multi_element_before_dest(void) {
+void test_move_pointers_array_right_overlapping_dest_one_element_before_src_2(
+    void) {
+  char *expected[] = {"", NULL, NULL, NULL, NULL, NULL, NULL};
+
+  char **src, **dest = values;
+  src = dest + 1;
+
+  print_values(values_len, values);
+  move_pointers_array_right((void **)dest, (void **)src, values_len - 1);
+  print_values(values_len, values);
+
+  for (size_t i = 0; i < values_len; i++) {
+    if (!expected[i])
+      TEST_ASSERT_NULL(values[i]);
+    else
+      TEST_ASSERT_EQUAL_STRING(expected[i], values[i]);
+  }
+}
+
+void test_move_pointers_array_right_overlapping_src_multi_element_before_dest(
+    void) {
   char *expected[] = {
       NULL, NULL, NULL, "MumboJumbo", "Kukuryku", "EeeeeeMakarena", "",
   };
@@ -157,7 +179,7 @@ void test_move_pointers_array_overlapping_src_multi_element_before_dest(void) {
   char **dest, **src = values;
   dest = src + 3; // remember to substract offset from `n`
 
-  move_pointers_array((void **)dest, (void **)src, values_len - 3);
+  move_pointers_array_right((void **)dest, (void **)src, values_len - 3);
 
   TEST_ASSERT_NULL(src[0]);
 

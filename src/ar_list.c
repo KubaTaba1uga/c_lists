@@ -9,6 +9,13 @@
  * lists.
  */
 
+// TO-DO pop - remove and return one item (by default last, do not shrink)
+// TO-DO remove - remove one item (index must be specified, do not shrink)
+// TO-DO clear - remove all items from a list (do not shrink)
+// TO-DO insert_multi - same as insert but array of elements (instead of single
+// element)
+// TO-DO extend - join two lists into one
+
 /*******************************************************************************
  *    IMPORTS
  ******************************************************************************/
@@ -48,8 +55,8 @@ static bool arl_is_i_too_big(arl_ptr l, size_t i);
 static void _arl_get(arl_ptr l, size_t i, void **p);
 static void _arl_set(arl_ptr l, size_t i, void *value);
 static l_error_t arl_grow_array_capacity(arl_ptr l);
-static l_error_t arl_move_indexes_by_positive_number(arl_ptr l, size_t start_i,
-                                                     size_t move_by);
+static l_error_t arl_move_elements_right(arl_ptr l, size_t start_i,
+                                         size_t move_by);
 /*******************************************************************************
  *    PUBLIC API
  ******************************************************************************/
@@ -112,7 +119,6 @@ l_error_t arl_set(arl_ptr l, size_t i, void *value) {
   return L_SUCCESS;
 }
 
-// TO-DO if i bigger than length n, assume i = length
 l_error_t arl_insert(arl_ptr l, size_t i, void *value) {
   size_t new_length, move_by = 1;
   l_error_t err;
@@ -128,7 +134,7 @@ l_error_t arl_insert(arl_ptr l, size_t i, void *value) {
       return err;
   }
 
-  err = arl_move_indexes_by_positive_number(l, i, move_by);
+  err = arl_move_elements_right(l, i, move_by);
   if (err)
     return err;
 
@@ -140,6 +146,10 @@ l_error_t arl_insert(arl_ptr l, size_t i, void *value) {
 }
 
 l_error_t arl_append(arl_ptr l, void *value) {
+  return arl_insert(l, l->length + 1, value);
+}
+
+l_error_t arl_pop(arl_ptr l, size_t i, void *value) {
   return arl_insert(l, l->length + 1, value);
 }
 
@@ -199,14 +209,13 @@ static l_error_t arl_grow_array_capacity(arl_ptr l) {
   return L_SUCCESS;
 };
 
-/* Move elements further by `move_by`, starting from `start_i`.
+/* Move elements to the right by `move_by`, starting from `start_i`.
  * Set NULL on source value.
  * Ex:
  *    INPUT  l.array {0, 1, 2, , ,}, start_i 1, move_by 2
  *    OUTPUT l.array {0, NULL, NULL, 1, 2}
  */
-l_error_t arl_move_indexes_by_positive_number(arl_ptr l, size_t start_i,
-                                              size_t move_by) {
+l_error_t arl_move_elements_right(arl_ptr l, size_t start_i, size_t move_by) {
 
   size_t old_length, new_length, elements_to_move_amount;
 
@@ -228,10 +237,17 @@ l_error_t arl_move_indexes_by_positive_number(arl_ptr l, size_t start_i,
   if (elements_to_move_amount == 0)
     return L_SUCCESS;
 
-  move_pointers_array(l->array + start_i + move_by, l->array + start_i,
-                      elements_to_move_amount);
+  move_pointers_array_right(l->array + start_i + move_by, l->array + start_i,
+                            elements_to_move_amount);
 
   l->length = new_length;
 
   return L_SUCCESS;
 }
+
+/* Move elements to the left by `move_by`, starting from `start_i`.
+ * Ex:
+ *    INPUT  l.array {0, 1, 2, , ,}, start_i 2, move_by 1
+ *    OUTPUT l.array {1, 2, , , ,}
+ */
+l_error_t arl_move_elements_left(arl_ptr l, size_t start_i, size_t move_by) {}

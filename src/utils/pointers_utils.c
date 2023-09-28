@@ -14,9 +14,16 @@
  *     where pointers are moved within one array.
  *  In overlapping situation if dest is before src behaviour is undefined.
  */
-void move_pointers_array(void *dest[], void *src[], size_t n) {
+void move_pointers_array_right(void *dest[], void *src[], size_t n) {
   while (n-- > 0) {
     dest[n] = src[n];
     src[n] = NULL;
+  }
+}
+
+void move_pointers_array_left(void *dest[], void *src[], size_t n) {
+  size_t i;
+  for (i = 0; i < n; i++) {
+    dest[n] = src[n];
   }
 }
