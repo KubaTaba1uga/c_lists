@@ -234,11 +234,12 @@ l_error_t arl_move_elements_right(arl_ptr l, size_t start_i, size_t move_by) {
 
   elements_to_move_amount = old_length - start_i;
 
+  // this check can be unnecessary
   if (elements_to_move_amount == 0)
     return L_SUCCESS;
 
-  move_pointers_array_right(l->array + start_i + move_by, l->array + start_i,
-                            elements_to_move_amount);
+  move_pointers_array_rstart(l->array + start_i + move_by, l->array + start_i,
+                             elements_to_move_amount);
 
   l->length = new_length;
 
@@ -250,4 +251,33 @@ l_error_t arl_move_elements_right(arl_ptr l, size_t start_i, size_t move_by) {
  *    INPUT  l.array {0, 1, 2, , ,}, start_i 2, move_by 1
  *    OUTPUT l.array {1, 2, , , ,}
  */
-l_error_t arl_move_elements_left(arl_ptr l, size_t start_i, size_t move_by) {}
+l_error_t arl_move_elements_left(arl_ptr l, size_t start_i, size_t move_by) {
+
+  size_t old_length, new_length, elements_to_move_amount;
+
+  // Idea is to detect all failures upfront so recovery from half moved array
+  //  is not required.
+  if (is_underflow_size_t_sub(l->length, move_by))
+    return L_ERROR_OVERFLOW;
+
+  old_length = l->length, new_length = l->length - move_by;
+
+  if (is_underflow_size_t_sub(old_length, new_length))
+    return L_ERROR_OVERFLOW;
+
+  elements_to_move_amount = old_length - new_length;
+
+  // this check can be unnecessary
+  if (elements_to_move_amount == 0)
+    return L_SUCCESS;
+
+  move_pointers_array_rstart(l->array + start_i, l->array + start_i + move_by,
+                             elements_to_move_amount);
+
+  // Shrink array when required
+  /* if (new_length > (l->capacity)) */
+  /* return L_ERROR_INVALID_ARGS; */
+
+  l->length = new_length;
+  return L_SUCCESS;
+}

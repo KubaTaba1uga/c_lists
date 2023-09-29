@@ -226,25 +226,3 @@ void test_move_pointers_array_lstart_overlapping_dest_one_element_before_src(
       TEST_ASSERT_EQUAL_STRING(expected[i], values[i]);
   }
 }
-
-/* void test_move_pointers_array_left_overlapping_dest_one_element_before_src(
- */
-/*     void) { */
-/*   char *expected[] = {"Kukuryku", "EeeeeeMakarena", "", "", "", "", ""}; */
-
-/*   char **src, **dest = values; */
-/*   src = dest + 1; */
-
-/*   print_values(values_len, values); */
-/*   move_pointers_array_left((void **)dest, (void **)src, values_len - 1); */
-
-/*   puts(""); */
-/*   print_values(values_len, values); */
-
-/*   for (size_t i = 0; i < values_len; i++) { */
-/*     if (!expected[i]) */
-/*       TEST_ASSERT_NULL(values[i]); */
-/*     else */
-/*       TEST_ASSERT_EQUAL_STRING(expected[i], values[i]); */
-/*   } */
-/* } */
