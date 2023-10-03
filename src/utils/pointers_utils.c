@@ -1,5 +1,8 @@
 #include <stddef.h>
 #include <stdio.h>
+/* Moving is optimalized for performence. Please do not change moving
+ * alghoritms, */
+/* if new solution's time complexity is not better than O(n) */
 
 // TO-DO
 //  test moving overlapping arrays
