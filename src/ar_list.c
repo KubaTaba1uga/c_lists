@@ -217,6 +217,8 @@ static l_error_t arl_grow_array_capacity(arl_ptr l) {
  */
 l_error_t arl_move_elements_right(arl_ptr l, size_t start_i, size_t move_by) {
 
+  // TO-DO maybe there is a bug in start_i, if we want to start at index 0 do we
+  // have to pass 1? or do we have to pass 0? indexes' starts should be inline.
   size_t old_length, new_length, elements_to_move_amount;
 
   // Idea is to detect all failures upfront so recovery from half moved array
@@ -232,9 +234,13 @@ l_error_t arl_move_elements_right(arl_ptr l, size_t start_i, size_t move_by) {
   if (is_underflow_size_t_sub(old_length, start_i))
     return L_ERROR_OVERFLOW;
 
+  // TO-DO substitute start_i with new_length (makes calculations more
+  // readeble)
   elements_to_move_amount = old_length - start_i;
 
-  // this check can be unnecessary
+  // TO-DO this check can be unnecessary? verify
+  // pop always substracts, insert always adds, so is there really scenario
+  // where no elements are moved?
   if (elements_to_move_amount == 0)
     return L_SUCCESS;
 
@@ -249,14 +255,21 @@ l_error_t arl_move_elements_right(arl_ptr l, size_t start_i, size_t move_by) {
 /* Move elements to the left by `move_by`, starting from `start_i`.
  * Ex:
  *    INPUT  l.array {0, 1, 2, , ,}, start_i 2, move_by 1
- *    OUTPUT l.array {1, 2, , , ,}
+ *    OUTPUT l.array {1, 2, NULL, ,}
  */
 l_error_t arl_move_elements_left(arl_ptr l, size_t start_i, size_t move_by) {
 
+  // Impl hints
+  // Size of array is not always changed
   size_t old_length, new_length, elements_to_move_amount;
 
   // Idea is to detect all failures upfront so recovery from half moved array
   //  is not required.
+
+  // Do not allow reading memory before array start.
+  if (move_by > start_i)
+    move_by = start_i;
+
   if (is_underflow_size_t_sub(l->length, move_by))
     return L_ERROR_OVERFLOW;
 
@@ -267,17 +280,20 @@ l_error_t arl_move_elements_left(arl_ptr l, size_t start_i, size_t move_by) {
 
   elements_to_move_amount = old_length - new_length;
 
-  // this check can be unnecessary
+  // this check can be unnecessary, look above
   if (elements_to_move_amount == 0)
     return L_SUCCESS;
 
-  move_pointers_array_rstart(l->array + start_i, l->array + start_i + move_by,
-                             elements_to_move_amount);
+  /* move_pointers_array_lstart(l->array + start_i - move_by, l->array +
+   * start_i, */
+  /*                            elements_to_move_amount); */
 
-  // Shrink array when required
-  /* if (new_length > (l->capacity)) */
-  /* return L_ERROR_INVALID_ARGS; */
+  void **start = l->array + start_i;
+  void **dest = start - move_by;
+
+  move_pointers_array_lstart(dest, start, elements_to_move_amount);
 
   l->length = new_length;
+
   return L_SUCCESS;
 }

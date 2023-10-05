@@ -4,11 +4,11 @@
 // C standard library
 #include <limits.h>
 #include <stddef.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 // Test framework
-#include "ar_list.h"
 #include "mock_std_lib_interface.h"
 #include <unity.h>
 
@@ -113,6 +113,10 @@ void mock_app_realloc(arl_ptr l, size_t new_array_size) {
 void parametrize_test_arl_get_i_too_big_failure(arl_ptr l);
 void parametrize_test_arl_set_i_too_big_failure(arl_ptr l);
 void parametrize_test_arl_insert_success(arl_ptr l, size_t i, int value);
+
+void TEST_ASSERT_EQUAL_ERROR(l_error_t expected, l_error_t received) {
+  TEST_ASSERT_EQUAL_STRING(l_strerror(expected), l_strerror(received));
+}
 
 /*******************************************************************************
  *    PRIVATE API TESTS
@@ -290,6 +294,66 @@ void test_arl_move_elements_right_success(void) {
 
     TEST_ASSERT_EQUAL(arl_small_values[i - last_null_index], *value);
   }
+}
+
+void test_arl_move_elements_left_new_length_overflow_failure(void) {
+  arl_ptr l = setup_small_list();
+  l_error_t err;
+
+  err = arl_move_elements_left(l, 2, l->length + 1);
+
+  TEST_ASSERT_EQUAL_ERROR(L_ERROR_OVERFLOW, err);
+}
+// TO-DO test scenarios
+// 1. shrink by one element starting from the middle
+// 2. shrink by n elements starting from the middle
+// 2. move by > start i, then move by start_i
+void test_arl_move_elements_left_new_length_test(void) {
+  arl_ptr l = setup_small_list();
+  l_error_t err;
+
+  for (size_t i = 0; i < arl_small_length; i++) {
+    if (!l->array[i])
+      puts("NULL,");
+    else
+      printf("%i,\n", *(int *)l->array[i]);
+  }
+  puts("");
+
+  err = arl_move_elements_left(l, 2, 1);
+
+  for (size_t i = 0; i < arl_small_length; i++) {
+    if (!l->array[i])
+      puts("NULL,");
+    else
+      printf("%i,\n", *(int *)l->array[i]);
+  }
+
+  TEST_ASSERT_EQUAL_ERROR(L_ERROR_OVERFLOW, err);
+}
+
+void test_arl_move_elements_left_new_length_test_1(void) {
+  arl_ptr l = setup_small_list();
+  l_error_t err;
+
+  for (size_t i = 0; i < arl_small_length; i++) {
+    if (!l->array[i])
+      puts("NULL,");
+    else
+      printf("%i,\n", *(int *)l->array[i]);
+  }
+  puts("");
+
+  err = arl_move_elements_left(l, 3, 3);
+
+  for (size_t i = 0; i < arl_small_length; i++) {
+    if (!l->array[i])
+      puts("NULL,");
+    else
+      printf("%i,\n", *(int *)l->array[i]);
+  }
+
+  TEST_ASSERT_EQUAL_ERROR(L_ERROR_OVERFLOW, err);
 }
 
 /*******************************************************************************

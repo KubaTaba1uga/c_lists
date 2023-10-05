@@ -195,7 +195,34 @@ void test_move_pointers_array_overlapping_dest_one_element_before_src_lstart(
       expected, dest, src, values_len - 1, move_pointers_array_lstart);
 }
 
-void test_move_pointers_array_rstart_overlapping_src_multi_element_before_dest(
+/* This behaviour is well defined. */
+void test_move_pointers_array_overlapping_dest_one_element_before_src_middle_lstart(
+    void) {
+  char *expected[] = {"MumboJumbo", "EeeeeeMakarena", "", "", "", "", NULL};
+
+  char **src, **dest = values + 1;
+  src = dest + 2;
+
+  parametrize_move_pointers_array_overlapping(expected, dest, src, 1,
+                                              move_pointers_array_lstart);
+}
+
+/* This behaviour is well defined. */
+void test_move_pointers_array_overlapping_dest_multi_element_before_src_middle_lstart(
+    void) {
+  char *expected[] = {"MumboJumbo", "EeeeeeMakarena", "", "", "", "", NULL};
+
+  char **src, **dest = values + 1;
+  src = dest + 3;
+
+  print_values(values_len, values);
+
+  parametrize_move_pointers_array_overlapping(expected, dest, src, 3,
+                                              move_pointers_array_lstart);
+  print_values(values_len, values);
+}
+
+void test_move_pointers_array_overlapping_src_multi_element_before_dest_rstart(
     void) {
   char *expected[] = {
       NULL, NULL, NULL, "MumboJumbo", "Kukuryku", "EeeeeeMakarena", "",
@@ -204,44 +231,26 @@ void test_move_pointers_array_rstart_overlapping_src_multi_element_before_dest(
   char **dest, **src = values;
   dest = src + 3; // remember to substract offset from `n`
 
-  move_pointers_array_rstart((void **)dest, (void **)src, values_len - 3);
-
-  TEST_ASSERT_NULL(src[0]);
-
-  for (size_t i = 0; i < values_len; i++) {
-    if (!expected[i])
-      TEST_ASSERT_NULL(expected[i]);
-    else
-      TEST_ASSERT_EQUAL_STRING(expected[i], values[i]);
-  }
+  parametrize_move_pointers_array_overlapping(
+      expected, dest, src, values_len - 3, move_pointers_array_rstart);
 }
 
-/* This behaviour is well defined. */
-/* void test_move_pointers_array_lstart_overlapping_dest_one_element_before_src(
- */
-/*     void) { */
-/*   char *expected[] = {"Kukuryku", "EeeeeeMakarena", "", "", "", "", NULL}; */
+void test_move_pointers_array_overlapping_dest_multi_element_before_src_lstart(
+    void) {
+  char *expected[] = {"", "", "", "", NULL, NULL, NULL};
 
-/*   char **src, **dest = values; */
-/*   src = dest + 1; */
+  char **src, **dest = values;
+  src = dest + 3; // remember to substract offset from `n`
 
-/*   move_pointers_array_lstart((void **)dest, (void **)src, values_len - 1); */
-
-/*   print_values(values_len, values); */
-/*   for (size_t i = 0; i < values_len; i++) { */
-/*     if (!expected[i]) */
-/*       TEST_ASSERT_NULL(values[i]); */
-/*     else */
-/*       TEST_ASSERT_EQUAL_STRING(expected[i], values[i]); */
-/*   } */
-/* } */
+  parametrize_move_pointers_array_overlapping(
+      expected, dest, src, values_len - 3, move_pointers_array_lstart);
+}
 
 void parametrize_move_pointers_array_no_overlapping(
     char **expected, char **dest, char **src, size_t n,
     void (*move_f)(void **, void **, size_t)) {
   move_f((void **)dest, (void **)src, n);
 
-  /* print_values(n, dest); */
   for (size_t i = 0; i < n; i++)
     TEST_ASSERT_NULL(src[i]);
 
@@ -254,7 +263,6 @@ void parametrize_move_pointers_array_overlapping(
     void (*move_f)(void **, void **, size_t)) {
   move_f((void **)dest, (void **)src, n);
 
-  /* print_values(n, dest); */
   for (size_t i = 0; i < n; i++) {
     if (!expected[i])
       TEST_ASSERT_NULL(expected[i]);

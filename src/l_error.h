@@ -8,6 +8,17 @@ typedef enum {
 
   L_ERROR_INVALID_ARGS,
 
+  /* Overflow usually is caused by invalid args,
+   *  assuming it's relation to INVALID_ARGS error
+   *  may be profitable during debugging. My goal
+   *  in splitting those is giving You capability
+   *  to handle those scenarios separatelly.
+   *  Moving responsibility to You would require
+   *  knowing each calculation made by the lib (by You).
+   *  Just thinking about it gives my a hadache :P
+   *
+   * TO-DO Add more overflow handlings to lib itself.
+   */
   L_ERROR_OVERFLOW,
 
   L_ERROR_OUT_OF_MEMORY,
