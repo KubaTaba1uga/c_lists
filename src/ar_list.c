@@ -252,7 +252,9 @@ l_error_t arl_move_elements_right(arl_ptr l, size_t start_i, size_t move_by) {
   return L_SUCCESS;
 }
 
-size_t count_number_of_elements_to_move_left() {}
+size_t count_number_of_elements_to_move_left(size_t start_i, size_t move_by) {
+  return start_i < move_by ? start_i : move_by;
+}
 
 /* Move elements to the left by `move_by`, starting from `start_i`.
  * Ex:
@@ -265,19 +267,20 @@ l_error_t arl_move_elements_left(arl_ptr l, size_t start_i, size_t move_by) {
    *   `pop elements starting from index 5 till index 8`.
    */
 
-  // Impl hints
-  // Size of array is always changed in scenarios created by this func.
-  size_t old_length, new_length, elements_to_move_amount;
+  size_t new_length, elements_to_move_amount;
 
-  old_length = l->length, new_length = l->length - move_by;
   // Idea is to detect all failures upfront so recovery from half moved array
   //  is not required.
-  elements_to_move_amount = old_length - start_i;
+  new_length = l->length - move_by;
+  elements_to_move_amount =
+      count_number_of_elements_to_move_left(start_i, move_by);
 
   void **src = l->array + start_i;
   void **dst = src - move_by;
 
-  move_pointers_array_lstart(dst, src, elements_to_move_amount);
+  move_pointers_array_lstart(dst, src, 3);
+
+  l->length = new_length;
 
   return L_SUCCESS;
 }

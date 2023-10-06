@@ -312,7 +312,7 @@ void test_arl_move_elements_left_one_move_all(void) {
   arl_ptr l = setup_small_list();
   l_error_t err;
 
-  for (size_t i = 0; i < arl_small_length; i++) {
+  for (size_t i = 0; i < l->length; i++) {
     if (!l->array[i])
       puts("NULL,");
     else
@@ -320,9 +320,9 @@ void test_arl_move_elements_left_one_move_all(void) {
   }
   puts("");
 
-  err = arl_move_elements_left(l, 3, 2);
+  err = arl_move_elements_left(l, 4, 2);
 
-  for (size_t i = 0; i < arl_small_length; i++) {
+  for (size_t i = 0; i < l->length; i++) {
     if (!l->array[i])
       puts("NULL,");
     else
