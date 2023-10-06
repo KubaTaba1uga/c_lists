@@ -252,48 +252,32 @@ l_error_t arl_move_elements_right(arl_ptr l, size_t start_i, size_t move_by) {
   return L_SUCCESS;
 }
 
+size_t count_number_of_elements_to_move_left() {}
+
 /* Move elements to the left by `move_by`, starting from `start_i`.
  * Ex:
  *    INPUT  l.array {0, 1, 2, , ,}, start_i 2, move_by 1
  *    OUTPUT l.array {1, 2, NULL, ,}
  */
 l_error_t arl_move_elements_left(arl_ptr l, size_t start_i, size_t move_by) {
+  /* `move_by` tells how many places we should shift.
+   *  Specially usefull when popping slice of array:
+   *   `pop elements starting from index 5 till index 8`.
+   */
 
   // Impl hints
-  // Size of array is not always changed
+  // Size of array is always changed in scenarios created by this func.
   size_t old_length, new_length, elements_to_move_amount;
 
+  old_length = l->length, new_length = l->length - move_by;
   // Idea is to detect all failures upfront so recovery from half moved array
   //  is not required.
+  elements_to_move_amount = old_length - start_i;
 
-  // Do not allow reading memory before array start.
-  if (move_by > start_i)
-    move_by = start_i;
+  void **src = l->array + start_i;
+  void **dst = src - 1;
 
-  if (is_underflow_size_t_sub(l->length, move_by))
-    return L_ERROR_OVERFLOW;
-
-  old_length = l->length, new_length = l->length - move_by;
-
-  if (is_underflow_size_t_sub(old_length, new_length))
-    return L_ERROR_OVERFLOW;
-
-  elements_to_move_amount = old_length - new_length;
-
-  // this check can be unnecessary, look above
-  if (elements_to_move_amount == 0)
-    return L_SUCCESS;
-
-  /* move_pointers_array_lstart(l->array + start_i - move_by, l->array +
-   * start_i, */
-  /*                            elements_to_move_amount); */
-
-  void **start = l->array + start_i;
-  void **dest = start - move_by;
-
-  move_pointers_array_lstart(dest, start, elements_to_move_amount);
-
-  l->length = new_length;
+  move_pointers_array_lstart(dst, src, elements_to_move_amount);
 
   return L_SUCCESS;
 }

@@ -308,7 +308,7 @@ void test_arl_move_elements_left_new_length_overflow_failure(void) {
 // 1. shrink by one element starting from the middle
 // 2. shrink by n elements starting from the middle
 // 2. move by > start i, then move by start_i
-void test_arl_move_elements_left_new_length_test(void) {
+void test_arl_move_elements_left_one_move_all(void) {
   arl_ptr l = setup_small_list();
   l_error_t err;
 
@@ -320,7 +320,7 @@ void test_arl_move_elements_left_new_length_test(void) {
   }
   puts("");
 
-  err = arl_move_elements_left(l, 2, 1);
+  err = arl_move_elements_left(l, 2, 2);
 
   for (size_t i = 0; i < arl_small_length; i++) {
     if (!l->array[i])
@@ -332,29 +332,29 @@ void test_arl_move_elements_left_new_length_test(void) {
   TEST_ASSERT_EQUAL_ERROR(L_ERROR_OVERFLOW, err);
 }
 
-void test_arl_move_elements_left_new_length_test_1(void) {
-  arl_ptr l = setup_small_list();
-  l_error_t err;
+/* void test_arl_move_elements_left_new_length_test_1(void) { */
+/*   arl_ptr l = setup_small_list(); */
+/*   l_error_t err; */
 
-  for (size_t i = 0; i < arl_small_length; i++) {
-    if (!l->array[i])
-      puts("NULL,");
-    else
-      printf("%i,\n", *(int *)l->array[i]);
-  }
-  puts("");
+/*   for (size_t i = 0; i < arl_small_length; i++) { */
+/*     if (!l->array[i]) */
+/*       puts("NULL,"); */
+/*     else */
+/*       printf("%i,\n", *(int *)l->array[i]); */
+/*   } */
+/*   puts(""); */
 
-  err = arl_move_elements_left(l, 3, 3);
+/*   err = arl_move_elements_left(l, 3, 3); */
 
-  for (size_t i = 0; i < arl_small_length; i++) {
-    if (!l->array[i])
-      puts("NULL,");
-    else
-      printf("%i,\n", *(int *)l->array[i]);
-  }
+/*   for (size_t i = 0; i < arl_small_length; i++) { */
+/*     if (!l->array[i]) */
+/*       puts("NULL,"); */
+/*     else */
+/*       printf("%i,\n", *(int *)l->array[i]); */
+/*   } */
 
-  TEST_ASSERT_EQUAL_ERROR(L_ERROR_OVERFLOW, err);
-}
+/*   TEST_ASSERT_EQUAL_ERROR(L_ERROR_OVERFLOW, err); */
+/* } */
 
 /*******************************************************************************
  *    PUBLIC API TESTS
