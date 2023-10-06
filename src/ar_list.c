@@ -252,10 +252,6 @@ l_error_t arl_move_elements_right(arl_ptr l, size_t start_i, size_t move_by) {
   return L_SUCCESS;
 }
 
-size_t count_number_of_elements_to_move_left(size_t start_i, size_t move_by) {
-  return start_i < move_by ? start_i : move_by;
-}
-
 /* Move elements to the left by `move_by`, starting from `start_i`.
  * Ex:
  *    INPUT  l.array {0, 1, 2, , ,}, start_i 2, move_by 1
@@ -269,16 +265,17 @@ l_error_t arl_move_elements_left(arl_ptr l, size_t start_i, size_t move_by) {
 
   size_t new_length, elements_to_move_amount;
 
+  /* if (move_by) */
+
   // Idea is to detect all failures upfront so recovery from half moved array
   //  is not required.
   new_length = l->length - move_by;
-  elements_to_move_amount =
-      count_number_of_elements_to_move_left(start_i, move_by);
+  elements_to_move_amount = l->length - start_i;
 
   void **src = l->array + start_i;
   void **dst = src - move_by;
 
-  move_pointers_array_lstart(dst, src, 3);
+  move_pointers_array_lstart(dst, src, elements_to_move_amount);
 
   l->length = new_length;
 
