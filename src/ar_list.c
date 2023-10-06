@@ -275,7 +275,7 @@ l_error_t arl_move_elements_left(arl_ptr l, size_t start_i, size_t move_by) {
   elements_to_move_amount = old_length - start_i;
 
   void **src = l->array + start_i;
-  void **dst = src - 1;
+  void **dst = src - move_by;
 
   move_pointers_array_lstart(dst, src, elements_to_move_amount);
 

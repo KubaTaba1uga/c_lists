@@ -320,7 +320,7 @@ void test_arl_move_elements_left_one_move_all(void) {
   }
   puts("");
 
-  err = arl_move_elements_left(l, 2, 2);
+  err = arl_move_elements_left(l, 3, 2);
 
   for (size_t i = 0; i < arl_small_length; i++) {
     if (!l->array[i])
