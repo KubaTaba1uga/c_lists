@@ -263,9 +263,14 @@ l_error_t arl_move_elements_left(arl_ptr l, size_t start_i, size_t move_by) {
    *   `pop elements starting from index 5 till index 8`.
    */
 
+  // TO-DO move_pointers_array should return pointers removed from array.
+  // TO-DO validate calculations for overflow/underflow.
+  // TO-DO design list slicing based on move arl move elements left.
+
   size_t new_length, elements_to_move_amount;
 
-  /* if (move_by) */
+  if (move_by > start_i)
+    move_by = start_i;
 
   // Idea is to detect all failures upfront so recovery from half moved array
   //  is not required.

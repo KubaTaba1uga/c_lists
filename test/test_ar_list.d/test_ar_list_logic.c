@@ -295,66 +295,52 @@ void test_arl_move_elements_right_success(void) {
     TEST_ASSERT_EQUAL(arl_small_values[i - last_null_index], *value);
   }
 }
+// TO-DO write move elements left validations tests
+/* void test_arl_move_elements_left_new_length_overflow_failure(void) { */
+/*   arl_ptr l = setup_small_list(); */
+/*   l_error_t err; */
 
-void test_arl_move_elements_left_new_length_overflow_failure(void) {
-  arl_ptr l = setup_small_list();
-  l_error_t err;
+/*   err = arl_move_elements_left(l, 2, l->length + 1); */
 
-  err = arl_move_elements_left(l, 2, l->length + 1);
+/*   TEST_ASSERT_EQUAL_ERROR(L_ERROR_OVERFLOW, err); */
+/* } */
 
-  TEST_ASSERT_EQUAL_ERROR(L_ERROR_OVERFLOW, err);
-}
 // TO-DO test scenarios
 // 1. shrink by one element starting from the middle
 // 2. shrink by n elements starting from the middle
 // 2. move by > start i, then move by start_i
 void test_arl_move_elements_left_one_move_all(void) {
   arl_ptr l = setup_small_list();
+  void *expected[] = {l->array[0], l->array[2], l->array[3], l->array[4],
+                      l->array[5]};
   l_error_t err;
 
-  for (size_t i = 0; i < l->length; i++) {
-    if (!l->array[i])
-      puts("NULL,");
-    else
-      printf("%i,\n", *(int *)l->array[i]);
-  }
-  puts("");
+  err = arl_move_elements_left(l, 2, 1);
 
-  err = arl_move_elements_left(l, 5, 4);
-
-  for (size_t i = 0; i < l->length; i++) {
-    if (!l->array[i])
-      puts("NULL,");
-    else
-      printf("%i,\n", *(int *)l->array[i]);
-  }
-
-  TEST_ASSERT_EQUAL_ERROR(L_ERROR_OVERFLOW, err);
+  TEST_ASSERT_EQUAL_ERROR(L_SUCCESS, err);
+  TEST_ASSERT_EQUAL_PTR_ARRAY(expected, l->array, l->length);
 }
+void test_arl_move_elements_left_multi_move_all(void) {
+  arl_ptr l = setup_small_list();
+  void *expected[] = {l->array[0], l->array[4], l->array[5]};
 
-/* void test_arl_move_elements_left_new_length_test_1(void) { */
-/*   arl_ptr l = setup_small_list(); */
-/*   l_error_t err; */
+  l_error_t err;
 
-/*   for (size_t i = 0; i < arl_small_length; i++) { */
-/*     if (!l->array[i]) */
-/*       puts("NULL,"); */
-/*     else */
-/*       printf("%i,\n", *(int *)l->array[i]); */
-/*   } */
-/*   puts(""); */
+  err = arl_move_elements_left(l, 4, 3);
 
-/*   err = arl_move_elements_left(l, 3, 3); */
+  TEST_ASSERT_EQUAL_ERROR(L_SUCCESS, err);
+  TEST_ASSERT_EQUAL_PTR_ARRAY(expected, l->array, l->length);
+}
+void test_arl_move_elements_left_move_by_bigger_than_start_i(void) {
+  arl_ptr l = setup_small_list();
+  void *expected[] = {l->array[4], l->array[5]};
+  l_error_t err;
 
-/*   for (size_t i = 0; i < arl_small_length; i++) { */
-/*     if (!l->array[i]) */
-/*       puts("NULL,"); */
-/*     else */
-/*       printf("%i,\n", *(int *)l->array[i]); */
-/*   } */
+  err = arl_move_elements_left(l, 4, 5);
 
-/*   TEST_ASSERT_EQUAL_ERROR(L_ERROR_OVERFLOW, err); */
-/* } */
+  TEST_ASSERT_EQUAL_ERROR(L_SUCCESS, err);
+  TEST_ASSERT_EQUAL_PTR_ARRAY(expected, l->array, l->length);
+}
 
 /*******************************************************************************
  *    PUBLIC API TESTS
