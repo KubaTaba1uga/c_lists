@@ -57,6 +57,8 @@ static void _arl_set(arl_ptr l, size_t i, void *value);
 static l_error_t arl_grow_array_capacity(arl_ptr l);
 static l_error_t arl_move_elements_right(arl_ptr l, size_t start_i,
                                          size_t move_by);
+l_error_t arl_move_elements_left(arl_ptr l, size_t start_i, size_t move_by);
+
 /*******************************************************************************
  *    PUBLIC API
  ******************************************************************************/
@@ -149,8 +151,20 @@ l_error_t arl_append(arl_ptr l, void *value) {
   return arl_insert(l, l->length + 1, value);
 }
 
-l_error_t arl_pop(arl_ptr l, size_t i, void *value) {
-  return arl_insert(l, l->length + 1, value);
+l_error_t arl_pop(arl_ptr l, size_t i, void **value) {
+  size_t offset = 1;
+  void *value_holder;
+
+  if (arl_is_i_too_big(l, i))
+    i = l->length;
+
+  _arl_get(l, i, &value_holder);
+
+  arl_move_elements_left(l, i + offset, offset);
+
+  *value = value_holder;
+
+  return L_SUCCESS;
 }
 
 /*******************************************************************************
@@ -263,8 +277,10 @@ l_error_t arl_move_elements_left(arl_ptr l, size_t start_i, size_t move_by) {
    *   `pop elements starting from index 5 till index 8`.
    */
 
-  // TO-DO move_pointers_array_left should return pointers removed from array.
-  // TO-DO validate calculations for overflow/underflow.
+  // TO-DO pop list should return pointers removed from array.
+  //   but do not add this feature here. Popping function, can
+  //   easilly get all delements elements, before moving left.
+  //   DRY and KISS like this :P
   // TO-DO design list slicing based on move arl move elements left.
 
   size_t new_length, elements_to_move_amount;

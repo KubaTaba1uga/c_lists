@@ -567,3 +567,10 @@ void parametrize_test_arl_insert_success(arl_ptr l, size_t i, int value) {
     TEST_ASSERT_EQUAL(arl_small_values[k - 1], *(int *)l->array[k]);
   }
 }
+void test_arl_pop_success(void) {
+  int value, i;
+  arl_ptr l = setup_small_list();
+
+  i = 3;
+  expected = arl_small_values[i];
+}
