@@ -295,20 +295,24 @@ void test_arl_move_elements_right_success(void) {
     TEST_ASSERT_EQUAL(arl_small_values[i - last_null_index], *value);
   }
 }
-// TO-DO write move elements left validations tests
-/* void test_arl_move_elements_left_new_length_overflow_failure(void) { */
-/*   arl_ptr l = setup_small_list(); */
-/*   l_error_t err; */
 
-/*   err = arl_move_elements_left(l, 2, l->length + 1); */
+void test_arl_move_elements_left_new_length_underflow_failure(void) {
+  arl_ptr l = setup_small_list();
+  l_error_t err;
 
-/*   TEST_ASSERT_EQUAL_ERROR(L_ERROR_OVERFLOW, err); */
-/* } */
+  err = arl_move_elements_left(l, l->length + 1, l->length + 1);
 
-// TO-DO test scenarios
-// 1. shrink by one element starting from the middle
-// 2. shrink by n elements starting from the middle
-// 2. move by > start i, then move by start_i
+  TEST_ASSERT_EQUAL(L_ERROR_OVERFLOW, err);
+}
+void test_arl_move_elements_left_elements_to_move_underflow_failure(void) {
+  arl_ptr l = setup_small_list();
+  l_error_t err;
+
+  err = arl_move_elements_left(l, l->length + 1, 0);
+
+  TEST_ASSERT_EQUAL(L_ERROR_OVERFLOW, err);
+}
+
 void test_arl_move_elements_left_one_move_all(void) {
   arl_ptr l = setup_small_list();
   void *expected[] = {l->array[0], l->array[2], l->array[3], l->array[4],
