@@ -346,6 +346,21 @@ void test_arl_move_elements_left_move_by_bigger_than_start_i(void) {
   TEST_ASSERT_EQUAL_PTR_ARRAY(expected, l->array, l->length);
 }
 
+/* Confirms:
+ *    INPUT  l.array {0, 1, 2, 3, 4, 5, , , , }, start_i 3, move_by 2
+ *    OUTPUT l.array {0, 3, 4, 5, , , , , , }
+ */
+void test_arl_move_elements_left_success(void) {
+  arl_ptr l = setup_small_list();
+  void *expected[] = {l->array[0], l->array[3], l->array[4], l->array[5]};
+  l_error_t err;
+
+  err = arl_move_elements_left(l, 3, 2);
+
+  TEST_ASSERT_EQUAL_ERROR(L_SUCCESS, err);
+  TEST_ASSERT_EQUAL_PTR_ARRAY(expected, l->array, l->length);
+}
+
 /*******************************************************************************
  *    PUBLIC API TESTS
  ******************************************************************************/
