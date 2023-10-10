@@ -210,16 +210,13 @@ void test_move_pointers_array_overlapping_dest_one_element_before_src_middle_lst
 /* This behaviour is well defined. */
 void test_move_pointers_array_overlapping_dest_multi_element_before_src_middle_lstart(
     void) {
-  char *expected[] = {"MumboJumbo", "EeeeeeMakarena", "", "", "", "", NULL};
+  char *expected[] = {"MumboJumbo", "", "", "", "", NULL, NULL};
 
   char **src, **dest = values + 1;
   src = dest + 3;
 
-  print_values(values_len, values);
-
   parametrize_move_pointers_array_overlapping(expected, dest, src, 3,
                                               move_pointers_array_lstart);
-  print_values(values_len, values);
 }
 
 void test_move_pointers_array_overlapping_src_multi_element_before_dest_rstart(
@@ -265,7 +262,7 @@ void parametrize_move_pointers_array_overlapping(
 
   for (size_t i = 0; i < n; i++) {
     if (!expected[i])
-      TEST_ASSERT_NULL(expected[i]);
+      TEST_ASSERT_NULL(values[i]);
     else
       TEST_ASSERT_EQUAL_STRING(expected[i], values[i]);
   }

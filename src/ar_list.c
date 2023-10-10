@@ -156,11 +156,13 @@ l_error_t arl_pop(arl_ptr l, size_t i, void **value) {
   void *value_holder;
 
   if (arl_is_i_too_big(l, i))
-    i = l->length;
+    i = l->length - 1;
+  if (l->length == 0)
+    return L_ERROR_INDEX_TOO_BIG;
 
   _arl_get(l, i, &value_holder);
 
-  arl_move_elements_left(l, i + offset, offset);
+  arl_move_elements_left(l, i, offset);
 
   *value = value_holder;
 
@@ -286,6 +288,8 @@ l_error_t arl_move_elements_left(arl_ptr l, size_t start_i, size_t move_by) {
   size_t new_length, elements_to_move_amount;
   void **src, **dst;
 
+  printf("start_i==%lu\n", start_i);
+  printf("move_by==%lu\n", move_by);
   // Do not allow reading before list's start.
   if (move_by > start_i)
     move_by = start_i;
@@ -304,9 +308,11 @@ l_error_t arl_move_elements_left(arl_ptr l, size_t start_i, size_t move_by) {
     return L_ERROR_OVERFLOW;
 
   elements_to_move_amount = l->length - start_i;
+  // To-DO how to delete last element? without reaching over the
+  //   array's boundary
 
-  src = l->array + start_i;
-  dst = src - move_by;
+  /* src = l->array + start_i; */
+  /* dst = src - move_by; */
 
   move_pointers_array_lstart(dst, src, elements_to_move_amount);
 
