@@ -9,12 +9,16 @@
  * lists.
  */
 
-// TO-DO remove - add callback to remove
-// TO-DO clear - remove all items from a list (do not shrink), add callback
+// TO-DO add callback to remove, one can easilly create version without callback
+//   if needed. Other way around would require using pop and mimicking remove
+//   logic. I like callback better, it is simpler. One do not need to know
+//   remove logic to create version without it. Just adds dummy function.
+// TO-DO clear - remove all items from a list (do not shrink)
 // TO-DO insert_multi - same as insert but array of elements (instead of single
 // element)
 // TO-DO extend - join two lists into one
-// TO-DO slice - pop elements from index i till index j
+// TO-DO slice - get elements from index i till index j
+// TO-DO pop_slice - pop elements from index i till index j
 
 /*******************************************************************************
  *    IMPORTS
@@ -175,14 +179,19 @@ l_error_t arl_pop(arl_ptr l, size_t i, void **value) {
   return L_SUCCESS;
 }
 /* Removes element from under the index.
- * Whatever pointer is under the i it will be
- * deleted. Can be error prone when using
- * with allocated memory.
+ * Executes callback function on removed element.
  */
-l_error_t arl_remove(arl_ptr l, size_t i) {
+l_error_t arl_remove(arl_ptr l, size_t i, void (*callback)(void *)) {
   void *p;
+  l_error_t err;
 
-  return arl_pop(l, i, &p);
+  err = arl_pop(l, i, &p);
+  if (err)
+    return err;
+
+  callback(p);
+
+  return L_SUCCESS;
 }
 
 /*******************************************************************************
