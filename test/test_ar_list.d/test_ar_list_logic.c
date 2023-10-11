@@ -381,6 +381,30 @@ void test_arl_move_elements_left_delete_index_5(void) {
   TEST_ASSERT_EQUAL_ERROR(L_SUCCESS, err);
   TEST_ASSERT_EQUAL_PTR_ARRAY(expected, l->array, arl_small_length);
 }
+void test_arl_move_elements_left_delete_last_indexes_0(void) {
+  arl_ptr l = setup_small_list();
+  void *expected[] = {l->array[0], l->array[1], l->array[2],
+                      l->array[3], NULL,        NULL};
+  l_error_t err;
+
+  // Reaching over the array's boundary, is handled.
+  err = arl_move_elements_left(l, 6, 2);
+
+  TEST_ASSERT_EQUAL_ERROR(L_SUCCESS, err);
+  TEST_ASSERT_EQUAL_PTR_ARRAY(expected, l->array, arl_small_length);
+}
+void test_arl_move_elements_left_delete_last_indexes_1(void) {
+  arl_ptr l = setup_small_list();
+  void *expected[] = {l->array[0], l->array[1], l->array[2], NULL, NULL, NULL};
+  l_error_t err;
+
+  // Reaching over the array's boundary, is handled.
+  err = arl_move_elements_left(l, 6, 3);
+
+  TEST_ASSERT_EQUAL_ERROR(L_SUCCESS, err);
+  TEST_ASSERT_EQUAL_PTR_ARRAY(expected, l->array, arl_small_length);
+}
+
 /* void test_arl_move_elements_left_multi_move_all(void) { */
 /*   arl_ptr l = setup_small_list(); */
 /*   void *expected[] = {l->array[0], l->array[4], l->array[5]}; */
