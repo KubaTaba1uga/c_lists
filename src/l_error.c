@@ -18,13 +18,20 @@ static const char *const L_ERROR_STRINGS[] = {
     "Overflow",
 
     // 3
-    "Not enough memory",
+    "Underflow",
 
     // 4
-    "Index too big",
+    "Not enough memory",
 
     // 5
+    "Index too big",
+
+    // 6
     "Array's maximum capacity reached",
+
+    // 6
+    "Popping empty list is disallowed",
+
 };
 
 static const size_t L_ERROR_STRINGS_LEN =

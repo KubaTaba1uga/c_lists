@@ -120,7 +120,9 @@ l_error_t arl_set(arl_ptr l, size_t i, void *value) {
 
   return L_SUCCESS;
 }
-
+/* Insert one element under the index.
+ *  If index bigger than list's length, appends the value.
+ */
 l_error_t arl_insert(arl_ptr l, size_t i, void *value) {
   size_t new_length, move_by = 1;
   l_error_t err;
@@ -146,23 +148,30 @@ l_error_t arl_insert(arl_ptr l, size_t i, void *value) {
 
   return L_SUCCESS;
 }
-
+/* Appends one element to the list's end.
+ */
 l_error_t arl_append(arl_ptr l, void *value) {
   return arl_insert(l, l->length + 1, value);
 }
-
+/* Pops  element from under the index. Sets
+ * `value` to the popped element's value.
+ *  Empty list when popped sets `value` to NULL
+ *  and returns L_ERROR_POP_EMPTY_LIST.
+ */
 l_error_t arl_pop(arl_ptr l, size_t i, void **value) {
-  size_t offset = 1;
+  const size_t offset = 1;
   void *value_holder;
 
   if (arl_is_i_too_big(l, i))
     i = l->length - 1;
-  if (l->length == 0)
-    return L_ERROR_INDEX_TOO_BIG;
+  if (l->length == 0) {
+    *value = NULL;
+    return L_ERROR_POP_EMPTY_LIST;
+  }
 
   _arl_get(l, i, &value_holder);
 
-  arl_move_elements_left(l, i, offset);
+  arl_move_elements_left(l, ++i, offset);
 
   *value = value_holder;
 
@@ -248,7 +257,7 @@ l_error_t arl_move_elements_right(arl_ptr l, size_t start_i, size_t move_by) {
     return L_ERROR_INVALID_ARGS;
 
   if (is_underflow_size_t_sub(old_length, start_i))
-    return L_ERROR_OVERFLOW;
+    return L_ERROR_UNDERFLOW;
 
   // TO-DO substitute start_i with new_length (makes calculations more
   // readeble)
@@ -299,14 +308,14 @@ l_error_t arl_move_elements_left(arl_ptr l, size_t start_i, size_t move_by) {
   //  is not required.
 
   if (is_underflow_size_t_sub(l->length, move_by))
-    return L_ERROR_OVERFLOW;
+    return L_ERROR_UNDERFLOW;
 
   new_length = l->length - move_by;
 
   // Confirms that `start_i` is smaller than `l->length`.
   // `src` assignment won't overflow.
   if (is_underflow_size_t_sub(l->length, start_i))
-    return L_ERROR_OVERFLOW;
+    return L_ERROR_UNDERFLOW;
 
   elements_to_move_amount = l->length - start_i;
 

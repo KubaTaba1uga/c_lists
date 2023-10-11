@@ -651,50 +651,99 @@ void parametrize_test_arl_insert_success(arl_ptr l, size_t i, int value) {
     TEST_ASSERT_EQUAL(arl_small_values[k - 1], *(int *)l->array[k]);
   }
 }
-/* void test_arl_pop_middle_success(void) { */
+void test_arl_pop_i_overflow(void) {
 
-/*   void *expected, *received; */
-/*   size_t len_cp; */
-/*   l_error_t err; */
-/*   int i; */
-/*   arl_ptr l = setup_small_list(); */
-/*   void *array_after_move[] = {l->array[0], l->array[1], l->array[2], */
-/*                               l->array[4], l->array[5], NULL}; */
+  void *expected, *received;
+  size_t len_cp;
+  l_error_t err;
+  int i;
+  arl_ptr l = setup_small_list();
+  void *array_after_move[] = {l->array[0], l->array[1], l->array[2],
+                              l->array[3], l->array[4], NULL};
 
-/*   len_cp = l->length; */
-/*   i = 3; */
-/*   _arl_get(l, i, &expected); */
+  len_cp = l->length;
+  i = 999;
+  _arl_get(l, len_cp - 1, &expected);
 
-/*   err = arl_pop(l, i, &received); */
+  err = arl_pop(l, i, &received);
 
-/*   TEST_ASSERT_EQUAL_ERROR(L_SUCCESS, err); */
-/*   TEST_ASSERT_EQUAL_PTR(expected, received); */
-/*   TEST_ASSERT_EQUAL(len_cp - 1, l->length); */
-/*   TEST_ASSERT_EQUAL_PTR_ARRAY(array_after_move, l->array, arl_small_length);
- */
-/* } */
+  TEST_ASSERT_EQUAL_ERROR(L_SUCCESS, err);
+  TEST_ASSERT_EQUAL_PTR(expected, received);
+  TEST_ASSERT_EQUAL(len_cp - 1, l->length);
+  TEST_ASSERT_EQUAL_PTR_ARRAY(array_after_move, l->array, arl_small_length);
+}
+void test_arl_pop_empty_list(void) {
 
-/* void test_arl_pop_last_success(void) { */
+  void *received;
+  l_error_t err;
+  arl_ptr l = setup_empty_list();
 
-/*   void *expected, *received; */
-/*   size_t len_cp; */
-/*   l_error_t err; */
-/*   size_t i; */
-/*   arl_ptr l = setup_small_list(); */
-/*   void *array_after_move[] = {l->array[0], l->array[1], l->array[2], */
-/*                               l->array[3], l->array[4], NULL}; */
+  err = arl_pop(l, 0, &received);
 
-/*   len_cp = l->length; */
-/*   i = l->length - 1; */
-/*   _arl_get(l, i, &expected); */
+  TEST_ASSERT_EQUAL_ERROR(L_ERROR_POP_EMPTY_LIST, err);
+}
 
-/*   printf("LAST: i=%lu\n", i); */
-/*   err = arl_pop(l, i, &received); */
+void test_arl_pop_first_success(void) {
 
-/*   TEST_ASSERT_EQUAL_ERROR(L_SUCCESS, err); */
-/*   TEST_ASSERT_EQUAL_PTR(expected, received); */
-/*   TEST_ASSERT_EQUAL(len_cp - 1, l->length); */
-/*   /\* TEST_ASSERT_EQUAL_PTR_ARRAY(array_after_move, l->array,
- * arl_small_length); */
-/*    *\/ */
-/* } */
+  void *expected, *received;
+  size_t len_cp;
+  l_error_t err;
+  int i;
+  arl_ptr l = setup_small_list();
+  void *array_after_move[] = {l->array[1], l->array[2], l->array[3],
+                              l->array[4], l->array[5], NULL};
+
+  len_cp = l->length;
+  i = 0;
+  _arl_get(l, i, &expected);
+
+  err = arl_pop(l, i, &received);
+
+  TEST_ASSERT_EQUAL_ERROR(L_SUCCESS, err);
+  TEST_ASSERT_EQUAL_PTR(expected, received);
+  TEST_ASSERT_EQUAL(len_cp - 1, l->length);
+  TEST_ASSERT_EQUAL_PTR_ARRAY(array_after_move, l->array, arl_small_length);
+}
+void test_arl_pop_middle_success(void) {
+
+  void *expected, *received;
+  size_t len_cp;
+  l_error_t err;
+  int i;
+  arl_ptr l = setup_small_list();
+  void *array_after_move[] = {l->array[0], l->array[1], l->array[2],
+                              l->array[4], l->array[5], NULL};
+
+  len_cp = l->length;
+  i = 3;
+  _arl_get(l, i, &expected);
+
+  err = arl_pop(l, i, &received);
+
+  TEST_ASSERT_EQUAL_ERROR(L_SUCCESS, err);
+  TEST_ASSERT_EQUAL_PTR(expected, received);
+  TEST_ASSERT_EQUAL(len_cp - 1, l->length);
+  TEST_ASSERT_EQUAL_PTR_ARRAY(array_after_move, l->array, arl_small_length);
+}
+
+void test_arl_pop_last_success(void) {
+
+  void *expected, *received;
+  size_t len_cp;
+  l_error_t err;
+  size_t i;
+  arl_ptr l = setup_small_list();
+  void *array_after_move[] = {l->array[0], l->array[1], l->array[2],
+                              l->array[3], l->array[4], NULL};
+
+  len_cp = l->length;
+  i = l->length - 1;
+  _arl_get(l, i, &expected);
+
+  err = arl_pop(l, i, &received);
+
+  TEST_ASSERT_EQUAL_ERROR(L_SUCCESS, err);
+  TEST_ASSERT_EQUAL_PTR(expected, received);
+  TEST_ASSERT_EQUAL(len_cp - 1, l->length);
+  TEST_ASSERT_EQUAL_PTR_ARRAY(array_after_move, l->array, arl_small_length);
+}
