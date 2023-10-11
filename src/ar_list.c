@@ -315,7 +315,7 @@ l_error_t arl_move_elements_left(arl_ptr l, size_t start_i, size_t move_by) {
     dst = src - move_by;
   } else {
     // Allow for deleting last elements.
-    // TO-DO find cleaner solution
+    // TO-DO too hackish, find cleaner solution
     start_i = l->length;
     src = dst = l->array + start_i - move_by;
     elements_to_move_amount = move_by;
