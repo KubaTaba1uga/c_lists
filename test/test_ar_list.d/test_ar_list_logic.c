@@ -404,6 +404,17 @@ void test_arl_move_elements_left_delete_last_indexes_1(void) {
   TEST_ASSERT_EQUAL_ERROR(L_SUCCESS, err);
   TEST_ASSERT_EQUAL_PTR_ARRAY(expected, l->array, arl_small_length);
 }
+void test_arl_move_elements_left_delete_all(void) {
+  arl_ptr l = setup_small_list();
+  void *expected[] = {NULL, NULL, NULL, NULL, NULL, NULL};
+  l_error_t err;
+
+  // Reaching over the array's boundary, is handled.
+  err = arl_move_elements_left(l, 6, 999);
+
+  TEST_ASSERT_EQUAL_ERROR(L_SUCCESS, err);
+  TEST_ASSERT_EQUAL_PTR_ARRAY(expected, l->array, arl_small_length);
+}
 
 /* void test_arl_move_elements_left_multi_move_all(void) { */
 /*   arl_ptr l = setup_small_list(); */
