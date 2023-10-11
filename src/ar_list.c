@@ -3,14 +3,14 @@
 
 /* Array list require allocating one continous chunk of memory. As all
  * allocating functions take required memory size in size_t type, it is safe to
- * assume that SIZE_MAX is maximum allocable memory size for one object.
+ * assume that SIZE_MAX is maximum allocable memory size for a list's instance.
  * To not shrink list accadidentially at some point ARL_MAX_CAPACITY
  * is defined as upper boundary. If You require bigger capacity check out other
  * lists.
  */
 
-// TO-DO remove - remove one item (index must be specified, do not shrink)
-// TO-DO clear - remove all items from a list (do not shrink)
+// TO-DO remove - add callback to remove
+// TO-DO clear - remove all items from a list (do not shrink), add callback
 // TO-DO insert_multi - same as insert but array of elements (instead of single
 // element)
 // TO-DO extend - join two lists into one
@@ -295,12 +295,6 @@ l_error_t arl_move_elements_left(arl_ptr l, size_t start_i, size_t move_by) {
    *   `pop elements starting from index 5 till index 8`.
    */
 
-  // TO-DO pop list should return pointers removed from array.
-  //   but do not add this feature here. Popping function, can
-  //   easilly get all delements elements, before moving left.
-  //   DRY and KISS like this :P
-  // TO-DO design list slicing based on move arl move elements left.
-
   size_t new_length, elements_to_move_amount;
   void **src, **dst;
 
@@ -330,7 +324,7 @@ l_error_t arl_move_elements_left(arl_ptr l, size_t start_i, size_t move_by) {
     src = l->array + start_i;
     dst = src - move_by;
   } else {
-    // Allow for deleting last elements.
+    // Allow deleting last elements.
     // TO-DO too hackish, find cleaner solution
     start_i = l->length;
     src = dst = l->array + start_i - move_by;
