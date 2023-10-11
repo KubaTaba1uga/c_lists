@@ -241,7 +241,7 @@ void test_arl_move_elements_right_elements_to_move_amount_underflow_failure(
 
   err = arl_move_elements_right(l, l->length + 1, 0);
 
-  TEST_ASSERT_EQUAL_ERROR(L_ERROR_OVERFLOW, err);
+  TEST_ASSERT_EQUAL_ERROR(L_ERROR_UNDERFLOW, err);
 }
 
 void test_arl_move_elements_right_no_elements_to_move(void) {
@@ -302,7 +302,7 @@ void test_arl_move_elements_left_new_length_underflow_failure(void) {
 
   err = arl_move_elements_left(l, l->length + 1, l->length + 1);
 
-  TEST_ASSERT_EQUAL_ERROR(L_ERROR_OVERFLOW, err);
+  TEST_ASSERT_EQUAL_ERROR(L_ERROR_UNDERFLOW, err);
 }
 void test_arl_move_elements_left_elements_to_move_underflow_failure(void) {
   arl_ptr l = setup_small_list();
@@ -310,7 +310,7 @@ void test_arl_move_elements_left_elements_to_move_underflow_failure(void) {
 
   err = arl_move_elements_left(l, l->length + 1, 0);
 
-  TEST_ASSERT_EQUAL_ERROR(L_ERROR_OVERFLOW, err);
+  TEST_ASSERT_EQUAL_ERROR(L_ERROR_UNDERFLOW, err);
 }
 
 void test_arl_move_elements_left_delete_index_0(void) {
@@ -744,6 +744,25 @@ void test_arl_pop_last_success(void) {
 
   TEST_ASSERT_EQUAL_ERROR(L_SUCCESS, err);
   TEST_ASSERT_EQUAL_PTR(expected, received);
+  TEST_ASSERT_EQUAL(len_cp - 1, l->length);
+  TEST_ASSERT_EQUAL_PTR_ARRAY(array_after_move, l->array, arl_small_length);
+}
+
+void test_arl_remove_success(void) {
+  void *received;
+  size_t len_cp;
+  l_error_t err;
+  int i;
+  arl_ptr l = setup_small_list();
+  void *array_after_move[] = {l->array[0], l->array[2], l->array[3],
+                              l->array[4], l->array[5], NULL};
+
+  len_cp = l->length;
+  i = 1;
+
+  err = arl_pop(l, i, &received);
+
+  TEST_ASSERT_EQUAL_ERROR(L_SUCCESS, err);
   TEST_ASSERT_EQUAL(len_cp - 1, l->length);
   TEST_ASSERT_EQUAL_PTR_ARRAY(array_after_move, l->array, arl_small_length);
 }

@@ -9,12 +9,12 @@
  * lists.
  */
 
-// TO-DO pop - remove and return one item (by default last, do not shrink)
 // TO-DO remove - remove one item (index must be specified, do not shrink)
 // TO-DO clear - remove all items from a list (do not shrink)
 // TO-DO insert_multi - same as insert but array of elements (instead of single
 // element)
 // TO-DO extend - join two lists into one
+// TO-DO slice - pop elements from index i till index j
 
 /*******************************************************************************
  *    IMPORTS
@@ -49,15 +49,14 @@ struct ar_list {
   void **array;
 };
 
-/* static size_t arl_count_new_capacity(size_t current_size, */
-/* size_t current_capacity); */
 static bool arl_is_i_too_big(arl_ptr l, size_t i);
 static void _arl_get(arl_ptr l, size_t i, void **p);
 static void _arl_set(arl_ptr l, size_t i, void *value);
 static l_error_t arl_grow_array_capacity(arl_ptr l);
 static l_error_t arl_move_elements_right(arl_ptr l, size_t start_i,
                                          size_t move_by);
-l_error_t arl_move_elements_left(arl_ptr l, size_t start_i, size_t move_by);
+static l_error_t arl_move_elements_left(arl_ptr l, size_t start_i,
+                                        size_t move_by);
 
 /*******************************************************************************
  *    PUBLIC API
@@ -153,10 +152,9 @@ l_error_t arl_insert(arl_ptr l, size_t i, void *value) {
 l_error_t arl_append(arl_ptr l, void *value) {
   return arl_insert(l, l->length + 1, value);
 }
-/* Pops  element from under the index. Sets
+/* Pops element from under the index. Sets
  * `value` to the popped element's value.
- *  Empty list when popped sets `value` to NULL
- *  and returns L_ERROR_POP_EMPTY_LIST.
+ *  If list empty returns L_ERROR_POP_EMPTY_LIST.
  */
 l_error_t arl_pop(arl_ptr l, size_t i, void **value) {
   const size_t offset = 1;
@@ -165,7 +163,6 @@ l_error_t arl_pop(arl_ptr l, size_t i, void **value) {
   if (arl_is_i_too_big(l, i))
     i = l->length - 1;
   if (l->length == 0) {
-    *value = NULL;
     return L_ERROR_POP_EMPTY_LIST;
   }
 
@@ -176,6 +173,16 @@ l_error_t arl_pop(arl_ptr l, size_t i, void **value) {
   *value = value_holder;
 
   return L_SUCCESS;
+}
+/* Removes element from under the index.
+ * Whatever pointer is under the i it will be
+ * deleted. Can be error prone when using
+ * with allocated memory.
+ */
+l_error_t arl_remove(arl_ptr l, size_t i) {
+  void *p;
+
+  return arl_pop(l, i, &p);
 }
 
 /*******************************************************************************
