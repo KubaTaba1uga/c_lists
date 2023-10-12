@@ -9,10 +9,6 @@
  * lists.
  */
 
-// TO-DO add callback to remove, one can easilly create version without callback
-//   if needed. Other way around would require using pop and mimicking remove
-//   logic. I like callback better, it is simpler. One do not need to know
-//   remove logic to create version without it. Just adds dummy function.
 // TO-DO clear - remove all items from a list (do not shrink)
 // TO-DO insert_multi - same as insert but array of elements (instead of single
 // element)
@@ -151,6 +147,35 @@ l_error_t arl_insert(arl_ptr l, size_t i, void *value) {
 
   return L_SUCCESS;
 }
+l_error_t arl_insert_multi(arl_ptr l, size_t i, size_t v_len,
+                           void *values[v_len]) {
+  size_t new_length, k, move_by = v_len;
+  l_error_t err;
+
+  if (arl_is_i_too_big(l, i))
+    i = l->length;
+
+  new_length = l->length + move_by;
+
+  while (new_length > l->capacity) {
+    err = arl_grow_array_capacity(l);
+    if (err)
+      return err;
+  }
+
+  err = arl_move_elements_right(l, i, move_by);
+  if (err)
+    return err;
+
+  for (k = i; k < i + v_len; k++) {
+    _arl_set(l, k, values[k - i]);
+  }
+
+  l->length = new_length;
+
+  return L_SUCCESS;
+}
+
 /* Appends one element to the list's end.
  */
 l_error_t arl_append(arl_ptr l, void *value) {
@@ -179,7 +204,8 @@ l_error_t arl_pop(arl_ptr l, size_t i, void **value) {
   return L_SUCCESS;
 }
 /* Removes element from under the index.
- * Executes callback function on removed element.
+ * Executes callback function on removed element,
+ *  only if callback is not NULL.
  */
 l_error_t arl_remove(arl_ptr l, size_t i, void (*callback)(void *)) {
   void *p;
@@ -189,7 +215,8 @@ l_error_t arl_remove(arl_ptr l, size_t i, void (*callback)(void *)) {
   if (err)
     return err;
 
-  callback(p);
+  if (callback)
+    callback(p);
 
   return L_SUCCESS;
 }
@@ -307,8 +334,8 @@ l_error_t arl_move_elements_left(arl_ptr l, size_t start_i, size_t move_by) {
   size_t new_length, elements_to_move_amount;
   void **src, **dst;
 
-  printf("start_i==%lu\n", start_i);
-  printf("move_by==%lu\n", move_by);
+  /* printf("start_i==%lu\n", start_i); */
+  /* printf("move_by==%lu\n", move_by); */
 
   // Do not allow reading before list's start.
   if (move_by > start_i)

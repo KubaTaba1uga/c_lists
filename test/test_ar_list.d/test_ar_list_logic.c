@@ -27,12 +27,15 @@ size_t list_memory_mock_size = 0, array_memory_mock_size = 0;
 void *list_memory_mock = NULL, *array_memory_mock = NULL;
 int arl_small_values[] = {0, 1, 2, 3, 4, 5};
 size_t arl_small_length = sizeof(arl_small_values) / sizeof(int);
+size_t FREE_COUNTER = 0;
 
 /*******************************************************************************
  *    SETUP, TEARDOWN
  ******************************************************************************/
 
 void setUp(void) {
+  FREE_COUNTER = 0;
+
   array_memory_mock_size = L_PTR_SIZE * 10;
 
   array_memory_mock = malloc(array_memory_mock_size);
@@ -109,7 +112,7 @@ void mock_app_realloc(arl_ptr l, size_t new_array_size) {
 
   app_realloc_ExpectAndReturn(l->array, new_array_size, new_array);
 }
-
+void dummy_free(void *value) { FREE_COUNTER = FREE_COUNTER + 1; }
 void parametrize_test_arl_get_i_too_big_failure(arl_ptr l);
 void parametrize_test_arl_set_i_too_big_failure(arl_ptr l);
 void parametrize_test_arl_insert_success(arl_ptr l, size_t i, int value);
@@ -748,8 +751,7 @@ void test_arl_pop_last_success(void) {
   TEST_ASSERT_EQUAL_PTR_ARRAY(array_after_move, l->array, arl_small_length);
 }
 
-void test_arl_remove_success(void) {
-  void *received;
+void test_arl_remove_success_no_callback(void) {
   size_t len_cp;
   l_error_t err;
   int i;
@@ -760,9 +762,68 @@ void test_arl_remove_success(void) {
   len_cp = l->length;
   i = 1;
 
-  err = arl_pop(l, i, &received);
+  err = arl_remove(l, i, NULL);
 
   TEST_ASSERT_EQUAL_ERROR(L_SUCCESS, err);
   TEST_ASSERT_EQUAL(len_cp - 1, l->length);
   TEST_ASSERT_EQUAL_PTR_ARRAY(array_after_move, l->array, arl_small_length);
+  TEST_ASSERT_EQUAL(0, FREE_COUNTER);
+}
+
+void test_arl_remove_success_callback(void) {
+  size_t len_cp;
+  l_error_t err;
+  int i;
+  arl_ptr l = setup_small_list();
+  void *array_after_move[] = {l->array[0], l->array[2], l->array[3],
+                              l->array[4], l->array[5], NULL};
+
+  len_cp = l->length;
+  i = 1;
+
+  err = arl_remove(l, i, dummy_free);
+
+  TEST_ASSERT_EQUAL_ERROR(L_SUCCESS, err);
+  TEST_ASSERT_EQUAL(len_cp - 1, l->length);
+  TEST_ASSERT_EQUAL_PTR_ARRAY(array_after_move, l->array, arl_small_length);
+  TEST_ASSERT_EQUAL(1, FREE_COUNTER);
+}
+void print_src_dest(void *p) {
+  if (!p)
+    printf("NULL, ");
+  else
+    printf("%i, ", *(int *)p);
+}
+
+void test_arl_insert_multi_success(void) {
+  size_t len_cp, len_to_insert;
+  l_error_t err;
+  int i;
+  arl_ptr l = setup_small_list();
+
+  void *to_insert[] = {l->array[0], l->array[2]};
+  len_to_insert = sizeof(to_insert) / sizeof(void *);
+  void *array_after_move[] = {l->array[0], l->array[1], l->array[0],
+                              l->array[2], l->array[2], l->array[3],
+                              l->array[4], l->array[5]};
+
+  len_cp = l->length;
+  i = 2;
+
+  printf("length %lu\n", l->length);
+  for (size_t k = 0; k < l->length; k++) {
+    printf("%i, ", *(int *)l->array[k]);
+  }
+  puts("");
+
+  err = arl_insert_multi(l, i, len_to_insert, to_insert);
+
+  for (size_t k = 0; k < l->length; k++) {
+    print_src_dest(l->array[k]);
+  }
+  puts("");
+  TEST_ASSERT_EQUAL_ERROR(L_SUCCESS, err);
+  TEST_ASSERT_EQUAL(len_cp + len_to_insert, l->length);
+  TEST_ASSERT_EQUAL_PTR_ARRAY(array_after_move, l->array,
+                              sizeof(array_after_move) / sizeof(void *));
 }
