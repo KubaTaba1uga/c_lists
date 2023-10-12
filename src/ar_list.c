@@ -10,8 +10,6 @@
  */
 
 // TO-DO clear - remove all items from a list (do not shrink)
-// TO-DO insert_multi - same as insert but array of elements (instead of single
-// element)
 // TO-DO extend - join two lists into one
 // TO-DO slice - get elements from index i till index j
 // TO-DO pop_slice - pop elements from index i till index j
@@ -217,6 +215,38 @@ l_error_t arl_remove(arl_ptr l, size_t i, void (*callback)(void *)) {
 
   if (callback)
     callback(p);
+
+  return L_SUCCESS;
+}
+/* l_error_t arl_pop_multi(arl_ptr l, size_t i, size_t hol_len, */
+/*                         void *holder[hol_len]) { */
+/*   const size_t offset = hol_len; */
+
+/*   if (arl_is_i_too_big(l, i)) */
+/*     i = l->length - 1; */
+/*   if (l->length == 0) { */
+/*     return L_ERROR_POP_EMPTY_LIST; */
+/*   } */
+/*   // TO-DO handle scenario where hol_len is bigger than l->length */
+
+// sLICE IS REQUIRED TO SUBSTITUTE _ARL_GET
+/*   _arl_get(l, i, &value_holder); */
+
+/*   arl_move_elements_left(l, ++i, offset); */
+
+/*   *value = value_holder; */
+
+/*   return L_SUCCESS; */
+/* } */
+
+// TO-DO add errors handling
+l_error_t arl_slice(arl_ptr l, size_t i, size_t slice_len,
+                    void *slice[slice_len]) {
+  size_t k;
+
+  for (k = 0; k < slice_len; k++) {
+    _arl_get(l, k + i, &slice[k]);
+  }
 
   return L_SUCCESS;
 }
