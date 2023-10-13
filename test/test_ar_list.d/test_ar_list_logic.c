@@ -817,6 +817,36 @@ void test_arl_insert_multi_success(void) {
   TEST_ASSERT_EQUAL_PTR_ARRAY(array_after_move, l->array,
                               sizeof(array_after_move) / sizeof(void *));
 }
+void test_arl_slice_start_i_too_big(void) {
+  size_t slice_len;
+  l_error_t err;
+  int i;
+  void *p;
+  arl_ptr l = setup_small_list();
+
+  slice_len = 0;
+
+  i = l->length;
+
+  err = arl_slice(l, i, slice_len, &p);
+
+  TEST_ASSERT_EQUAL_ERROR(L_ERROR_INDEX_TOO_BIG, err);
+}
+void test_arl_slice_too_much_elements_to_move(void) {
+  size_t slice_len;
+  l_error_t err;
+  int i;
+  void *p;
+  arl_ptr l = setup_small_list();
+
+  slice_len = l->length;
+
+  i = 0;
+
+  err = arl_slice(l, i, slice_len, &p);
+
+  TEST_ASSERT_EQUAL_ERROR(L_ERROR_INVALID_ARGS, err);
+}
 void test_arl_slice_success(void) {
   size_t slice_len;
   l_error_t err;

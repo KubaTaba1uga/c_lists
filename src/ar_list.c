@@ -239,13 +239,25 @@ l_error_t arl_remove(arl_ptr l, size_t i, void (*callback)(void *)) {
 /*   return L_SUCCESS; */
 /* } */
 
-// TO-DO add errors handling
-l_error_t arl_slice(arl_ptr l, size_t i, size_t slice_len,
-                    void *slice[slice_len]) {
-  size_t k;
+/* Fills slice with elements from index i till index
+ *  i+elemets_amount. Start i and elements amount have
+ *  to respect list's length, otherwise error is raised.
+ *  Slice's length has to be bigger than elements amount.
+ *  Otherwise behaviour is undefined.
+ */
+l_error_t arl_slice(arl_ptr l, size_t start_i, size_t elements_amount,
+                    void *slice[]) {
+  size_t k, last_elem_i;
 
-  for (k = 0; k < slice_len; k++) {
-    _arl_get(l, k + i, &slice[k]);
+  if (arl_is_i_too_big(l, start_i))
+    return L_ERROR_INDEX_TOO_BIG;
+
+  last_elem_i = start_i + elements_amount;
+  if (arl_is_i_too_big(l, last_elem_i))
+    return L_ERROR_INVALID_ARGS;
+
+  for (k = 0; k < elements_amount; k++) {
+    _arl_get(l, k + start_i, &slice[k]);
   }
 
   return L_SUCCESS;
