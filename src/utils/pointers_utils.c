@@ -25,7 +25,7 @@ void print_src_dest(void *p) {
  *  If arrays do not overlap than it doesn't matter.
  */
 void move_pointers_array_rstart(void *dest[], void *src[], size_t n) {
-  printf("START: n=%lu\n", n);
+  /* printf("START: n=%lu\n", n); */
   while (n-- > 0) {
     /* printf("Before: dest[%lu]=", n); */
     /* print_src_dest(dest[n]); */
@@ -52,23 +52,23 @@ void move_pointers_array_rstart(void *dest[], void *src[], size_t n) {
 void move_pointers_array_lstart(void *dest[], void *src[], size_t n) {
   size_t i;
 
-  /* printf("START: n=%lu\n", n); */
+  printf("START: n=%lu\n", n);
   for (i = 0; i < n; i++) {
 
-    /* printf("Before: dest[%lu]=", i); */
-    /* print_src_dest(dest[i]); */
-    /* printf(" src[%lu]=", i); */
-    /* print_src_dest(src[i]); */
-    /* puts(""); */
+    printf("Before: dest[%lu]=", i);
+    print_src_dest(dest[i]);
+    printf(" src[%lu]=", i);
+    print_src_dest(src[i]);
+    puts("");
 
     dest[i] = src[i];
     src[i] = NULL;
 
-    /* printf("After: dest[%lu]=", i); */
-    /* print_src_dest(dest[i]); */
-    /* printf(" src[%lu]=", i); */
-    /* print_src_dest(src[i]); */
-    /* puts(""); */
+    printf("After: dest[%lu]=", i);
+    print_src_dest(dest[i]);
+    printf(" src[%lu]=", i);
+    print_src_dest(src[i]);
+    puts("");
     /* printf("After: dest[%lu]=%i, src[%lu]=%i\n", i, *(int *)dest[i], i, */
     /*        *(int *)src[i]); */
     /* puts(""); */

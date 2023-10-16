@@ -15,5 +15,6 @@
  ******************************************************************************/
 void *app_malloc(size_t size);
 void *app_realloc(void *p, size_t size);
+void app_free(void *p) { free(p); }
 
 #endif

@@ -1,4 +1,4 @@
-/* Array list implementation, as described here: */
+/* Array list implementation, as des\cribed here: */
 /*   https://en.wikipedia.org/wiki/Dynamic_array   */
 
 /* Array list require allocating one continous chunk of memory. As all
@@ -7,12 +7,21 @@
  * To not shrink list accadidentially at some point ARL_MAX_CAPACITY
  * is defined as upper boundary. If You require bigger capacity check out other
  * lists.
+ * List's array is not being shrinked, even on pop or clear. As it may be
+ * usefull for someone, it is not essential to list's logic (in opposition
+ * to growing). I would rather do some versions of current functions which
+ * would shrink internall array, then edit current ones.
  */
 
-// TO-DO clear - remove all items from a list (do not shrink)
 // TO-DO extend - join two lists into one
-// TO-DO slice - get elements from index i till index j
-// TO-DO pop_slice - pop elements from index i till index j
+// TO-DO shrink array:
+// 1. pop
+// 2. remove
+// 3. pop multi
+// 4. clear - get as arg new capacity, shrink to new capacity.
+//     ?? do we really need it? I think this is duplication of
+//     destroy currtent list, create a new one. ??
+// TO-DO test e2e
 
 /*******************************************************************************
  *    IMPORTS
@@ -60,7 +69,7 @@ static l_error_t arl_move_elements_left(arl_ptr l, size_t start_i,
  *    PUBLIC API
  ******************************************************************************/
 
-void arl_length(arl_ptr l, size_t *p) { *p = l->length; }
+size_t arl_length(arl_ptr l) { return l->length; }
 
 /* Returns L_SUCCESS on success. */
 /* Behaviour is undefined if `l` is not a valid pointer. */
@@ -89,6 +98,10 @@ CLEANUP_L_LOCAL_OOM:
   free(l_array);
   return L_ERROR_OUT_OF_MEMORY;
 }
+void arl_destroy(arl_ptr l) {
+  app_free(l->array);
+  app_free(l);
+}
 
 /* Gets pointer to the value under the index.
  * `p` is placeholder for the value's pointer.
@@ -100,6 +113,30 @@ l_error_t arl_get(arl_ptr l, size_t i, void **p) {
     return L_ERROR_INDEX_TOO_BIG;
 
   _arl_get(l, i, p);
+
+  return L_SUCCESS;
+}
+
+/* Fills slice with elements from index i till index
+ *  i+elemets_amount. Start i and elements amount have
+ *  to respect list's length, otherwise error is raised.
+ *  Slice's length has to be bigger than elements amount.
+ *  Otherwise behaviour is undefined.
+ */
+l_error_t arl_slice(arl_ptr l, size_t start_i, size_t elements_amount,
+                    void *slice[]) {
+  size_t k, last_elem_i;
+
+  if (arl_is_i_too_big(l, start_i))
+    return L_ERROR_INDEX_TOO_BIG;
+
+  last_elem_i = start_i + elements_amount;
+  if (arl_is_i_too_big(l, last_elem_i))
+    return L_ERROR_INVALID_ARGS;
+
+  for (k = 0; k < elements_amount; k++) {
+    _arl_get(l, k + start_i, &slice[k]);
+  }
 
   return L_SUCCESS;
 }
@@ -182,10 +219,13 @@ l_error_t arl_append(arl_ptr l, void *value) {
 /* Pops element from under the index. Sets
  * `value` to the popped element's value.
  *  If list empty returns L_ERROR_POP_EMPTY_LIST.
+ * If i bigger tan list's lenth, substitues it with
+ *  maximum poppable i.
  */
 l_error_t arl_pop(arl_ptr l, size_t i, void **value) {
   const size_t offset = 1;
   void *value_holder;
+  l_error_t err;
 
   if (arl_is_i_too_big(l, i))
     i = l->length - 1;
@@ -195,9 +235,32 @@ l_error_t arl_pop(arl_ptr l, size_t i, void **value) {
 
   _arl_get(l, i, &value_holder);
 
-  arl_move_elements_left(l, ++i, offset);
+  err = arl_move_elements_left(l, ++i, offset);
+  if (err)
+    return err;
 
   *value = value_holder;
+
+  return L_SUCCESS;
+}
+/* Fills holder with elements starting from index i till index
+ *  i+elements aomunt. Holder's length has to be bigger than
+ *  elements amount. Otherwise behaviour is undefined.
+ */
+l_error_t arl_pop_multi(arl_ptr l, size_t i, size_t elements_amount,
+                        void *holder[]) {
+  l_error_t err;
+
+  err = arl_slice(l, i, elements_amount, holder);
+  if (err)
+    return err;
+
+  if (is_overflow_size_t_add(i, elements_amount))
+    return L_ERROR_OVERFLOW;
+
+  err = arl_move_elements_left(l, i + elements_amount, elements_amount);
+  if (err)
+    return err;
 
   return L_SUCCESS;
 }
@@ -218,47 +281,30 @@ l_error_t arl_remove(arl_ptr l, size_t i, void (*callback)(void *)) {
 
   return L_SUCCESS;
 }
-/* l_error_t arl_pop_multi(arl_ptr l, size_t i, size_t hol_len, */
-/*                         void *holder[hol_len]) { */
-/*   const size_t offset = hol_len; */
 
-/*   if (arl_is_i_too_big(l, i)) */
-/*     i = l->length - 1; */
-/*   if (l->length == 0) { */
-/*     return L_ERROR_POP_EMPTY_LIST; */
-/*   } */
-/*   // TO-DO handle scenario where hol_len is bigger than l->length */
-
-// sLICE IS REQUIRED TO SUBSTITUTE _ARL_GET
-/*   _arl_get(l, i, &value_holder); */
-
-/*   arl_move_elements_left(l, ++i, offset); */
-
-/*   *value = value_holder; */
-
-/*   return L_SUCCESS; */
-/* } */
-
-/* Fills slice with elements from index i till index
- *  i+elemets_amount. Start i and elements amount have
- *  to respect list's length, otherwise error is raised.
- *  Slice's length has to be bigger than elements amount.
- *  Otherwise behaviour is undefined.
+/* Removes all elements from the list.
+ * Executes callback function on each removed element,
+ *  only if callback is not NULL.
  */
-l_error_t arl_slice(arl_ptr l, size_t start_i, size_t elements_amount,
-                    void *slice[]) {
-  size_t k, last_elem_i;
+l_error_t arl_clear(arl_ptr l, void (*callback)(void *)) {
+  size_t i;
+  void *p;
+  l_error_t err;
 
-  if (arl_is_i_too_big(l, start_i))
-    return L_ERROR_INDEX_TOO_BIG;
-
-  last_elem_i = start_i + elements_amount;
-  if (arl_is_i_too_big(l, last_elem_i))
-    return L_ERROR_INVALID_ARGS;
-
-  for (k = 0; k < elements_amount; k++) {
-    _arl_get(l, k + start_i, &slice[k]);
+  // POP MULTI is not used here avoid extra loop iteration and
+  // some memory. Slicing is unnecessary from clear's point of view.
+  if (callback) {
+    for (i = 0; i < l->length; i++) {
+      _arl_get(l, i, &p);
+      callback(p);
+    }
   }
+
+  err = arl_move_elements_left(l, l->length, l->length);
+  if (err)
+    return err;
+
+  l->length = 0;
 
   return L_SUCCESS;
 }
@@ -270,13 +316,8 @@ l_error_t arl_slice(arl_ptr l, size_t start_i, size_t elements_amount,
 void _arl_get(arl_ptr l, size_t i, void **p) { *p = l->array[i]; }
 void _arl_set(arl_ptr l, size_t i, void *value) { l->array[i] = value; }
 
-// SHRINK ONLY IN POP
-// IF SIZE < CAPACITY / 3
-//     CAPACITY = CAPACITY / 2
-
 /* Counts list's new capacity.
- * The behaviour is undefined if new capacity is not a valid pointer.
- * Prevents overflow by assigning L_MAX_SIZE_CAPACITY, whenever overflow
+ * Prevents overflow by assigning ARL_CAPACITY_MAX, whenever overflow
  *   would occur. At some point list will be prevented from growing.
  */
 size_t arl_count_new_capacity(size_t current_length, size_t current_capacity) {
@@ -327,8 +368,9 @@ static l_error_t arl_grow_array_capacity(arl_ptr l) {
  */
 l_error_t arl_move_elements_right(arl_ptr l, size_t start_i, size_t move_by) {
 
-  // TO-DO maybe there is a bug in start_i, if we want to start at index 0 do we
-  // have to pass 1? or do we have to pass 0? indexes' starts should be inline.
+  // TO-DO maybe there is a bug in start_i, if we want to start at index 0 do
+  // we have to pass 1? or do we have to pass 0? indexes' starts should be
+  // inline.
   size_t old_length, new_length, elements_to_move_amount;
 
   // Idea is to detect all failures upfront so recovery from half moved array
