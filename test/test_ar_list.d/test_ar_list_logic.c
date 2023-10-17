@@ -895,7 +895,6 @@ void test_arl_slice_success(void) {
                               sizeof(expected) / sizeof(void *));
 }
 
-// TO-DO paramatrize pop multi success
 void test_arl_pop_multi_success_0(void) {
   size_t slice_len;
   l_error_t err;

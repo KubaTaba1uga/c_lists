@@ -1,4 +1,4 @@
-/* Array list implementation, as des\cribed here: */
+/* Array list implementation, as described here: */
 /*   https://en.wikipedia.org/wiki/Dynamic_array   */
 
 /* Array list require allocating one continous chunk of memory. As all
@@ -10,7 +10,7 @@
  * List's array is not being shrinked, even on pop or clear. As it may be
  * usefull for someone, it is not essential to list's logic (in opposition
  * to growing). I would rather do some versions of current functions which
- * would shrink internall array, then edit current ones.
+ * would shrink internall array, than edit current ones. Maybe even new list?
  */
 
 // TO-DO extend - join two lists into one
@@ -21,7 +21,6 @@
 // 4. clear - get as arg new capacity, shrink to new capacity.
 //     ?? do we really need it? I think this is duplication of
 //     destroy currtent list, create a new one. ??
-// TO-DO test e2e
 
 /*******************************************************************************
  *    IMPORTS
@@ -368,31 +367,23 @@ static l_error_t arl_grow_array_capacity(arl_ptr l) {
  */
 l_error_t arl_move_elements_right(arl_ptr l, size_t start_i, size_t move_by) {
 
-  // TO-DO maybe there is a bug in start_i, if we want to start at index 0 do
-  // we have to pass 1? or do we have to pass 0? indexes' starts should be
-  // inline.
-  size_t old_length, new_length, elements_to_move_amount;
+  size_t new_length, elements_to_move_amount;
 
   // Idea is to detect all failures upfront so recovery from half moved array
   //  is not required.
   if (is_overflow_size_t_add(l->length, move_by))
     return L_ERROR_OVERFLOW;
 
-  old_length = l->length, new_length = l->length + move_by;
+  new_length = l->length + move_by;
 
   if (new_length > (l->capacity))
     return L_ERROR_INVALID_ARGS;
 
-  if (is_underflow_size_t_sub(old_length, start_i))
+  if (is_underflow_size_t_sub(l->length, start_i))
     return L_ERROR_UNDERFLOW;
 
-  // TO-DO substitute start_i with new_length (makes calculations more
-  // readeble)
-  elements_to_move_amount = old_length - start_i;
+  elements_to_move_amount = l->length - start_i;
 
-  // TO-DO this check can be unnecessary? verify
-  // pop always substracts, insert always adds, so is there really scenario
-  // where no elements are moved?
   if (elements_to_move_amount == 0)
     return L_SUCCESS;
 
@@ -413,13 +404,12 @@ l_error_t arl_move_elements_left(arl_ptr l, size_t start_i, size_t move_by) {
   /* `move_by` tells how many places we should shift.
    *  Specially usefull when popping slice of array:
    *   `pop elements starting from index 5 till index 8`.
+   *  If start_i is bigger or equal to l->length, assumes
+   *   end of the list.
    */
 
   size_t new_length, elements_to_move_amount;
   void **src, **dst;
-
-  /* printf("start_i==%lu\n", start_i); */
-  /* printf("move_by==%lu\n", move_by); */
 
   // Do not allow reading before list's start.
   if (move_by > start_i)
@@ -433,8 +423,6 @@ l_error_t arl_move_elements_left(arl_ptr l, size_t start_i, size_t move_by) {
 
   new_length = l->length - move_by;
 
-  // Confirms that `start_i` is smaller than `l->length`.
-  // `src` assignment won't overflow.
   if (is_underflow_size_t_sub(l->length, start_i))
     return L_ERROR_UNDERFLOW;
 
@@ -444,7 +432,7 @@ l_error_t arl_move_elements_left(arl_ptr l, size_t start_i, size_t move_by) {
     src = l->array + start_i;
     dst = src - move_by;
   } else {
-    // Allow deleting last elements.
+    // Allow deleting last element.
     // TO-DO too hackish, find cleaner solution
     start_i = l->length;
     src = dst = l->array + start_i - move_by;
