@@ -1,5 +1,14 @@
+/*******************************************************************************
+ *    IMPORTS
+ ******************************************************************************/
+// C standard library
 #include <stddef.h>
 #include <stdio.h>
+
+/*******************************************************************************
+ *    PUBLIC API
+ ******************************************************************************/
+
 /* Move pointers from `src` to `dest`. N is number of elements to move.
  *  Moving starts from the end, allowing specific arrays overlapping.
  *  When dest is after source behaviour is well defined. Otherwise if it's not.
