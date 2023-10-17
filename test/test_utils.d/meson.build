@@ -30,10 +30,12 @@ test(test_overflow_name, test_overflow_exe, suite: 'test_utils')
 ################################################
 test_pointers_utils_file = 'test_pointers_utils.c'
 test_pointers_utils_name = 'test_pointers_utils'
+
 test_pointers_utils_src = files([
   test_pointers_utils_file,
   utils / 'pointers_utils.h', utils / 'pointers_utils.c',
 ])
+
 test_pointers_utils_exe = executable(test_pointers_utils_name,
   sources: [
    test_pointers_utils_src,
