@@ -3,3 +3,4 @@ sources = files(
 )
 
 subdir('utils')
+subdir('interfaces')
