@@ -1,8 +1,11 @@
 /*******************************************************************************
  *    IMPORTS
  ******************************************************************************/
-#include "l_error.h"
+// C standard library
 #include <stddef.h>
+
+// App
+#include "l_error.h"
 
 /*******************************************************************************
  *    PRIVATE DATA
@@ -40,10 +43,12 @@ static const size_t L_ERROR_STRINGS_LEN =
 /*******************************************************************************
  *    PUBLIC API
  ******************************************************************************/
-// TO-DO
-// return l_error_t
+
 const char *l_strerror(l_error_t error) {
   // Return string on success, NULL on failure.
+  // This function is only exception from `always
+  //  return l_error_t` design decision.
+  // Idea is to mimic org strerror.
 
   if ( // Upper bound
       (error >= L_ERROR_LEN) || (error >= L_ERROR_STRINGS_LEN) ||

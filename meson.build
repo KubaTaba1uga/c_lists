@@ -7,14 +7,14 @@ project('c_lists', 'c',
          version: '0.0.1',
 	 meson_version: '>=1.0.1',
 	 default_options: [
-            'werror=false',
+            #'werror=false',
             'c_std=c11'
          ]
 )
 
 subdir('src')
 
-#c_lists = shared_library('c_lists', sources)
+c_lists = shared_library('c_lists', sources)
 
 # ******************************************************************************
 # *    Tests

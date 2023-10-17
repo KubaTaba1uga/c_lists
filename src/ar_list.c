@@ -153,6 +153,7 @@ l_error_t arl_set(arl_ptr l, size_t i, void *value) {
 
   return L_SUCCESS;
 }
+
 /* Insert one element under the index.
  *  If index bigger than list's length, appends the value.
  */
@@ -181,6 +182,12 @@ l_error_t arl_insert(arl_ptr l, size_t i, void *value) {
 
   return L_SUCCESS;
 }
+
+/* Insert multiple elements. Better optimized for multiple
+ *  inserts than insert. Moving elements is done only once.
+ *  i has to be smaller than l->length.
+ *  values should hold valid pointers. v_len is values' length.
+ */
 l_error_t arl_insert_multi(arl_ptr l, size_t i, size_t v_len,
                            void *values[v_len]) {
   size_t new_length, k, move_by = v_len;
@@ -215,6 +222,7 @@ l_error_t arl_insert_multi(arl_ptr l, size_t i, size_t v_len,
 l_error_t arl_append(arl_ptr l, void *value) {
   return arl_insert(l, l->length + 1, value);
 }
+
 /* Pops element from under the index. Sets
  * `value` to the popped element's value.
  *  If list empty returns L_ERROR_POP_EMPTY_LIST.
@@ -242,9 +250,12 @@ l_error_t arl_pop(arl_ptr l, size_t i, void **value) {
 
   return L_SUCCESS;
 }
+
 /* Fills holder with elements starting from index i till index
  *  i+elements aomunt. Holder's length has to be bigger than
  *  elements amount. Otherwise behaviour is undefined.
+ *  Better optimized for multiple pops than pop. Elements are
+ *  moved only once.
  */
 l_error_t arl_pop_multi(arl_ptr l, size_t i, size_t elements_amount,
                         void *holder[]) {
@@ -263,6 +274,7 @@ l_error_t arl_pop_multi(arl_ptr l, size_t i, size_t elements_amount,
 
   return L_SUCCESS;
 }
+
 /* Removes element from under the index.
  * Executes callback function on removed element,
  *  only if callback is not NULL.
@@ -290,7 +302,7 @@ l_error_t arl_clear(arl_ptr l, void (*callback)(void *)) {
   void *p;
   l_error_t err;
 
-  // POP MULTI is not used here avoid extra loop iteration and
+  // POP MULTI is not used here to avoid extra loop iteration and
   // some memory. Slicing is unnecessary from clear's point of view.
   if (callback) {
     for (i = 0; i < l->length; i++) {
