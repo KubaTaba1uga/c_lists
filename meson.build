@@ -3,18 +3,18 @@
 # ******************************************************************************
 # *    App
 # ******************************************************************************
-project('c_project_template', 'c',
+project('c_lists', 'c',
          version: '0.0.1',
 	 meson_version: '>=1.0.1',
 	 default_options: [
-            'werror=true',
+            #'werror=false',
             'c_std=c11'
          ]
 )
 
 subdir('src')
 
-main = executable('main', sources)
+c_lists = shared_library('c_lists', sources)
 
 # ******************************************************************************
 # *    Tests

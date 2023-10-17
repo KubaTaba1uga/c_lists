@@ -19,6 +19,6 @@ cmock_gen_mock = generator(
    arguments: ['@INPUT@', '@BUILD_DIR@'],
 )
 
-subdir('test_gardener.d')
-subdir('test_cmock.d')
-subdir('test_main.d')
+subdir('test_ar_list.d')
+subdir('test_utils.d')
+subdir('test_l_error.d')

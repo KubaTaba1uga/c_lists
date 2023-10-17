@@ -1,16 +1,12 @@
 name: Unit Tests
 run-name: ${{ github.actor }} is testing the app for ${{ github.ref }}
 on:
-  push:
-    branches:
-      - "main"
   pull_request:
-    branches:
-      - "main"
+    branches: '**'
 env:
   BUILD_DIR: build
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     steps:
       - name: Copy Project

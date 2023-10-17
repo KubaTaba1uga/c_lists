@@ -1,19 +1,16 @@
-#ifndef _std_lib_utils_h
-#define _std_lib_utils_h
+#ifndef _pointers_utils_h
+#define _pointers_utils_h
 
 /*******************************************************************************
- *    INCLUDED FILES
+ *    IMPORTS
  ******************************************************************************/
-// Standard library
+// C Standard library
 #include <stddef.h>
-#include <stdlib.h>
-#include <time.h>
 
 /*******************************************************************************
  *    PUBLIC API
  ******************************************************************************/
-unsigned long get_current_time(void);
-void *app_malloc(size_t size);
-int app_exit(int exit_code);
+void move_pointers_array_rstart(void *dest[], void *src[], size_t n);
 
+void move_pointers_array_lstart(void *dest[], void *src[], size_t n);
 #endif
