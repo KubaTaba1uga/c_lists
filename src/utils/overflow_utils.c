@@ -13,6 +13,7 @@
 #define is_overflow_multi(a, b, max) (a != 0) && (b > max / a)
 #define is_overflow_add(a, b, max) (a > max - b)
 #define is_overflow_sub(a, b) (a < b)
+
 /*******************************************************************************
  *    PUBLIC API
  ******************************************************************************/
