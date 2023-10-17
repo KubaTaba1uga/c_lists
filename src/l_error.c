@@ -32,7 +32,7 @@ static const char *const L_ERROR_STRINGS[] = {
     // 6
     "Array's maximum capacity reached",
 
-    // 6
+    // 7
     "Popping empty list is disallowed",
 
 };
