@@ -2,11 +2,10 @@ name: Unit Tests
 run-name: ${{ github.actor }} is testing the app for ${{ github.ref }}
 on:
   push:
-    branches:
-      - "main"
+    # only trigger on branches, not on tags
+    branches: '**'
   pull_request:
-    branches:
-      - "main"
+    branches: '**'
 env:
   BUILD_DIR: build
 jobs:
