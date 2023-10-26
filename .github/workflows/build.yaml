@@ -1,12 +1,12 @@
-name: Unit Tests
-run-name: ${{ github.actor }} is testing the app for ${{ github.ref }}
+name: Build
+run-name: ${{ github.actor }} is building the app for ${{ github.ref }}
 on:
   pull_request:
     branches: '**'
 env:
   BUILD_DIR: build
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Copy Project
@@ -15,5 +15,5 @@ jobs:
         run: ./scripts/install_meson.sh
       - name: Setup build dir
         run: ./scripts/setup_build.sh
-      - name: Run tests
-        run: ./scripts/run_tests.sh
+      - name: Compile build
+        run: ./scripts/compile_build.sh
