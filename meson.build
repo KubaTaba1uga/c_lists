@@ -12,7 +12,9 @@ project('c_lists', 'c',
 
 subdir('src')
 
-c_lists = library('c_lists', sources)
+c_lists_lib = library('c_lists', sources, include_directories: c_lists_dir)
+
+c_lists_dep = declare_dependency(link_with: c_lists_lib, include_directories: c_lists_dir)
 
 # ******************************************************************************
 # *    Tests
