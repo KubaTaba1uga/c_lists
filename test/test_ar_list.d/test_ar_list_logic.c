@@ -19,9 +19,9 @@
 #define local_malloc malloc
 #define local_free free
 #define local_realloc realloc
-#undef malloc
-#undef realloc
-#undef free
+/* #undef malloc */
+/* #undef realloc */
+/* #undef free */
 #include "ar_list.c"
 #undef malloc
 #undef realloc
@@ -509,6 +509,8 @@ void test_arl_create_memory_failure_list(void) {
 
   app_malloc_ExpectAndReturn(array_memory_mock_size, array_memory_mock);
   app_malloc_ExpectAndReturn(list_memory_mock_size, NULL);
+  app_free_Expect(array_memory_mock);
+
   array_memory_mock = NULL;
 
   err = arl_create(&l, 10);
