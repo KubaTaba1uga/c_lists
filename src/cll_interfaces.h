@@ -2,7 +2,7 @@
 #define _interfaces_src_protector_h
 
 #ifdef ENABLE_TESTS
-#include "interfaces/std_lib_interface.h"
+#include "interfaces/cll_std_lib_interface.h"
 
 // Make local copies
 #define local_malloc malloc

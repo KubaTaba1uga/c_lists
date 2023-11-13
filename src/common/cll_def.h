@@ -1,17 +1,17 @@
+#ifndef _cll_def_h
+#define _cll_def_h
+
 /*******************************************************************************
  *    IMPORTS
  ******************************************************************************/
 // C standard library
-#include <stdlib.h>
-
-// App
-#include "std_lib_interface.h"
+#include <stddef.h>
 
 /*******************************************************************************
  *    PUBLIC API
  ******************************************************************************/
-void *app_malloc(size_t size) { return malloc(size); }
+#define CLL_PTR_SIZE sizeof(void *)
+#define CLL_SIZE_T_MAX (size_t) - 1
+#define ARL_CAPACITY_MAX CLL_SIZE_T_MAX / CLL_PTR_SIZE
 
-void *app_realloc(void *p, size_t size) { return realloc(p, size); }
-
-void app_free(void *p) { free(p); }
+#endif

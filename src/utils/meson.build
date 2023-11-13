@@ -1,4 +1,4 @@
 sources += files(
-  'overflow_utils.c', 'overflow_utils.h',
-  'pointers_utils.c', 'pointers_utils.h',
+  'cll_overflow_utils.c', 'cll_overflow_utils.h',
+  'cll_pointers_utils.c', 'cll_pointers_utils.h',
 )

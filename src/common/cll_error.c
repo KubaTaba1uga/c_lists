@@ -5,12 +5,12 @@
 #include <stddef.h>
 
 // App
-#include "l_error.h"
+#include "cll_error.h"
 
 /*******************************************************************************
  *    PRIVATE DATA
  ******************************************************************************/
-static const char *const L_ERROR_STRINGS[] = {
+static const char *const CLL_ERROR_STRINGS[] = {
     // 0
     "Success",
 
@@ -37,24 +37,24 @@ static const char *const L_ERROR_STRINGS[] = {
 
 };
 
-static const size_t L_ERROR_STRINGS_LEN =
-    sizeof(L_ERROR_STRINGS) / sizeof(char *);
+static const size_t CLL_ERROR_STRINGS_LEN =
+    sizeof(CLL_ERROR_STRINGS) / sizeof(char *);
 
 /*******************************************************************************
  *    PUBLIC API
  ******************************************************************************/
 
-const char *l_strerror(l_error_t error) {
+const char *cll_strerror(cll_error_t error) {
   // Return string on success, NULL on failure.
   // This function is only exception from `always
-  //  return l_error_t` design decision.
+  //  return cll_error_t` design decision.
   // Idea is to mimic org strerror.
 
   if ( // Upper bound
-      (error >= L_ERROR_LEN) || (error >= L_ERROR_STRINGS_LEN) ||
+      (error >= CLL_ERROR_LEN) || (error >= CLL_ERROR_STRINGS_LEN) ||
       // Lower bound
       (error < 0))
     return NULL;
 
-  return L_ERROR_STRINGS[error];
+  return CLL_ERROR_STRINGS[error];
 }

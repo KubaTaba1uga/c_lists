@@ -11,7 +11,7 @@ test_overflow_name = 'test_overflow_utils'
 
 test_overflow_src = files([
   test_overflow_file,
-  utils / 'overflow_utils.h', utils / 'overflow_utils.c',
+  utils / 'cll_overflow_utils.h', utils / 'cll_overflow_utils.c',
 ])
 
 test_overflow_exe = executable(test_overflow_name,
@@ -33,7 +33,7 @@ test_pointers_utils_name = 'test_pointers_utils'
 
 test_pointers_utils_src = files([
   test_pointers_utils_file,
-  utils / 'pointers_utils.h', utils / 'pointers_utils.c',
+  utils / 'cll_pointers_utils.h', utils / 'cll_pointers_utils.c',
 ])
 
 test_pointers_utils_exe = executable(test_pointers_utils_name,

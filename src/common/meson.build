@@ -1,5 +1,5 @@
-l_error = files('l_error.c', 'l_error.h')
+l_error = files('cll_error.c', 'cll_error.h')
 
 sources += files(
-  'l_def.h',
+  'cll_def.h',
 ) + l_error
