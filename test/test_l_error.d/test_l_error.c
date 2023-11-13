@@ -2,12 +2,12 @@
 
 #include <unity.h>
 
-#include "l_error.c"
+#include "common/cll_error.c"
 
 void test_errors_string_matching(void) {
-  size_t error_strings_size = sizeof(L_ERROR_STRINGS) / sizeof(char *);
+  size_t error_strings_size = sizeof(CLL_ERROR_STRINGS) / sizeof(char *);
 
   TEST_ASSERT_EQUAL_MESSAGE(
-      L_ERROR_LEN, error_strings_size,
-      "Each error needs to have matching pair in L_ERROR_STRINGS.");
+      CLL_ERROR_LEN, error_strings_size,
+      "Each error needs to have matching pair in CLL_ERROR_STRINGS.");
 }

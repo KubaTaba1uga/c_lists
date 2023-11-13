@@ -1,5 +1,5 @@
-#ifndef _l_error_h
-#define _l_error_h
+#ifndef _cll_error_h
+#define _cll_error_h
 
 /*******************************************************************************
  *    IMPORTS
@@ -10,9 +10,9 @@
  *    PUBLIC API
  ******************************************************************************/
 typedef enum {
-  L_SUCCESS = 0,
+  CLL_SUCCESS = 0,
 
-  L_ERROR_INVALID_ARGS,
+  CLL_ERROR_INVALID_ARGS,
 
   /* Overflow usually is caused by invalid args,
    *  assuming it's relation to INVALID_ARGS error
@@ -25,23 +25,23 @@ typedef enum {
    *
    * TO-DO Add more overflow handlings to lib itself.
    */
-  L_ERROR_OVERFLOW,
-  L_ERROR_UNDERFLOW,
+  CLL_ERROR_OVERFLOW,
+  CLL_ERROR_UNDERFLOW,
 
-  L_ERROR_OUT_OF_MEMORY,
+  CLL_ERROR_OUT_OF_MEMORY,
 
-  L_ERROR_INDEX_TOO_BIG,
+  CLL_ERROR_INDEX_TOO_BIG,
 
-  L_ERROR_REACHED_CAPACITY_MAX,
+  CLL_ERROR_REACHED_CAPACITY_MAX,
 
-  L_ERROR_POP_EMPTY_LIST,
+  CLL_ERROR_POP_EMPTY_LIST,
   /* Enum assigns values automatically by incrementing
-   *   the first value. `L_ERROR_LEN` stands for number
+   *   the first value. `CLL_ERROR_LEN` stands for number
    *   of elements in enum (aka `length`).
    */
-  L_ERROR_LEN,
-} l_error_t;
+  CLL_ERROR_LEN,
+} cll_error_t;
 
-const char *l_strerror(l_error_t error);
+const char *cll_strerror(cll_error_t error);
 
 #endif
