@@ -8,7 +8,7 @@
  *    IMPORTS
  ******************************************************************************/
 // C standard library
-#include "l_error.h"
+#include "common/l_error.h"
 
 // App
 #include <stddef.h>

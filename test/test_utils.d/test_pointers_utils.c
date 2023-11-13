@@ -11,7 +11,7 @@
 #include "unity.h"
 
 // App
-#include "pointers_utils.h"
+#include "utils/pointers_utils.h"
 
 /*******************************************************************************
  *    TESTS DATA
@@ -121,7 +121,7 @@ void test_move_pointers_array_success_rstart(void) {
   n = values_len;
 
   parametrize_move_pointers_array_no_overlapping(values_content, dest, src, n,
-                                                 move_pointers_array_rstart);
+                                                 l_move_pointers_array_rstart);
 }
 
 void test_move_pointers_array_success_lstart(void) {
@@ -134,7 +134,7 @@ void test_move_pointers_array_success_lstart(void) {
   n = values_len;
 
   parametrize_move_pointers_array_no_overlapping(values_content, dest, src, n,
-                                                 move_pointers_array_lstart);
+                                                 l_move_pointers_array_lstart);
 }
 
 /* This behaviour is well defined. */
@@ -148,7 +148,7 @@ void test_move_pointers_array_overlapping_src_one_element_before_dest_rstart(
   dest = src + 1;
 
   parametrize_move_pointers_array_overlapping(
-      expected, dest, src, values_len - 1, move_pointers_array_rstart);
+      expected, dest, src, values_len - 1, l_move_pointers_array_rstart);
 }
 /* This scenario is hard to follow and pretty misleading, function name
  *  is not `nullify_array` afterall. That's why it's described as undefined.
@@ -164,7 +164,7 @@ void test_move_pointers_array_overlapping_src_one_element_before_dest_lstart(
   dest = src + 1;
 
   parametrize_move_pointers_array_overlapping(
-      expected, dest, src, values_len - 1, move_pointers_array_lstart);
+      expected, dest, src, values_len - 1, l_move_pointers_array_lstart);
 }
 
 /* This scenario is hard to follow and pretty misleading, function name
@@ -181,7 +181,7 @@ void test_move_pointers_array_overlapping_dest_one_element_before_src_rstart(
   src = dest + 1;
 
   parametrize_move_pointers_array_overlapping(
-      expected, dest, src, values_len - 1, move_pointers_array_rstart);
+      expected, dest, src, values_len - 1, l_move_pointers_array_rstart);
 }
 /* This behaviour is well defined. */
 void test_move_pointers_array_overlapping_dest_one_element_before_src_lstart(
@@ -192,7 +192,7 @@ void test_move_pointers_array_overlapping_dest_one_element_before_src_lstart(
   src = dest + 1;
 
   parametrize_move_pointers_array_overlapping(
-      expected, dest, src, values_len - 1, move_pointers_array_lstart);
+      expected, dest, src, values_len - 1, l_move_pointers_array_lstart);
 }
 
 /* This behaviour is well defined. */
@@ -204,7 +204,7 @@ void test_move_pointers_array_overlapping_dest_one_element_before_src_middle_lst
   src = dest + 2;
 
   parametrize_move_pointers_array_overlapping(expected, dest, src, 1,
-                                              move_pointers_array_lstart);
+                                              l_move_pointers_array_lstart);
 }
 
 /* This behaviour is well defined. */
@@ -216,7 +216,7 @@ void test_move_pointers_array_overlapping_dest_multi_element_before_src_middle_l
   src = dest + 3;
 
   parametrize_move_pointers_array_overlapping(expected, dest, src, 3,
-                                              move_pointers_array_lstart);
+                                              l_move_pointers_array_lstart);
 }
 
 void test_move_pointers_array_overlapping_src_multi_element_before_dest_rstart(
@@ -229,7 +229,7 @@ void test_move_pointers_array_overlapping_src_multi_element_before_dest_rstart(
   dest = src + 3; // remember to substract offset from `n`
 
   parametrize_move_pointers_array_overlapping(
-      expected, dest, src, values_len - 3, move_pointers_array_rstart);
+      expected, dest, src, values_len - 3, l_move_pointers_array_rstart);
 }
 
 void test_move_pointers_array_overlapping_dest_multi_element_before_src_lstart(
@@ -240,7 +240,7 @@ void test_move_pointers_array_overlapping_dest_multi_element_before_src_lstart(
   src = dest + 3; // remember to substract offset from `n`
 
   parametrize_move_pointers_array_overlapping(
-      expected, dest, src, values_len - 3, move_pointers_array_lstart);
+      expected, dest, src, values_len - 3, l_move_pointers_array_lstart);
 }
 
 void parametrize_move_pointers_array_no_overlapping(

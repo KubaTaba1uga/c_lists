@@ -13,8 +13,8 @@
  *  for static functions testing.
  *  Do not forget adding `-zmuldefs` to gcc.*/
 #include "ar_list.c"
-#include "l_def.h"
-#include "l_error.h"
+#include "common/l_def.h"
+#include "common/l_error.h"
 
 // Test framework
 #include "../interfaces.h"

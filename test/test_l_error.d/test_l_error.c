@@ -2,7 +2,7 @@
 
 #include <unity.h>
 
-#include "l_error.c"
+#include "common/l_error.c"
 
 void test_errors_string_matching(void) {
   size_t error_strings_size = sizeof(L_ERROR_STRINGS) / sizeof(char *);

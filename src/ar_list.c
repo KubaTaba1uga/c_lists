@@ -34,9 +34,9 @@
 
 // App
 #include "ar_list.h"
+#include "common/l_def.h"
+#include "common/l_error.h"
 #include "interfaces.h"
-#include "l_def.h"
-#include "l_error.h"
 #include "utils/overflow_utils.h"
 #include "utils/pointers_utils.h"
 
@@ -72,7 +72,7 @@ size_t arl_length(arl_ptr l) { return l->length; }
 /* Returns L_SUCCESS on success. */
 /* Behaviour is undefined if `l` is not a valid pointer. */
 l_error_t arl_create(arl_ptr *l, size_t default_capacity) {
-  if (is_overflow_size_t_multi(default_capacity, L_PTR_SIZE))
+  if (l_is_overflow_size_t_multi(default_capacity, L_PTR_SIZE))
     return L_ERROR_OVERFLOW;
 
   void *l_array = malloc(default_capacity * L_PTR_SIZE);
@@ -96,6 +96,7 @@ CLEANUP_L_LOCAL_OOM:
   free(l_array);
   return L_ERROR_OUT_OF_MEMORY;
 }
+
 void arl_destroy(arl_ptr l) {
   free(l->array);
   free(l);
@@ -264,7 +265,7 @@ l_error_t arl_pop_multi(arl_ptr l, size_t i, size_t elements_amount,
   if (err)
     return err;
 
-  if (is_overflow_size_t_add(i, elements_amount))
+  if (l_is_overflow_size_t_add(i, elements_amount))
     return L_ERROR_OVERFLOW;
 
   err = arl_move_elements_left(l, i + elements_amount, elements_amount);
@@ -336,8 +337,8 @@ size_t arl_count_new_capacity(size_t current_length, size_t current_capacity) {
 new_size
    * divided by cur_size overflow.
    */
-  if (is_overflow_l_capacity_multi(current_length, 3) ||
-      is_overflow_l_capacity_add(current_capacity, 2)) {
+  if (l_is_overflow_l_capacity_multi(current_length, 3) ||
+      l_is_overflow_l_capacity_add(current_capacity, 2)) {
 
     return ARL_CAPACITY_MAX;
   }
@@ -382,7 +383,7 @@ l_error_t arl_move_elements_right(arl_ptr l, size_t start_i, size_t move_by) {
 
   // Idea is to detect all failures upfront so recovery from half moved array
   //  is not required.
-  if (is_overflow_size_t_add(l->length, move_by))
+  if (l_is_overflow_size_t_add(l->length, move_by))
     return L_ERROR_OVERFLOW;
 
   new_length = l->length + move_by;
@@ -390,7 +391,7 @@ l_error_t arl_move_elements_right(arl_ptr l, size_t start_i, size_t move_by) {
   if (new_length > (l->capacity))
     return L_ERROR_INVALID_ARGS;
 
-  if (is_underflow_size_t_sub(l->length, start_i))
+  if (l_is_underflow_size_t_sub(l->length, start_i))
     return L_ERROR_UNDERFLOW;
 
   elements_to_move_amount = l->length - start_i;
@@ -398,8 +399,8 @@ l_error_t arl_move_elements_right(arl_ptr l, size_t start_i, size_t move_by) {
   if (elements_to_move_amount == 0)
     return L_SUCCESS;
 
-  move_pointers_array_rstart(l->array + start_i + move_by, l->array + start_i,
-                             elements_to_move_amount);
+  l_move_pointers_array_rstart(l->array + start_i + move_by, l->array + start_i,
+                               elements_to_move_amount);
 
   l->length = new_length;
 
@@ -429,12 +430,12 @@ l_error_t arl_move_elements_left(arl_ptr l, size_t start_i, size_t move_by) {
   // Idea is to detect all failures upfront so recovery from half moved array
   //  is not required.
 
-  if (is_underflow_size_t_sub(l->length, move_by))
+  if (l_is_underflow_size_t_sub(l->length, move_by))
     return L_ERROR_UNDERFLOW;
 
   new_length = l->length - move_by;
 
-  if (is_underflow_size_t_sub(l->length, start_i))
+  if (l_is_underflow_size_t_sub(l->length, start_i))
     return L_ERROR_UNDERFLOW;
 
   elements_to_move_amount = l->length - start_i;
@@ -450,7 +451,7 @@ l_error_t arl_move_elements_left(arl_ptr l, size_t start_i, size_t move_by) {
     elements_to_move_amount = move_by;
   }
 
-  move_pointers_array_lstart(dst, src, elements_to_move_amount);
+  l_move_pointers_array_lstart(dst, src, elements_to_move_amount);
 
   l->length = new_length;
 
