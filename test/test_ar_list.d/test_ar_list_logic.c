@@ -12,12 +12,6 @@
 /* Including source file instead of header file allows
  *  for static functions testing.
  *  Do not forget adding `-zmuldefs` to gcc.*/
-/* #define local_malloc malloc */
-/* #define local_free free */
-/* #define local_realloc realloc */
-/* #undef malloc */
-/* #undef realloc */
-/* #undef free */
 #include "ar_list.c"
 #include "l_def.h"
 #include "l_error.h"
