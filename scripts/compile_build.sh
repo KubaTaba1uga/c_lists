@@ -7,4 +7,4 @@ then
     builddir="build"
 fi
 
-meson compile -C $builddir  
+meson compile -C $builddir 
