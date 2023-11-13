@@ -8,11 +8,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Test framework
-#include "ar_list.h"
-#include "mock_std_lib_interface.h"
-#include <unity.h>
-
 // App
 /* Including source file instead of header file allows
  *  for static functions testing.
@@ -20,6 +15,11 @@
 #include "ar_list.c"
 #include "l_def.h"
 #include "l_error.h"
+
+// Test framework
+#include "../interfaces.h"
+#include "mock_std_lib_interface.h"
+#include <unity.h>
 
 /*******************************************************************************
  *    TESTS DATA
@@ -54,17 +54,13 @@ void setUp(void) {
 
 void tearDown(void) {
 
-  if (array_memory_mock)
-    free(array_memory_mock);
+  free(array_memory_mock);
 
-  if (list_memory_mock)
-    free(list_memory_mock);
+  free(list_memory_mock);
 
   array_memory_mock = NULL;
-  array_memory_mock = 0;
 
   list_memory_mock = NULL;
-  list_memory_mock = 0;
 }
 
 /*******************************************************************************
@@ -497,7 +493,7 @@ void test_arl_create_memory_failure_list(void) {
 
   app_malloc_ExpectAndReturn(array_memory_mock_size, array_memory_mock);
   app_malloc_ExpectAndReturn(list_memory_mock_size, NULL);
-  array_memory_mock = NULL;
+  app_free_Expect(array_memory_mock);
 
   err = arl_create(&l, 10);
 

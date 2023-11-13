@@ -34,10 +34,9 @@
 
 // App
 #include "ar_list.h"
+#include "interfaces.h"
 #include "l_def.h"
 #include "l_error.h"
-
-#include "interfaces/std_lib_interface.h"
 #include "utils/overflow_utils.h"
 #include "utils/pointers_utils.h"
 
@@ -76,12 +75,12 @@ l_error_t arl_create(arl_ptr *l, size_t default_capacity) {
   if (is_overflow_size_t_multi(default_capacity, L_PTR_SIZE))
     return L_ERROR_OVERFLOW;
 
-  void *l_array = app_malloc(default_capacity * L_PTR_SIZE);
+  void *l_array = malloc(default_capacity * L_PTR_SIZE);
 
   if (!l_array)
     return L_ERROR_OUT_OF_MEMORY;
 
-  arl_ptr l_local = app_malloc(sizeof(struct ar_list));
+  arl_ptr l_local = malloc(sizeof(struct ar_list));
 
   if (!l_local)
     goto CLEANUP_L_LOCAL_OOM;
@@ -98,8 +97,8 @@ CLEANUP_L_LOCAL_OOM:
   return L_ERROR_OUT_OF_MEMORY;
 }
 void arl_destroy(arl_ptr l) {
-  app_free(l->array);
-  app_free(l);
+  free(l->array);
+  free(l);
 }
 
 /* Gets pointer to the value under the index.
@@ -360,7 +359,7 @@ static l_error_t arl_grow_array_capacity(arl_ptr l) {
 
   new_capacity = arl_count_new_capacity(l->length, l->capacity);
 
-  p = app_realloc(l->array, new_capacity * L_PTR_SIZE);
+  p = realloc(l->array, new_capacity * L_PTR_SIZE);
   if (!p) {
     return L_ERROR_OUT_OF_MEMORY;
   }

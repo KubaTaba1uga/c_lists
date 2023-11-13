@@ -7,7 +7,7 @@ test_file_name = 'test_ar_list_logic.c'
 test_name = 'test_ar_list_logic'
 
 cmock_test_src = files([
-  test_file_name,
+  test_file_name, '..' / 'interfaces.h',
   src / 'ar_list.h', src / 'ar_list.c',
   src / 'l_error.h', src / 'l_error.c',
   utils / 'overflow_utils.h', utils / 'overflow_utils.c',
@@ -25,10 +25,7 @@ test_ar_list_exe = executable(test_name,
   link_args: [
     # allow static functions testing
     '-zmuldefs',
-    
-  ],
-  
-             
+  ],         
 )
 
 test(test_name, test_ar_list_exe)

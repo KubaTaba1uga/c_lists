@@ -8,7 +8,12 @@ project('c_lists', 'c',
            'werror=true',
            'c_std=c99'
          ]
-)
+       )
+
+if get_option('enable_tests')
+  add_project_arguments('-DENABLE_TESTS=1', language : 'c')
+  add_project_arguments('-save-temps', language : 'c')    
+endif
 
 subdir('src')
 
