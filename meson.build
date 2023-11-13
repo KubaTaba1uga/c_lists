@@ -5,8 +5,8 @@ project('c_lists', 'c',
          version: '0.0.1',
 	 meson_version: '>=1.0.1',
 	 default_options: [
-            'werror=true',
-            'c_std=c99'
+           'werror=true',
+           'c_std=c99'
          ]
 )
 
