@@ -34,18 +34,11 @@
 
 // App
 #include "ar_list.h"
+#include "interfaces.h"
 #include "l_def.h"
 #include "l_error.h"
 #include "utils/overflow_utils.h"
 #include "utils/pointers_utils.h"
-
-#ifdef ENABLE_TESTS
-#include "interfaces/std_lib_interface.h"
-#define malloc app_malloc
-#define realloc app_realloc
-#define free app_free
-// #undef app_malloc
-#endif
 
 /*******************************************************************************
  *    PRIVATE API DECLARATIONS

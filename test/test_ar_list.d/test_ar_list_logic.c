@@ -8,30 +8,24 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Test framework
-#include "mock_std_lib_interface.h"
-#include <unity.h>
-
 // App
 /* Including source file instead of header file allows
  *  for static functions testing.
  *  Do not forget adding `-zmuldefs` to gcc.*/
-#define local_malloc malloc
-#define local_free free
-#define local_realloc realloc
+/* #define local_malloc malloc */
+/* #define local_free free */
+/* #define local_realloc realloc */
 /* #undef malloc */
 /* #undef realloc */
 /* #undef free */
 #include "ar_list.c"
-#undef malloc
-#undef realloc
-#undef free
-#define malloc local_malloc
-#define realloc local_realloc
-#define free local_free
-
 #include "l_def.h"
 #include "l_error.h"
+
+// Test framework
+#include "../interfaces.h"
+#include "mock_std_lib_interface.h"
+#include <unity.h>
 
 /*******************************************************************************
  *    TESTS DATA
