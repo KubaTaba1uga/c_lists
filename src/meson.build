@@ -5,4 +5,8 @@ sources = files(
 )
 
 subdir('utils')
-subdir('interfaces')
+
+if get_option('enable_tests')
+  subdir('interfaces')
+endif
+

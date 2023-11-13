@@ -27,7 +27,7 @@ test_ar_list_exe = executable(test_name,
     '-zmuldefs',
     
   ],
-  
+  c_args: ['-save-temps']
              
 )
 
