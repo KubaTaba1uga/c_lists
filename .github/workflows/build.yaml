@@ -14,6 +14,6 @@ jobs:
       - name: Install meson
         run: ./scripts/install_meson.sh
       - name: Setup build dir
-        run: ./scripts/setup_build.sh
+        run: ./scripts/setup_build.sh build false
       - name: Compile build
         run: ./scripts/compile_build.sh
