@@ -25,10 +25,7 @@ test_ar_list_exe = executable(test_name,
   link_args: [
     # allow static functions testing
     '-zmuldefs',
-    
-  ],
-  c_args: ['-save-temps']
-             
+  ],         
 )
 
 test(test_name, test_ar_list_exe)
