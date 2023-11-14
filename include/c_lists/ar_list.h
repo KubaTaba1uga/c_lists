@@ -8,10 +8,10 @@
  *    IMPORTS
  ******************************************************************************/
 // C standard library
-#include "cll_error.h"
+#include <stddef.h>
 
 // App
-#include <stddef.h>
+#include "cll_error.h"
 
 /*******************************************************************************
  *    PUBLIC API
