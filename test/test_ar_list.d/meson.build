@@ -14,7 +14,7 @@ test_ar_list_exe = executable(test_name,
     test_objs
   ],
   include_directories: tests_include,
-  dependencies: [unity_dependency, cmock_dependency],
+  dependencies: tests_dependencies,
   link_args: [
     # allow static functions testing
     '-zmuldefs',
