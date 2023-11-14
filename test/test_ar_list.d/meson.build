@@ -13,7 +13,7 @@ test_ar_list_exe = executable(test_name,
   objects: [
     test_objs
   ],
-  include_directories: [c_lists_dir],
+  include_directories: tests_include,
   dependencies: [unity_dependency, cmock_dependency],
   link_args: [
     # allow static functions testing

@@ -33,10 +33,10 @@
 #include <string.h>
 
 // App
-#include "ar_list.h"
+#include "c_lists/ar_list.h"
+#include "c_lists/cll_error.h"
 #include "cll_interfaces.h"
 #include "common/cll_def.h"
-#include "common/cll_error.h"
 #include "utils/cll_overflow_utils.h"
 #include "utils/cll_pointers_utils.h"
 

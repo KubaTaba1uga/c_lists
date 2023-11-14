@@ -13,8 +13,8 @@
  *  for static functions testing.
  *  Do not forget adding `-zmuldefs` to gcc.*/
 #include "ar_list.c"
+#include "c_lists/cll_error.h"
 #include "common/cll_def.h"
-#include "common/cll_error.h"
 
 // Test framework
 #include "../interfaces.h"

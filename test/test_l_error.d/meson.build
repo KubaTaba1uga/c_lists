@@ -11,7 +11,7 @@ test_l_error_exe = executable('test_l_error',
   objects: [
     test_objs
   ],
-  include_directories: [src],
+  include_directories: tests_include,
   dependencies: [unity_dependency, cmock_dependency],
     link_args: [
     # allow static variables testing

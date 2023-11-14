@@ -8,7 +8,7 @@
  *    IMPORTS
  ******************************************************************************/
 // C standard library
-#include "common/cll_error.h"
+#include "cll_error.h"
 
 // App
 #include <stddef.h>
