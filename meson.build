@@ -7,10 +7,7 @@ project('c_lists', 'c',
 	 default_options: [
            'werror=true',
            'c_std=c99',
-           'includedir=c_lists',
-           'libdir=c_lists'
          ],
-
        )
 
 if get_option('enable_tests')
