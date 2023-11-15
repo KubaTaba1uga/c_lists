@@ -59,8 +59,8 @@ static bool arl_is_i_too_big(arl_ptr l, size_t i);
 static void _arl_get(arl_ptr l, size_t i, void **p);
 static void _arl_set(arl_ptr l, size_t i, void *value);
 static cll_error_t arl_grow_array_capacity(arl_ptr l);
-static cll_error_t arl_move_elements_right(arl_ptr l, size_t start_i,
-                                           size_t move_by);
+static arl_ptr arl_move_elements_right(arl_ptr l, size_t start_i,
+                                       size_t move_by);
 static arl_ptr arl_move_elements_left(arl_ptr l, size_t start_i,
                                       size_t move_by);
 
@@ -160,6 +160,7 @@ cll_error_t arl_set(arl_ptr l, size_t i, void *value) {
  */
 cll_error_t arl_insert(arl_ptr l, size_t i, void *value) {
   size_t new_length, move_by = 1;
+  void *success;
   cll_error_t err;
 
   if (arl_is_i_too_big(l, i))
@@ -173,14 +174,17 @@ cll_error_t arl_insert(arl_ptr l, size_t i, void *value) {
       return err;
   }
 
-  err = arl_move_elements_right(l, i, move_by);
-  if (err)
-    return err;
+  success = arl_move_elements_right(l, i, move_by);
+  if (!success)
+    goto ERROR;
 
   _arl_set(l, i, value);
 
   l->length = new_length;
 
+  return CLL_SUCCESS;
+
+ERROR:
   return CLL_SUCCESS;
 }
 
@@ -192,6 +196,7 @@ cll_error_t arl_insert(arl_ptr l, size_t i, void *value) {
 cll_error_t arl_insert_multi(arl_ptr l, size_t i, size_t v_len,
                              void *values[v_len]) {
   size_t new_length, k, move_by = v_len;
+  void *success;
   cll_error_t err;
 
   if (arl_is_i_too_big(l, i))
@@ -205,9 +210,9 @@ cll_error_t arl_insert_multi(arl_ptr l, size_t i, size_t v_len,
       return err;
   }
 
-  err = arl_move_elements_right(l, i, move_by);
-  if (err)
-    return err;
+  success = arl_move_elements_right(l, i, move_by);
+  if (!success)
+    goto ERROR;
 
   for (k = i; k < i + v_len; k++) {
     _arl_set(l, k, values[k - i]);
@@ -215,6 +220,8 @@ cll_error_t arl_insert_multi(arl_ptr l, size_t i, size_t v_len,
 
   l->length = new_length;
 
+  return CLL_SUCCESS;
+ERROR:
   return CLL_SUCCESS;
 }
 
@@ -382,34 +389,43 @@ static cll_error_t arl_grow_array_capacity(arl_ptr l) {
  *    INPUT  l.array {0, 1, 2, , ,}, start_i 1, move_by 2
  *    OUTPUT l.array {0, NULL, NULL, 1, 2}
  */
-cll_error_t arl_move_elements_right(arl_ptr l, size_t start_i, size_t move_by) {
+arl_ptr arl_move_elements_right(arl_ptr l, size_t start_i, size_t move_by) {
 
   size_t new_length, elements_to_move_amount;
 
   // Idea is to detect all failures upfront so recovery from half moved array
   //  is not required.
-  if (cll_is_overflow_size_t_add(l->length, move_by))
-    return CLL_ERROR_OVERFLOW;
+  if (cll_is_overflow_size_t_add(l->length, move_by)) {
+    errno = CLL_ERROR_OVERFLOW;
+    goto ERROR;
+  }
 
   new_length = l->length + move_by;
 
-  if (new_length > (l->capacity))
-    return CLL_ERROR_INVALID_ARGS;
+  if (new_length > (l->capacity)) {
+    errno = CLL_ERROR_INVALID_ARGS;
+    goto ERROR;
+  }
 
-  if (cll_is_underflow_size_t_sub(l->length, start_i))
-    return CLL_ERROR_UNDERFLOW;
+  if (cll_is_underflow_size_t_sub(l->length, start_i)) {
+    errno = CLL_ERROR_UNDERFLOW;
+    goto ERROR;
+  }
 
   elements_to_move_amount = l->length - start_i;
 
   if (elements_to_move_amount == 0)
-    return CLL_SUCCESS;
+    goto SUCCESS;
 
   cll_move_pointers_array_rstart(l->array + start_i + move_by,
                                  l->array + start_i, elements_to_move_amount);
 
   l->length = new_length;
 
-  return CLL_SUCCESS;
+SUCCESS:
+  return l;
+ERROR:
+  return NULL;
 }
 
 /* Move elements to the left by `move_by`, starting from `start_i`.
