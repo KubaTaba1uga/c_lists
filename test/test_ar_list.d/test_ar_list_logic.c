@@ -190,13 +190,16 @@ void test_arl_is_i_too_big_false(void) {
 
 void test_arl_grow_array_capacity_memory_failure(void) {
   arl_ptr l = setup_small_list();
-  cll_error_t err;
+  void *success;
+
+  errno = 0;
 
   app_realloc_IgnoreAndReturn(NULL);
 
-  err = arl_grow_array_capacity(l);
+  success = arl_grow_array_capacity(l);
 
-  TEST_ASSERT_EQUAL_ERROR(CLL_ERROR_OUT_OF_MEMORY, err);
+  TEST_ASSERT_NULL(success);
+  TEST_ASSERT_EQUAL_ERROR(CLL_ERROR_OUT_OF_MEMORY, errno);
   TEST_ASSERT_EQUAL_PTR(array_memory_mock, l->array);
   TEST_ASSERT_EQUAL(arl_small_length, l->length);
   TEST_ASSERT_EQUAL(array_memory_mock_size / sizeof(void *), l->capacity);
@@ -204,19 +207,24 @@ void test_arl_grow_array_capacity_memory_failure(void) {
 
 void test_arl_grow_array_capacity_max_failure(void) {
   arl_ptr l = setup_small_list();
-  cll_error_t err;
+  void *success;
+
+  errno = 0;
 
   l->capacity = ARL_CAPACITY_MAX;
 
-  err = arl_grow_array_capacity(l);
+  success = arl_grow_array_capacity(l);
 
-  TEST_ASSERT_EQUAL_ERROR(CLL_ERROR_REACHED_CAPACITY_MAX, err);
+  TEST_ASSERT_NULL(success);
+  TEST_ASSERT_EQUAL_ERROR(CLL_ERROR_REACHED_CAPACITY_MAX, errno);
 }
 
 void test_arl_grow_array_capacity_success(void) {
   arl_ptr l = setup_small_list();
   size_t new_l_capacity, new_array_size;
-  cll_error_t err;
+  void *success;
+
+  errno = 0;
 
   new_l_capacity = arl_count_new_capacity(l->length, l->capacity);
 
@@ -224,9 +232,10 @@ void test_arl_grow_array_capacity_success(void) {
 
   mock_app_realloc(l, new_array_size);
 
-  err = arl_grow_array_capacity(l);
+  success = arl_grow_array_capacity(l);
 
-  TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
+  TEST_ASSERT_NOT_NULL(success);
+  TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, errno);
   TEST_ASSERT_EQUAL_PTR(array_memory_mock, l->array);
   TEST_ASSERT_EQUAL(new_l_capacity, l->capacity);
 }
@@ -239,7 +248,7 @@ void test_arl_move_elements_right_new_length_overflow_failure(void) {
 
   success = arl_move_elements_right(l, 0, CLL_SIZE_T_MAX);
 
-  TEST_ASSERT_TRUE(!success);
+  TEST_ASSERT_NULL(success);
   TEST_ASSERT_EQUAL_ERROR(CLL_ERROR_OVERFLOW, errno);
 }
 
@@ -251,7 +260,7 @@ void test_arl_move_elements_right_new_length_invalid(void) {
 
   success = arl_move_elements_right(l, 0, l->capacity + 1);
 
-  TEST_ASSERT_TRUE(!success);
+  TEST_ASSERT_NULL(success);
   TEST_ASSERT_EQUAL_ERROR(CLL_ERROR_INVALID_ARGS, errno);
 }
 
@@ -264,7 +273,7 @@ void test_arl_move_elements_right_elements_to_move_amount_underflow_failure(
 
   success = arl_move_elements_right(l, l->length + 1, 0);
 
-  TEST_ASSERT_TRUE(!success);
+  TEST_ASSERT_NULL(success);
   TEST_ASSERT_EQUAL_ERROR(CLL_ERROR_UNDERFLOW, errno);
 }
 
@@ -276,7 +285,7 @@ void test_arl_move_elements_right_no_elements_to_move(void) {
 
   success = arl_move_elements_right(l, l->length, 0);
 
-  TEST_ASSERT_TRUE(success);
+  TEST_ASSERT_NOT_NULL(success);
   TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, errno);
 }
 
@@ -297,14 +306,14 @@ void test_arl_move_elements_right_success(void) {
 
   success = arl_move_elements_right(l, 1, 3);
 
-  TEST_ASSERT_TRUE(success);
+  TEST_ASSERT_NOT_NULL(success);
   TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, errno);
   TEST_ASSERT_EQUAL(9, l->length);
 
   // Values before start_i should'n be changed
   for (i = 0; i < null_indexes[0]; i++) {
     arl_get(l, i, (void **)&value);
-    TEST_ASSERT_TRUE(success);
+    TEST_ASSERT_NOT_NULL(success);
     TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, errno);
 
     TEST_ASSERT_EQUAL(arl_small_values[i], *value);
@@ -313,7 +322,7 @@ void test_arl_move_elements_right_success(void) {
   // NULLs should be inserted in old values place
   for (i = 0; i < null_i_length; i++) {
     arl_get(l, null_indexes[i], (void **)&value);
-    TEST_ASSERT_TRUE(success);
+    TEST_ASSERT_NOT_NULL(success);
     TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, errno);
     TEST_ASSERT_NULL(value);
   }
@@ -323,7 +332,7 @@ void test_arl_move_elements_right_success(void) {
 
   for (i = last_null_index + 1; i < l->length; i++) {
     arl_get(l, i, (void **)&value);
-    TEST_ASSERT_TRUE(success);
+    TEST_ASSERT_NOT_NULL(success);
     TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, errno);
 
     TEST_ASSERT_EQUAL(arl_small_values[i - last_null_index], *value);

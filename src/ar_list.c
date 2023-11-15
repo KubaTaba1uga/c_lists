@@ -58,7 +58,7 @@ struct ar_list {
 static bool arl_is_i_too_big(arl_ptr l, size_t i);
 static void _arl_get(arl_ptr l, size_t i, void **p);
 static void _arl_set(arl_ptr l, size_t i, void *value);
-static cll_error_t arl_grow_array_capacity(arl_ptr l);
+static arl_ptr arl_grow_array_capacity(arl_ptr l);
 static arl_ptr arl_move_elements_right(arl_ptr l, size_t start_i,
                                        size_t move_by);
 static arl_ptr arl_move_elements_left(arl_ptr l, size_t start_i,
@@ -161,7 +161,6 @@ cll_error_t arl_set(arl_ptr l, size_t i, void *value) {
 cll_error_t arl_insert(arl_ptr l, size_t i, void *value) {
   size_t new_length, move_by = 1;
   void *success;
-  cll_error_t err;
 
   if (arl_is_i_too_big(l, i))
     i = l->length;
@@ -169,9 +168,9 @@ cll_error_t arl_insert(arl_ptr l, size_t i, void *value) {
   new_length = l->length + move_by;
 
   if (new_length > l->capacity) {
-    err = arl_grow_array_capacity(l);
-    if (err)
-      return err;
+    success = arl_grow_array_capacity(l);
+    if (!success)
+      goto ERROR;
   }
 
   success = arl_move_elements_right(l, i, move_by);
@@ -197,7 +196,6 @@ cll_error_t arl_insert_multi(arl_ptr l, size_t i, size_t v_len,
                              void *values[v_len]) {
   size_t new_length, k, move_by = v_len;
   void *success;
-  cll_error_t err;
 
   if (arl_is_i_too_big(l, i))
     i = l->length;
@@ -205,9 +203,9 @@ cll_error_t arl_insert_multi(arl_ptr l, size_t i, size_t v_len,
   new_length = l->length + move_by;
 
   while (new_length > l->capacity) {
-    err = arl_grow_array_capacity(l);
-    if (err)
-      return err;
+    success = arl_grow_array_capacity(l);
+    if (!success)
+      goto ERROR;
   }
 
   success = arl_move_elements_right(l, i, move_by);
@@ -363,24 +361,31 @@ new_size
 bool arl_is_i_too_big(arl_ptr l, size_t i) { return i >= (l->length); }
 
 /* Grows underlaying array. */
-static cll_error_t arl_grow_array_capacity(arl_ptr l) {
+arl_ptr arl_grow_array_capacity(arl_ptr l) {
   void *p;
   size_t new_capacity;
 
-  if (l->capacity == ARL_CAPACITY_MAX)
-    return CLL_ERROR_REACHED_CAPACITY_MAX;
+  if (l->capacity == ARL_CAPACITY_MAX) {
+    errno = CLL_ERROR_REACHED_CAPACITY_MAX;
+    goto ERROR;
+  }
 
   new_capacity = arl_count_new_capacity(l->length, l->capacity);
 
   p = realloc(l->array, new_capacity * CLL_PTR_SIZE);
+
   if (!p) {
-    return CLL_ERROR_OUT_OF_MEMORY;
+    errno = CLL_ERROR_OUT_OF_MEMORY;
+    goto ERROR;
   }
 
   l->capacity = new_capacity;
   l->array = p;
 
-  return CLL_SUCCESS;
+  return l;
+
+ERROR:
+  return NULL;
 };
 
 /* Move elements to the right by `move_by`, starting from `start_i`.
