@@ -962,7 +962,7 @@ void test_arl_slice_success(void) {
 
 void test_arl_pop_multi_success_0(void) {
   size_t slice_len;
-  cll_error_t err;
+  void *success;
   int i;
   arl_ptr l = setup_small_list();
 
@@ -974,9 +974,12 @@ void test_arl_pop_multi_success_0(void) {
 
   i = 1;
 
-  err = arl_pop_multi(l, i, slice_len, slice);
+  errno = 0;
 
-  TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
+  success = arl_pop_multi(l, i, slice_len, slice);
+
+  TEST_ASSERT_NOT_NULL(success);
+  TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, errno);
   TEST_ASSERT_EQUAL_PTR_ARRAY(expected_slice, slice,
                               sizeof(expected_slice) / sizeof(void *));
   TEST_ASSERT_EQUAL_PTR_ARRAY(expected_list_array, l->array,
@@ -985,7 +988,7 @@ void test_arl_pop_multi_success_0(void) {
 
 void test_arl_pop_multi_success_1(void) {
   size_t slice_len;
-  cll_error_t err;
+  void *success;
   int i;
   arl_ptr l = setup_small_list();
 
@@ -997,10 +1000,12 @@ void test_arl_pop_multi_success_1(void) {
                                  l->array[5]};
 
   i = 2;
+  errno = 0;
 
-  err = arl_pop_multi(l, i, slice_len, slice);
+  success = arl_pop_multi(l, i, slice_len, slice);
 
-  TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
+  TEST_ASSERT_NOT_NULL(success);
+  TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, errno);
   TEST_ASSERT_EQUAL_PTR_ARRAY(expected_slice, slice,
                               sizeof(expected_slice) / sizeof(void *));
   TEST_ASSERT_EQUAL_PTR_ARRAY(expected_list_array, l->array,

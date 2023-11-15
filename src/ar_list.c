@@ -266,23 +266,25 @@ ERROR:
  *  Better optimized for multiple pops than pop. Elements are
  *  moved only once.
  */
-cll_error_t arl_pop_multi(arl_ptr l, size_t i, size_t elements_amount,
-                          void *holder[]) {
+void *arl_pop_multi(arl_ptr l, size_t i, size_t elements_amount,
+                    void *holder[]) {
   void *success;
   cll_error_t err;
 
   err = arl_slice(l, i, elements_amount, holder);
   if (err)
-    return err;
+    return NULL;
 
-  if (cll_is_overflow_size_t_add(i, elements_amount))
-    return CLL_ERROR_OVERFLOW;
+  if (cll_is_overflow_size_t_add(i, elements_amount)) {
+    errno = CLL_ERROR_OVERFLOW;
+    return NULL;
+  }
 
   success = arl_move_elements_left(l, i + elements_amount, elements_amount);
   if (!success)
-    return CLL_SUCCESS;
+    return NULL;
 
-  return CLL_SUCCESS;
+  return holder;
 }
 
 /* Removes element from under the index.
