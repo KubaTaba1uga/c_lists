@@ -229,13 +229,13 @@ cll_error_t arl_append(arl_ptr l, void *value) {
   return arl_insert(l, l->length + 1, value);
 }
 
-/* Pops element from under the index. Sets
- * `value` to the popped element's value.
- *  If list empty returns CLL_ERROR_POP_EMPTY_LIST.
+/* Pops element from under the index.
+ * If list is empty returns NULL and sets
+ *   errno to CLL_ERROR_POP_EMPTY_LIST.
  * If i bigger tan list's lenth, substitues it with
  *  maximum poppable i.
  */
-cll_error_t arl_pop(arl_ptr l, size_t i, void **value) {
+void *arl_pop(arl_ptr l, size_t i) {
   const size_t offset = 1;
   void *value_holder;
   void *success;
@@ -243,21 +243,17 @@ cll_error_t arl_pop(arl_ptr l, size_t i, void **value) {
   if (arl_is_i_too_big(l, i))
     i = l->length - 1;
   if (l->length == 0) {
-    return CLL_ERROR_POP_EMPTY_LIST;
+    errno = CLL_ERROR_POP_EMPTY_LIST;
+    return NULL;
   }
 
   _arl_get(l, i, &value_holder);
 
   success = arl_move_elements_left(l, ++i, offset);
   if (!success)
-    goto ERROR;
+    return NULL;
 
-  *value = value_holder;
-
-  return CLL_SUCCESS;
-
-ERROR:
-  return CLL_SUCCESS;
+  return value_holder;
 }
 
 /* Fills holder with elements starting from index i till index
@@ -293,10 +289,9 @@ void *arl_pop_multi(arl_ptr l, size_t i, size_t elements_amount,
  */
 arl_ptr arl_remove(arl_ptr l, size_t i, void (*callback)(void *)) {
   void *p;
-  cll_error_t err;
 
-  err = arl_pop(l, i, &p);
-  if (err)
+  p = arl_pop(l, i);
+  if (!p)
     return NULL;
 
   if (callback)

@@ -748,7 +748,6 @@ void test_arl_pop_i_overflow(void) {
 
   void *expected, *received;
   size_t len_cp;
-  cll_error_t err;
   int i;
   arl_ptr l = setup_small_list();
   void *array_after_move[] = {l->array[0], l->array[1], l->array[2],
@@ -758,9 +757,11 @@ void test_arl_pop_i_overflow(void) {
   i = 999;
   _arl_get(l, len_cp - 1, &expected);
 
-  err = arl_pop(l, i, &received);
+  errno = 0;
 
-  TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
+  received = arl_pop(l, i);
+
+  TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, errno);
   TEST_ASSERT_EQUAL_PTR(expected, received);
   TEST_ASSERT_EQUAL(len_cp - 1, l->length);
   TEST_ASSERT_EQUAL_PTR_ARRAY(array_after_move, l->array, arl_small_length);
@@ -769,19 +770,20 @@ void test_arl_pop_i_overflow(void) {
 void test_arl_pop_empty_list(void) {
 
   void *received;
-  cll_error_t err;
   arl_ptr l = setup_empty_list();
 
-  err = arl_pop(l, 0, &received);
+  errno = 0;
 
-  TEST_ASSERT_EQUAL_ERROR(CLL_ERROR_POP_EMPTY_LIST, err);
+  received = arl_pop(l, 0);
+
+  TEST_ASSERT_NULL(received);
+  TEST_ASSERT_EQUAL_ERROR(CLL_ERROR_POP_EMPTY_LIST, errno);
 }
 
 void test_arl_pop_first_success(void) {
 
   void *expected, *received;
   size_t len_cp;
-  cll_error_t err;
   int i;
   arl_ptr l = setup_small_list();
   void *array_after_move[] = {l->array[1], l->array[2], l->array[3],
@@ -791,9 +793,11 @@ void test_arl_pop_first_success(void) {
   i = 0;
   _arl_get(l, i, &expected);
 
-  err = arl_pop(l, i, &received);
+  errno = 0;
 
-  TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
+  received = arl_pop(l, i);
+
+  TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, errno);
   TEST_ASSERT_EQUAL_PTR(expected, received);
   TEST_ASSERT_EQUAL(len_cp - 1, l->length);
   TEST_ASSERT_EQUAL_PTR_ARRAY(array_after_move, l->array, arl_small_length);
@@ -803,7 +807,6 @@ void test_arl_pop_middle_success(void) {
 
   void *expected, *received;
   size_t len_cp;
-  cll_error_t err;
   int i;
   arl_ptr l = setup_small_list();
   void *array_after_move[] = {l->array[0], l->array[1], l->array[2],
@@ -813,9 +816,11 @@ void test_arl_pop_middle_success(void) {
   i = 3;
   _arl_get(l, i, &expected);
 
-  err = arl_pop(l, i, &received);
+  errno = 0;
 
-  TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
+  received = arl_pop(l, i);
+
+  TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, errno);
   TEST_ASSERT_EQUAL_PTR(expected, received);
   TEST_ASSERT_EQUAL(len_cp - 1, l->length);
   TEST_ASSERT_EQUAL_PTR_ARRAY(array_after_move, l->array, arl_small_length);
@@ -825,7 +830,6 @@ void test_arl_pop_last_success(void) {
 
   void *expected, *received;
   size_t len_cp;
-  cll_error_t err;
   size_t i;
   arl_ptr l = setup_small_list();
   void *array_after_move[] = {l->array[0], l->array[1], l->array[2],
@@ -835,9 +839,11 @@ void test_arl_pop_last_success(void) {
   i = l->length - 1;
   _arl_get(l, i, &expected);
 
-  err = arl_pop(l, i, &received);
+  errno = 0;
 
-  TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
+  received = arl_pop(l, i);
+
+  TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, errno);
   TEST_ASSERT_EQUAL_PTR(expected, received);
   TEST_ASSERT_EQUAL(len_cp - 1, l->length);
   TEST_ASSERT_EQUAL_PTR_ARRAY(array_after_move, l->array, arl_small_length);
