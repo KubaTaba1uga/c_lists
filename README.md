@@ -1,4 +1,4 @@
-# C Project Template
+# C Lists Library
 
 Template for new c projects. Includes build system, test, mocking, readme, license, pipelines. 
 
