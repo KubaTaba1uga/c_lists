@@ -312,16 +312,16 @@ void test_arl_move_elements_right_success(void) {
 
   // Values before start_i should'n be changed
   for (i = 0; i < null_indexes[0]; i++) {
-    arl_get(l, i, (void **)&value);
+    value = arl_get(l, i);
+
     TEST_ASSERT_NOT_NULL(success);
     TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, errno);
-
     TEST_ASSERT_EQUAL(arl_small_values[i], *value);
   }
 
   // NULLs should be inserted in old values place
   for (i = 0; i < null_i_length; i++) {
-    arl_get(l, null_indexes[i], (void **)&value);
+    value = arl_get(l, null_indexes[i]);
     TEST_ASSERT_NOT_NULL(success);
     TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, errno);
     TEST_ASSERT_NULL(value);
@@ -331,7 +331,7 @@ void test_arl_move_elements_right_success(void) {
   int last_null_index = null_indexes[null_i_length - 1];
 
   for (i = last_null_index + 1; i < l->length; i++) {
-    arl_get(l, i, (void **)&value);
+    value = arl_get(l, i);
     TEST_ASSERT_NOT_NULL(success);
     TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, errno);
 
@@ -599,23 +599,28 @@ void test_arl_get_i_too_big_failure(void) {
 void parametrize_test_arl_get_i_too_big_failure(arl_ptr l) {
   size_t i, indexes_to_check[] = {l->length, l->length + 1, l->length + 2};
   void *p;
-  cll_error_t err;
+
+  errno = 0;
 
   for (i = 0; i < sizeof(indexes_to_check) / sizeof(size_t); i++) {
-    err = arl_get(l, indexes_to_check[i], &p);
-    TEST_ASSERT_EQUAL_ERROR(CLL_ERROR_INDEX_TOO_BIG, err);
+    p = arl_get(l, indexes_to_check[i]);
+
+    TEST_ASSERT_EQUAL_ERROR(CLL_ERROR_INDEX_TOO_BIG, errno);
+    TEST_ASSERT_NULL(p);
   }
 }
 
 void test_arl_get_success(void) {
   arl_ptr l = setup_small_list();
   int *value, i;
-  cll_error_t err;
+
+  errno = 0;
 
   for (i = 0; i < l->length; i++) {
-    err = arl_get(l, i, (void **)&value);
+    value = arl_get(l, i);
 
-    TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
+    TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, errno);
+    TEST_ASSERT_NOT_NULL(value);
     TEST_ASSERT_EQUAL(arl_small_values[i], *value);
   }
 }
@@ -755,7 +760,7 @@ void test_arl_pop_i_overflow(void) {
 
   len_cp = l->length;
   i = 999;
-  _arl_get(l, len_cp - 1, &expected);
+  expected = _arl_get(l, len_cp - 1);
 
   errno = 0;
 
@@ -791,7 +796,7 @@ void test_arl_pop_first_success(void) {
 
   len_cp = l->length;
   i = 0;
-  _arl_get(l, i, &expected);
+  expected = _arl_get(l, i);
 
   errno = 0;
 
@@ -814,7 +819,7 @@ void test_arl_pop_middle_success(void) {
 
   len_cp = l->length;
   i = 3;
-  _arl_get(l, i, &expected);
+  expected = _arl_get(l, i);
 
   errno = 0;
 
@@ -837,7 +842,7 @@ void test_arl_pop_last_success(void) {
 
   len_cp = l->length;
   i = l->length - 1;
-  _arl_get(l, i, &expected);
+  expected = _arl_get(l, len_cp - 1);
 
   errno = 0;
 

@@ -56,7 +56,7 @@ struct ar_list {
 };
 
 static bool arl_is_i_too_big(arl_ptr l, size_t i);
-static void _arl_get(arl_ptr l, size_t i, void **p);
+static void *_arl_get(arl_ptr l, size_t i);
 static void _arl_set(arl_ptr l, size_t i, void *value);
 static arl_ptr arl_grow_array_capacity(arl_ptr l);
 static arl_ptr arl_move_elements_right(arl_ptr l, size_t start_i,
@@ -108,13 +108,13 @@ void arl_destroy(arl_ptr l) {
  * `l` and `p` have to be valid pointers,
  *  otherwise behaviour is undefined.
  */
-cll_error_t arl_get(arl_ptr l, size_t i, void **p) {
-  if (arl_is_i_too_big(l, i))
-    return CLL_ERROR_INDEX_TOO_BIG;
+void *arl_get(arl_ptr l, size_t i) {
+  if (arl_is_i_too_big(l, i)) {
+    errno = CLL_ERROR_INDEX_TOO_BIG;
+    return NULL;
+  }
 
-  _arl_get(l, i, p);
-
-  return CLL_SUCCESS;
+  return _arl_get(l, i);
 }
 
 /* Fills slice with elements from index i till index
@@ -135,7 +135,7 @@ cll_error_t arl_slice(arl_ptr l, size_t start_i, size_t elements_amount,
     return CLL_ERROR_INVALID_ARGS;
 
   for (k = 0; k < elements_amount; k++) {
-    _arl_get(l, k + start_i, &slice[k]);
+    slice[k] = _arl_get(l, k + start_i);
   }
 
   return CLL_SUCCESS;
@@ -242,12 +242,13 @@ void *arl_pop(arl_ptr l, size_t i) {
 
   if (arl_is_i_too_big(l, i))
     i = l->length - 1;
+
   if (l->length == 0) {
     errno = CLL_ERROR_POP_EMPTY_LIST;
     return NULL;
   }
 
-  _arl_get(l, i, &value_holder);
+  value_holder = _arl_get(l, i);
 
   success = arl_move_elements_left(l, ++i, offset);
   if (!success)
@@ -306,15 +307,13 @@ arl_ptr arl_remove(arl_ptr l, size_t i, void (*callback)(void *)) {
  */
 arl_ptr arl_clear(arl_ptr l, void (*callback)(void *)) {
   size_t i;
-  void *p;
   void *success;
 
   // POP MULTI is not used here to avoid extra loop iteration and
   // some memory. Slicing is unnecessary from clear's point of view.
   if (callback) {
     for (i = 0; i < l->length; i++) {
-      _arl_get(l, i, &p);
-      callback(p);
+      callback(_arl_get(l, i));
     }
   }
 
@@ -331,7 +330,7 @@ arl_ptr arl_clear(arl_ptr l, void (*callback)(void *)) {
  *    PRIVATE API
  ******************************************************************************/
 
-void _arl_get(arl_ptr l, size_t i, void **p) { *p = l->array[i]; }
+void *_arl_get(arl_ptr l, size_t i) { return l->array[i]; }
 void _arl_set(arl_ptr l, size_t i, void *value) { l->array[i] = value; }
 
 /* Counts list's new capacity.

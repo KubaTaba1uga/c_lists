@@ -24,7 +24,7 @@ void arl_destroy(arl_ptr l);
 size_t arl_length(arl_ptr l);
 
 // List's data operations
-cll_error_t arl_get(arl_ptr l, size_t i, void **p);
+void *arl_get(arl_ptr l, size_t i);
 cll_error_t arl_slice(arl_ptr l, size_t start_i, size_t elements_amount,
                       void *slice[]);
 cll_error_t arl_set(arl_ptr l, size_t i, void *value);
