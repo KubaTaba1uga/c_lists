@@ -1,5 +1,7 @@
 # C Lists Library
 
+Simple and leightwight library for lists datastructures, no dependencies, C99 compliant.
+
 Template for new c projects. Includes build system, test, mocking, readme, license, pipelines. 
 
 1. [Getting Started](#Getting-Started)
