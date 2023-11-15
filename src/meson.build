@@ -1,7 +1,7 @@
 c_lists_dir = [include_directories('.')]
 
 sources = files(
-  'ar_list.c', 'ar_list.h',
+  'ar_list.c',
   'cll_interfaces.h',
 )
 

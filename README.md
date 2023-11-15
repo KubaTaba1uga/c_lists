@@ -1,4 +1,6 @@
-# C Project Template
+# C Lists Library
+
+Simple and leightwight library for lists datastructures, no dependencies, C99 compliant, cross platform (Windows/Linux/MacOs).
 
 Template for new c projects. Includes build system, test, mocking, readme, license, pipelines. 
 
