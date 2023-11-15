@@ -26,6 +26,7 @@
  *    IMPORTS
  ******************************************************************************/
 // C standard library
+#include <errno.h>
 #include <limits.h>
 #include <stdbool.h>
 #include <stddef.h>
@@ -60,8 +61,8 @@ static void _arl_set(arl_ptr l, size_t i, void *value);
 static cll_error_t arl_grow_array_capacity(arl_ptr l);
 static cll_error_t arl_move_elements_right(arl_ptr l, size_t start_i,
                                            size_t move_by);
-static cll_error_t arl_move_elements_left(arl_ptr l, size_t start_i,
-                                          size_t move_by);
+static arl_ptr arl_move_elements_left(arl_ptr l, size_t start_i,
+                                      size_t move_by);
 
 /*******************************************************************************
  *    PUBLIC API
@@ -232,7 +233,7 @@ cll_error_t arl_append(arl_ptr l, void *value) {
 cll_error_t arl_pop(arl_ptr l, size_t i, void **value) {
   const size_t offset = 1;
   void *value_holder;
-  cll_error_t err;
+  void *success;
 
   if (arl_is_i_too_big(l, i))
     i = l->length - 1;
@@ -242,12 +243,15 @@ cll_error_t arl_pop(arl_ptr l, size_t i, void **value) {
 
   _arl_get(l, i, &value_holder);
 
-  err = arl_move_elements_left(l, ++i, offset);
-  if (err)
-    return err;
+  success = arl_move_elements_left(l, ++i, offset);
+  if (!success)
+    goto ERROR;
 
   *value = value_holder;
 
+  return CLL_SUCCESS;
+
+ERROR:
   return CLL_SUCCESS;
 }
 
@@ -259,6 +263,7 @@ cll_error_t arl_pop(arl_ptr l, size_t i, void **value) {
  */
 cll_error_t arl_pop_multi(arl_ptr l, size_t i, size_t elements_amount,
                           void *holder[]) {
+  void *success;
   cll_error_t err;
 
   err = arl_slice(l, i, elements_amount, holder);
@@ -268,9 +273,9 @@ cll_error_t arl_pop_multi(arl_ptr l, size_t i, size_t elements_amount,
   if (cll_is_overflow_size_t_add(i, elements_amount))
     return CLL_ERROR_OVERFLOW;
 
-  err = arl_move_elements_left(l, i + elements_amount, elements_amount);
-  if (err)
-    return err;
+  success = arl_move_elements_left(l, i + elements_amount, elements_amount);
+  if (!success)
+    return CLL_SUCCESS;
 
   return CLL_SUCCESS;
 }
@@ -300,7 +305,7 @@ cll_error_t arl_remove(arl_ptr l, size_t i, void (*callback)(void *)) {
 cll_error_t arl_clear(arl_ptr l, void (*callback)(void *)) {
   size_t i;
   void *p;
-  cll_error_t err;
+  void *success;
 
   // POP MULTI is not used here to avoid extra loop iteration and
   // some memory. Slicing is unnecessary from clear's point of view.
@@ -311,9 +316,9 @@ cll_error_t arl_clear(arl_ptr l, void (*callback)(void *)) {
     }
   }
 
-  err = arl_move_elements_left(l, l->length, l->length);
-  if (err)
-    return err;
+  success = arl_move_elements_left(l, l->length, l->length);
+  if (success)
+    return CLL_SUCCESS;
 
   l->length = 0;
 
@@ -412,7 +417,7 @@ cll_error_t arl_move_elements_right(arl_ptr l, size_t start_i, size_t move_by) {
  *    INPUT  l.array {0, 1, 2, , ,}, start_i 2, move_by 1
  *    OUTPUT l.array {1, 2, NULL, ,}
  */
-cll_error_t arl_move_elements_left(arl_ptr l, size_t start_i, size_t move_by) {
+arl_ptr arl_move_elements_left(arl_ptr l, size_t start_i, size_t move_by) {
   /* `move_by` tells how many places we should shift.
    *  Specially usefull when popping slice of array:
    *   `pop elements starting from index 5 till index 8`.
@@ -430,13 +435,17 @@ cll_error_t arl_move_elements_left(arl_ptr l, size_t start_i, size_t move_by) {
   // Idea is to detect all failures upfront so recovery from half moved array
   //  is not required.
 
-  if (cll_is_underflow_size_t_sub(l->length, move_by))
-    return CLL_ERROR_UNDERFLOW;
+  if (cll_is_underflow_size_t_sub(l->length, move_by)) {
+    errno = CLL_ERROR_UNDERFLOW;
+    goto ERROR;
+  }
 
   new_length = l->length - move_by;
 
-  if (cll_is_underflow_size_t_sub(l->length, start_i))
-    return CLL_ERROR_UNDERFLOW;
+  if (cll_is_underflow_size_t_sub(l->length, start_i)) {
+    errno = CLL_ERROR_UNDERFLOW;
+    goto ERROR;
+  }
 
   elements_to_move_amount = l->length - start_i;
 
@@ -455,5 +464,8 @@ cll_error_t arl_move_elements_left(arl_ptr l, size_t start_i, size_t move_by) {
 
   l->length = new_length;
 
-  return CLL_SUCCESS;
+  return l;
+
+ERROR:
+  return NULL;
 }
