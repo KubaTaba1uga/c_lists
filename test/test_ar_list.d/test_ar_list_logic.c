@@ -1004,24 +1004,30 @@ void test_arl_pop_multi_success_1(void) {
 }
 
 void test_arl_clear_no_callback(void) {
-  cll_error_t err;
+  void *success;
   arl_ptr l = setup_small_list();
   void *expected_list_array[] = {NULL, NULL, NULL, NULL, NULL, NULL};
 
-  err = arl_clear(l, NULL);
+  errno = 0;
 
-  TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
+  success = arl_clear(l, NULL);
+
+  TEST_ASSERT_NOT_NULL(success);
+  TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, errno);
   TEST_ASSERT_EQUAL(0, l->length);
   TEST_ASSERT_EQUAL_PTR_ARRAY(expected_list_array, l->array, arl_small_length);
 }
 
 void test_arl_clear_callback(void) {
-  cll_error_t err;
+  void *success;
   arl_ptr l = setup_small_list();
 
-  err = arl_clear(l, dummy_free);
+  errno = 0;
 
-  TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
+  success = arl_clear(l, dummy_free);
+
+  TEST_ASSERT_NOT_NULL(success);
+  TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, errno);
   TEST_ASSERT_EQUAL(0, l->length);
   TEST_ASSERT_EQUAL(arl_small_length, FREE_COUNTER);
 }

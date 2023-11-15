@@ -307,7 +307,7 @@ cll_error_t arl_remove(arl_ptr l, size_t i, void (*callback)(void *)) {
  * Executes callback function on each removed element,
  *  only if callback is not NULL.
  */
-cll_error_t arl_clear(arl_ptr l, void (*callback)(void *)) {
+arl_ptr arl_clear(arl_ptr l, void (*callback)(void *)) {
   size_t i;
   void *p;
   void *success;
@@ -322,12 +322,12 @@ cll_error_t arl_clear(arl_ptr l, void (*callback)(void *)) {
   }
 
   success = arl_move_elements_left(l, l->length, l->length);
-  if (success)
-    return CLL_SUCCESS;
+  if (!success)
+    return NULL;
 
   l->length = 0;
 
-  return CLL_SUCCESS;
+  return l;
 }
 
 /*******************************************************************************

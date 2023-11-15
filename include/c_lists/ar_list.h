@@ -36,6 +36,6 @@ cll_error_t arl_pop(arl_ptr l, size_t i, void **value);
 cll_error_t arl_pop_multi(arl_ptr l, size_t i, size_t elements_amount,
                           void *holder[]);
 cll_error_t arl_remove(arl_ptr l, size_t i, void (*callback)(void *));
-cll_error_t arl_clear(arl_ptr l, void (*callback)(void *));
+arl_ptr arl_clear(arl_ptr l, void (*callback)(void *));
 
 #endif
