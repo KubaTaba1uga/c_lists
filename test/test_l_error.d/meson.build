@@ -12,7 +12,7 @@ test_l_error_exe = executable('test_l_error',
     test_objs
   ],
   include_directories: tests_include,
-  dependencies: [unity_dependency, cmock_dependency],
+  dependencies: tests_dependencies,
     link_args: [
     # allow static variables testing
     '-zmuldefs',
