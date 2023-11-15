@@ -289,18 +289,18 @@ cll_error_t arl_pop_multi(arl_ptr l, size_t i, size_t elements_amount,
  * Executes callback function on removed element,
  *  only if callback is not NULL.
  */
-cll_error_t arl_remove(arl_ptr l, size_t i, void (*callback)(void *)) {
+arl_ptr arl_remove(arl_ptr l, size_t i, void (*callback)(void *)) {
   void *p;
   cll_error_t err;
 
   err = arl_pop(l, i, &p);
   if (err)
-    return err;
+    return NULL;
 
   if (callback)
     callback(p);
 
-  return CLL_SUCCESS;
+  return l;
 }
 
 /* Removes all elements from the list.
