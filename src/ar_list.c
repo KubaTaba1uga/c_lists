@@ -167,6 +167,54 @@ cll_error arl_set(arl_ptr l, size_t i, CLL_VALUE_TYPE value) {
   return CLL_SUCCESS;
 }
 
+/* Move elements to the left by `move_by`, starting from start_i
+ * Ex:
+ *    INPUT  l.array {0, 1, 2, , ,}, start_i 2, move_by 1
+ *    OUTPUT l.array {1, 2, NULL, ,}
+ */
+cll_error arl_move_elements_left(arl_ptr l, size_t start_i, size_t move_by) {
+  /* ove_byop elements starting from index 5 till index 8
+   *  If start_i is bigger or equal to l->length, assumes
+   *   end of the list.
+   */
+
+  size_t new_length, elements_to_move_amount;
+  CLL_VALUE_TYPE *src, *dst;
+
+  // Do not allow reading before list's start.
+  if (move_by > start_i)
+    move_by = start_i;
+
+  // Idea is to detect all failures upfront so recovery from half moved array
+  //  is not required.
+
+  if (cll_is_underflow_size_t_sub(l->length, move_by))
+    return CLL_ERROR_UNDERFLOW;
+
+  new_length = l->length - move_by;
+
+  if (cll_is_underflow_size_t_sub(l->length, start_i))
+    return CLL_ERROR_UNDERFLOW;
+
+  elements_to_move_amount = l->length - start_i;
+
+  if (start_i < l->length) {
+    src = l->array + start_i;
+    dst = src - move_by;
+  } else {
+    // Allow deleting last element.
+    // TO-DO too hackish, find cleaner solution
+    start_i = l->length;
+    src = dst = l->array + start_i - move_by;
+    elements_to_move_amount = move_by;
+  }
+
+  cll_move_pointers_array_lstart(dst, src, elements_to_move_amount);
+
+  l->length = new_length;
+
+  return CLL_SUCCESS;
+}
 /* /\* Insert one element under the index. */
 /*  * If index bigger than list's length, appends the value. */
 /*  * Returns NULL and sets errno on failure. */
