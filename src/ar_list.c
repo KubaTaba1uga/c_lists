@@ -22,6 +22,9 @@
 //     ?? do we really need it? I think this is duplication of
 //     destroy currtent list, create a new one. ??
 
+// TO-DO use opaque pointers to allow user link to struct
+// TO-DO make library as meson's custom target
+
 /*******************************************************************************
  *    IMPORTS
  ******************************************************************************/
