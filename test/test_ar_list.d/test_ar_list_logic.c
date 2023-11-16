@@ -1,26 +1,68 @@
-/* /\*******************************************************************************
- */
-/*  *    IMPORTS */
-/*  ******************************************************************************\/
- */
-/* // C standard library */
-/* #include <errno.h> */
-/* #include <limits.h> */
-/* #include <stddef.h> */
-/* #include <stdio.h> */
-/* #include <stdlib.h> */
-/* #include <string.h> */
+/*******************************************************************************
+ *    IMPORTS
+ ******************************************************************************/
+// C standard library
+#include <errno.h>
+#include <limits.h>
+#include <stddef.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-/* // App */
-/* #include "ar_list.c" */
-/* #include "c_lists/cll_error.h" */
-/* #include "common/cll_def.h" */
+// App
+#include "ar_list.c"
+#include "c_lists/cll_error.h"
+#include "common/cll_def.h"
 
-/* // Test framework */
-/* #include "../interfaces.h" */
-/* #include "mock_cll_std_lib_interface.h" */
-/* #include <unity.h> */
+// Test framework
+#include "../interfaces.h"
+#include "mock_cll_std_lib_interface.h"
+#include <unity.h>
 
+/*******************************************************************************
+ *    TESTS UTILS
+ ******************************************************************************/
+
+void TEST_ASSERT_EQUAL_ERROR(cll_error expected, cll_error received) {
+  TEST_ASSERT_EQUAL_STRING(cll_strerror(expected), cll_strerror(received));
+}
+
+/*******************************************************************************
+ *    PRIVATE API TESTS
+ ******************************************************************************/
+
+void test_arl_count_new_capacity(void) {
+  /* Show array capacity growth ratio by example. */
+  /* Purpose of this function is mainly documentational. */
+
+  size_t expected_values[] = {1000, 2500, 6250, 15625};
+  size_t length = 0;
+  size_t capacity = 1000;
+  size_t value;
+  size_t i;
+  cll_error err;
+
+  for (i = 0; i < (sizeof(expected_values) / sizeof(size_t)); i++) {
+    err = arl_count_new_capacity(length, capacity, &value);
+
+    capacity = length = value;
+
+    TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
+    TEST_ASSERT_EQUAL(expected_values[i], capacity);
+  }
+}
+
+void test_arl_count_new_capacity_overflow_failure(void) {
+  /* Show array growth stop. */
+  /* Upper bound of list is well defined. */
+  size_t length, capacity, value;
+  cll_error err;
+
+  capacity = length = CLL_SIZE_T_MAX;
+
+  err = arl_count_new_capacity(length, capacity, &value);
+  TEST_ASSERT_EQUAL_ERROR(CLL_ERROR_OVERFLOW, err);
+}
 /* /\*******************************************************************************
  */
 /*  *    TESTS DATA */

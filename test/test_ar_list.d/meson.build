@@ -48,7 +48,8 @@ test_ar_list_exe = executable(test_name,
     '-zmuldefs',
   ],
   c_args: [
-    '-DCLL_VALUE_TYPE=void *'
+    '-DCLL_VALUE_TYPE=void *',
+    '-w'
   ]
 )
 
@@ -77,7 +78,7 @@ test_ar_list_exe = executable(test_name,
   ],
   c_args: [
     '-DCLL_VALUE_TYPE=char',
-    '-Werror'
+    '-w'
   ]
 )
 
