@@ -130,7 +130,7 @@ void parametrize_test_arl_get_i_too_big_failure(arl_ptr l);
 void parametrize_test_arl_set_i_too_big_failure(arl_ptr l);
 void parametrize_test_arl_insert_success(arl_ptr l, size_t i, int value);
 
-void TEST_ASSERT_EQUAL_ERROR(cll_error_t expected, cll_error_t received) {
+void TEST_ASSERT_EQUAL_ERROR(cll_error expected, cll_error received) {
   TEST_ASSERT_EQUAL_STRING(cll_strerror(expected), cll_strerror(received));
 }
 

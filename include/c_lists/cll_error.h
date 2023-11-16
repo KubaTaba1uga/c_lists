@@ -40,8 +40,8 @@ typedef enum {
    *   of elements in enum (aka `length`).
    */
   CLL_ERROR_LEN,
-} cll_error_t;
+} cll_error;
 
-const char *cll_strerror(cll_error_t error);
+const char *cll_strerror(cll_error error);
 
 #endif
