@@ -189,6 +189,57 @@ void test_arl_set_success(void) {
   }
 }
 
+void test_arl_slice_start_i_too_big(void) {
+  size_t slice_len;
+  cll_error err;
+  int i;
+  void *c;
+  arl_ptr l = setup_small_list();
+
+  slice_len = 0;
+
+  i = l->length;
+
+  err = arl_slice(l, i, slice_len, &c);
+
+  TEST_ASSERT_EQUAL_ERROR(CLL_ERROR_INDEX_TOO_BIG, err);
+}
+
+void test_arl_slice_too_much_elements_to_move(void) {
+  size_t slice_len;
+  cll_error err;
+  int i;
+  void *c;
+  arl_ptr l = setup_small_list();
+
+  slice_len = l->length;
+
+  i = 0;
+
+  err = arl_slice(l, i, slice_len, &c);
+
+  TEST_ASSERT_EQUAL_ERROR(CLL_ERROR_INVALID_ARGS, err);
+}
+
+void test_arl_slice_success(void) {
+  size_t slice_len;
+  cll_error err;
+  int i;
+  arl_ptr l = setup_small_list();
+
+  slice_len = 3;
+  void *slice[slice_len];
+
+  void *expected[] = {l->array[1], l->array[2], l->array[3]};
+
+  i = 1;
+
+  err = arl_slice(l, i, slice_len, slice);
+
+  TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
+  TEST_ASSERT_EQUAL_CHAR_ARRAY(expected, slice, slice_len);
+}
+
 /* void test_arl_create_overflow_failure(void) { */
 /*   arl_ptr l; */
 /*   cll_error err; */

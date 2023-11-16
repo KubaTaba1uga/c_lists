@@ -27,8 +27,8 @@ cll_error arl_length(arl_ptr l, size_t *length);
 // List's data operations
 //// Getters
 cll_error arl_get(arl_ptr l, size_t i, CLL_VALUE_TYPE *value);
-void *arl_slice(arl_ptr l, size_t start_i, size_t elements_amount,
-                void *slice[]);
+cll_error arl_slice(arl_ptr l, size_t start_i, size_t elements_amount,
+                    CLL_VALUE_TYPE slice[]);
 //// Setters
 cll_error arl_set(arl_ptr l, size_t i, CLL_VALUE_TYPE value);
 arl_ptr arl_append(arl_ptr l, void *value);

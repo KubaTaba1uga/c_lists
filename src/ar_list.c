@@ -56,8 +56,9 @@ struct ar_list {
 };
 
 static bool arl_is_i_too_big(arl_ptr l, size_t i);
-static CLL_VALUE_TYPE _arl_get(arl_ptr l, size_t i);
+static void _arl_get(arl_ptr l, size_t i, CLL_VALUE_TYPE *value);
 static void _arl_set(arl_ptr l, size_t i, CLL_VALUE_TYPE value);
+
 /* static arl_ptr arl_grow_array_capacity(arl_ptr l); */
 /* static arl_ptr arl_move_elements_right(arl_ptr l, size_t start_i, */
 /*                                        size_t move_by); */
@@ -124,39 +125,34 @@ cll_error arl_get(arl_ptr l, size_t i, CLL_VALUE_TYPE *value) {
   if (arl_is_i_too_big(l, i))
     return CLL_ERROR_INDEX_TOO_BIG;
 
-  *value = _arl_get(l, i);
+  _arl_get(l, i, value);
 
   return CLL_SUCCESS;
 }
 
-/* /\* Fills slice with elements from index i till index */
-/*  *  i+elemets_amount. Start i and elements amount have */
-/*  *  to respect list's length, otherwise error is raised. */
-/*  * Slice's length has to be bigger than elements amount, */
-/*  *  otherwise behaviour is undefined. */
-/*  * Returns NULL and sets errno on failure. */
-/*  *\/ */
-/* void *arl_slice(arl_ptr l, size_t start_i, size_t elements_amount, */
-/*                 void *slice[]) { */
-/*   size_t k, last_elem_i; */
+/* Fills slice with elements from index i till index
+ *  i+elemets_amount. Start i and elements amount have
+ *  to respect list's length, otherwise error is raised.
+ *  Slice's length has to be bigger than elements amount.
+ *  Otherwise behaviour is undefined.
+ */
+cll_error arl_slice(arl_ptr l, size_t start_i, size_t elements_amount,
+                    CLL_VALUE_TYPE slice[]) {
+  size_t k, last_elem_i;
 
-/*   if (arl_is_i_too_big(l, start_i)) { */
-/*     errno = CLL_ERROR_INDEX_TOO_BIG; */
-/*     return NULL; */
-/*   } */
+  if (arl_is_i_too_big(l, start_i))
+    return CLL_ERROR_INDEX_TOO_BIG;
 
-/*   last_elem_i = start_i + elements_amount; */
-/*   if (arl_is_i_too_big(l, last_elem_i)) { */
-/*     errno = CLL_ERROR_INVALID_ARGS; */
-/*     return NULL; */
-/*   } */
+  last_elem_i = start_i + elements_amount;
+  if (arl_is_i_too_big(l, last_elem_i))
+    return CLL_ERROR_INVALID_ARGS;
 
-/*   for (k = 0; k < elements_amount; k++) { */
-/*     slice[k] = _arl_get(l, k + start_i); */
-/*   } */
+  for (k = 0; k < elements_amount; k++) {
+    _arl_get(l, k + start_i, &slice[k]);
+  }
 
-/*   return slice; */
-/* } */
+  return CLL_SUCCESS;
+}
 
 /* Sets value under the index.
  * Index has to be smaller than list's length.
@@ -348,7 +344,9 @@ cll_error arl_set(arl_ptr l, size_t i, CLL_VALUE_TYPE value) {
 /*  ******************************************************************************\/
  */
 
-CLL_VALUE_TYPE _arl_get(arl_ptr l, size_t i) { return l->array[i]; }
+void _arl_get(arl_ptr l, size_t i, CLL_VALUE_TYPE *value) {
+  *value = l->array[i];
+}
 void _arl_set(arl_ptr l, size_t i, CLL_VALUE_TYPE value) {
   l->array[i] = value;
 }
