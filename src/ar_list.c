@@ -52,7 +52,7 @@ struct ar_list {
   size_t capacity;
 
   /* Storage. */
-  void **array;
+  CLL_VALUE_TYPE *array;
 };
 
 static bool arl_is_i_too_big(arl_ptr l, size_t i);
@@ -81,7 +81,7 @@ arl_ptr arl_create(size_t default_capacity) {
     goto ERROR;
   }
 
-  void *l_array = malloc(default_capacity * CLL_PTR_SIZE);
+  void *l_array = malloc(default_capacity * CLL_VALUE_SIZE);
 
   if (!l_array) {
     goto ERROR_OOM;
@@ -92,7 +92,7 @@ arl_ptr arl_create(size_t default_capacity) {
   if (!l_local)
     goto CLEANUP_L_LOCAL_OOM;
 
-  l_local->array = l_array;
+  l_local->array = (CLL_VALUE_TYPE *)l_array;
   l_local->capacity = default_capacity;
   l_local->length = 0;
 
