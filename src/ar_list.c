@@ -68,10 +68,13 @@ static arl_ptr arl_move_elements_left(arl_ptr l, size_t start_i,
  *    PUBLIC API
  ******************************************************************************/
 
+/* Returns list's length. */
 size_t arl_length(arl_ptr l) { return l->length; }
 
-/* Returns L_SUCCESS on success. */
-/* Behaviour is undefined if `l` is not a valid pointer. */
+/* Creates array list's instance. Returns NULL and sets
+ *  errno on failure.
+ * Behaviour is undefined if `default_capacity` is equal 0.
+ */
 arl_ptr arl_create(size_t default_capacity) {
   if (cll_is_overflow_size_t_multi(default_capacity, CLL_PTR_SIZE)) {
     errno = CLL_ERROR_OVERFLOW;
@@ -103,15 +106,14 @@ ERROR:
   return NULL;
 }
 
+/* Frees resouces allocated for array list's instance. */
 void arl_destroy(arl_ptr l) {
   free(l->array);
   free(l);
 }
 
-/* Gets pointer to the value under the index.
- * `p` is placeholder for the value's pointer.
- * `l` and `p` have to be valid pointers,
- *  otherwise behaviour is undefined.
+/* Gets the value under the index.
+ * Returns NULL and sets errno on failure.
  */
 void *arl_get(arl_ptr l, size_t i) {
   if (arl_is_i_too_big(l, i)) {
@@ -125,8 +127,9 @@ void *arl_get(arl_ptr l, size_t i) {
 /* Fills slice with elements from index i till index
  *  i+elemets_amount. Start i and elements amount have
  *  to respect list's length, otherwise error is raised.
- *  Slice's length has to be bigger than elements amount.
- *  Otherwise behaviour is undefined.
+ * Slice's length has to be bigger than elements amount,
+ *  otherwise behaviour is undefined.
+ * Returns NULL and sets errno on failure.
  */
 void *arl_slice(arl_ptr l, size_t start_i, size_t elements_amount,
                 void *slice[]) {
@@ -151,9 +154,8 @@ void *arl_slice(arl_ptr l, size_t start_i, size_t elements_amount,
 }
 
 /* Sets value under the index.
- *  Index has to be smaller than list's length.
- *  `l` and `value` have to be valid pointers,
- *  otherwise behaviour is undefined.
+ * Index has to be smaller than list's length.
+ * Returns NULL and sets errno on failure.
  */
 arl_ptr arl_set(arl_ptr l, size_t i, void *value) {
   if (arl_is_i_too_big(l, i)) {
@@ -167,7 +169,8 @@ arl_ptr arl_set(arl_ptr l, size_t i, void *value) {
 }
 
 /* Insert one element under the index.
- *  If index bigger than list's length, appends the value.
+ * If index bigger than list's length, appends the value.
+ * Returns NULL and sets errno on failure.
  */
 arl_ptr arl_insert(arl_ptr l, size_t i, void *value) {
   size_t new_length, move_by = 1;
@@ -197,8 +200,8 @@ arl_ptr arl_insert(arl_ptr l, size_t i, void *value) {
 
 /* Insert multiple elements. Better optimized for multiple
  *  inserts than insert. Moving elements is done only once.
- *  i has to be smaller than l->length.
- *  values should hold valid pointers. v_len is values' length.
+ *  Index has to be smaller than l->length.
+ * Returns NULL and sets errno on failure.
  */
 arl_ptr arl_insert_multi(arl_ptr l, size_t i, size_t v_len,
                          void *values[v_len]) {
@@ -230,6 +233,7 @@ arl_ptr arl_insert_multi(arl_ptr l, size_t i, size_t v_len,
 }
 
 /* Appends one element to the list's end.
+ * Returns NULL and sets errno on failure.
  */
 arl_ptr arl_append(arl_ptr l, void *value) {
   return arl_insert(l, l->length + 1, value);
@@ -268,6 +272,7 @@ void *arl_pop(arl_ptr l, size_t i) {
  *  elements amount. Otherwise behaviour is undefined.
  *  Better optimized for multiple pops than pop. Elements are
  *  moved only once.
+ * Returns NULL and sets errno on failure.
  */
 void *arl_pop_multi(arl_ptr l, size_t i, size_t elements_amount,
                     void *holder[]) {
@@ -292,6 +297,7 @@ void *arl_pop_multi(arl_ptr l, size_t i, size_t elements_amount,
 /* Removes element from under the index.
  * Executes callback function on removed element,
  *  only if callback is not NULL.
+ * Returns NULL and sets errno on failure.
  */
 arl_ptr arl_remove(arl_ptr l, size_t i, void (*callback)(void *)) {
   void *p;
@@ -309,6 +315,7 @@ arl_ptr arl_remove(arl_ptr l, size_t i, void (*callback)(void *)) {
 /* Removes all elements from the list.
  * Executes callback function on each removed element,
  *  only if callback is not NULL.
+ * Returns NULL and sets errno on failure.
  */
 arl_ptr arl_clear(arl_ptr l, void (*callback)(void *)) {
   size_t i;
