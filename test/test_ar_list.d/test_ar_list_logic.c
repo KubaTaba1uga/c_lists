@@ -71,7 +71,7 @@ arl_ptr setup_empty_list() {
   app_malloc_ExpectAndReturn(array_memory_mock_size, array_memory_mock);
   app_malloc_ExpectAndReturn(list_memory_mock_size, list_memory_mock);
 
-  arl_create(&l, default_capacity);
+  l = arl_create(default_capacity);
 
   return l;
 }
@@ -533,9 +533,9 @@ void test_arl_move_elements_left_success(void) {
 
   success = arl_move_elements_left(l, 3, 2);
 
-  TEST_ASSERT_NOT_NULL(success);
   TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, errno);
   TEST_ASSERT_EQUAL_PTR_ARRAY(expected, l->array, l->length);
+  TEST_ASSERT_NOT_NULL(success);
 }
 
 /*******************************************************************************
@@ -544,50 +544,58 @@ void test_arl_move_elements_left_success(void) {
 
 void test_arl_create_memory_failure_array(void) {
   arl_ptr l;
-  cll_error_t err;
 
   app_malloc_ExpectAndReturn(array_memory_mock_size, NULL);
 
-  err = arl_create(&l, 10);
+  errno = 0;
 
-  TEST_ASSERT_EQUAL_ERROR(CLL_ERROR_OUT_OF_MEMORY, err);
+  l = arl_create(10);
+
+  TEST_ASSERT_EQUAL_ERROR(CLL_ERROR_OUT_OF_MEMORY, errno);
+  TEST_ASSERT_NULL(l);
 }
 
 void test_arl_create_memory_failure_list(void) {
   arl_ptr l;
-  cll_error_t err;
 
   app_malloc_ExpectAndReturn(array_memory_mock_size, array_memory_mock);
   app_malloc_ExpectAndReturn(list_memory_mock_size, NULL);
   app_free_Expect(array_memory_mock);
 
-  err = arl_create(&l, 10);
+  errno = 0;
 
-  TEST_ASSERT_EQUAL_ERROR(CLL_ERROR_OUT_OF_MEMORY, err);
+  l = arl_create(10);
+
+  TEST_ASSERT_EQUAL_ERROR(CLL_ERROR_OUT_OF_MEMORY, errno);
+  TEST_ASSERT_NULL(l);
 }
 
 void test_arl_create_overflow_failure(void) {
   arl_ptr l;
-  cll_error_t err;
 
-  err = arl_create(&l, ARL_CAPACITY_MAX + 1);
+  errno = 0;
 
-  TEST_ASSERT_EQUAL_ERROR(CLL_ERROR_OVERFLOW, err);
+  l = arl_create(ARL_CAPACITY_MAX + 1);
+
+  TEST_ASSERT_EQUAL_ERROR(CLL_ERROR_OVERFLOW, errno);
+  TEST_ASSERT_NULL(l);
 }
 
 void test_arl_create_success(void) {
   size_t default_capacity = array_memory_mock_size / sizeof(void *);
   arl_ptr l;
-  cll_error_t err;
 
   app_malloc_ExpectAndReturn(array_memory_mock_size, array_memory_mock);
   app_malloc_ExpectAndReturn(list_memory_mock_size, list_memory_mock);
 
-  err = arl_create(&l, default_capacity);
+  errno = 0;
 
-  TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
+  l = arl_create(default_capacity);
+
+  TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, errno);
   TEST_ASSERT_EQUAL(l->length, 0);
   TEST_ASSERT_EQUAL(l->capacity, default_capacity);
+  TEST_ASSERT_NOT_NULL(l);
 }
 
 void test_arl_get_i_too_big_failure(void) {

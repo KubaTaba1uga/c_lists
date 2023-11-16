@@ -19,7 +19,7 @@
 typedef struct ar_list *arl_ptr;
 
 // List operations
-cll_error_t arl_create(arl_ptr *l_p, size_t default_size);
+arl_ptr arl_create(size_t default_size);
 void arl_destroy(arl_ptr l);
 size_t arl_length(arl_ptr l);
 
@@ -34,7 +34,7 @@ arl_ptr arl_append(arl_ptr l, void *value);
 arl_ptr arl_insert(arl_ptr l, size_t i, void *value);
 arl_ptr arl_insert_multi(arl_ptr l, size_t i, size_t v_len,
                          void *values[v_len]);
-//// Getters
+//// Removers
 void *arl_pop(arl_ptr l, size_t i);
 void *arl_pop_multi(arl_ptr l, size_t i, size_t elements_amount,
                     void *holder[]);

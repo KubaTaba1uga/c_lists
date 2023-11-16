@@ -72,14 +72,17 @@ size_t arl_length(arl_ptr l) { return l->length; }
 
 /* Returns L_SUCCESS on success. */
 /* Behaviour is undefined if `l` is not a valid pointer. */
-cll_error_t arl_create(arl_ptr *l, size_t default_capacity) {
-  if (cll_is_overflow_size_t_multi(default_capacity, CLL_PTR_SIZE))
-    return CLL_ERROR_OVERFLOW;
+arl_ptr arl_create(size_t default_capacity) {
+  if (cll_is_overflow_size_t_multi(default_capacity, CLL_PTR_SIZE)) {
+    errno = CLL_ERROR_OVERFLOW;
+    goto ERROR;
+  }
 
   void *l_array = malloc(default_capacity * CLL_PTR_SIZE);
 
-  if (!l_array)
-    return CLL_ERROR_OUT_OF_MEMORY;
+  if (!l_array) {
+    goto ERROR_OOM;
+  }
 
   arl_ptr l_local = malloc(sizeof(struct ar_list));
 
@@ -89,13 +92,15 @@ cll_error_t arl_create(arl_ptr *l, size_t default_capacity) {
   l_local->array = l_array;
   l_local->capacity = default_capacity;
   l_local->length = 0;
-  *l = l_local;
 
-  return CLL_SUCCESS;
+  return l_local;
 
 CLEANUP_L_LOCAL_OOM:
   free(l_array);
-  return CLL_ERROR_OUT_OF_MEMORY;
+ERROR_OOM:
+  errno = CLL_ERROR_OUT_OF_MEMORY;
+ERROR:
+  return NULL;
 }
 
 void arl_destroy(arl_ptr l) {
