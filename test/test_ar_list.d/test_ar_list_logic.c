@@ -2,6 +2,7 @@
  *    IMPORTS
  ******************************************************************************/
 // C standard library
+#include <errno.h>
 #include <limits.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -635,25 +636,31 @@ void test_arl_set_i_too_big_failure(void) {
 void parametrize_test_arl_set_i_too_big_failure(arl_ptr l) {
   size_t i, indexes_to_check[] = {l->length, l->length + 1, l->length + 2};
   char value[] = "ABC";
-  cll_error_t err;
+  void *success;
+
+  errno = 0;
 
   for (i = 0; i < sizeof(indexes_to_check) / sizeof(size_t); i++) {
-    err = arl_set(l, indexes_to_check[i], value);
-    TEST_ASSERT_EQUAL_ERROR(CLL_ERROR_INDEX_TOO_BIG, err);
+    success = arl_set(l, indexes_to_check[i], value);
+    TEST_ASSERT_EQUAL_ERROR(CLL_ERROR_INDEX_TOO_BIG, errno);
+    TEST_ASSERT_NULL(success);
   }
 }
 
 void test_arl_set_success(void) {
   arl_ptr l = setup_small_list();
   int i, value = 13;
-  cll_error_t err;
+  void *success;
+
+  errno = 0;
 
   for (i = 0; i < arl_small_length; i++) {
-    err = arl_set(l, i, (void *)&value);
+    success = arl_set(l, i, (void *)&value);
 
-    TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
+    TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, errno);
     TEST_ASSERT_EQUAL_PTR(&value, l->array[i]);
     TEST_ASSERT_EQUAL(value, *(int *)(l->array[i]));
+    TEST_ASSERT_NOT_NULL(success);
   }
 }
 
@@ -909,7 +916,7 @@ void test_arl_remove_success_callback(void) {
 
 void test_arl_insert_multi_success(void) {
   size_t len_cp, len_to_insert;
-  cll_error_t err;
+  void *success;
   int i;
   arl_ptr l = setup_small_list();
 
@@ -922,49 +929,56 @@ void test_arl_insert_multi_success(void) {
   len_cp = l->length;
   i = 2;
 
-  err = arl_insert_multi(l, i, len_to_insert, to_insert);
+  errno = 0;
 
-  TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
+  success = arl_insert_multi(l, i, len_to_insert, to_insert);
+
+  TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, errno);
   TEST_ASSERT_EQUAL(len_cp + len_to_insert, l->length);
   TEST_ASSERT_EQUAL_PTR_ARRAY(array_after_move, l->array,
                               sizeof(array_after_move) / sizeof(void *));
+  TEST_ASSERT_NOT_NULL(success);
 }
 
 void test_arl_slice_start_i_too_big(void) {
   size_t slice_len;
-  cll_error_t err;
+  void *success;
   int i;
   void *p;
   arl_ptr l = setup_small_list();
 
   slice_len = 0;
-
   i = l->length;
 
-  err = arl_slice(l, i, slice_len, &p);
+  errno = 0;
 
-  TEST_ASSERT_EQUAL_ERROR(CLL_ERROR_INDEX_TOO_BIG, err);
+  success = arl_slice(l, i, slice_len, &p);
+
+  TEST_ASSERT_EQUAL_ERROR(CLL_ERROR_INDEX_TOO_BIG, errno);
+  TEST_ASSERT_NULL(success);
 }
 
 void test_arl_slice_too_much_elements_to_move(void) {
   size_t slice_len;
-  cll_error_t err;
+  void *success;
   int i;
   void *p;
   arl_ptr l = setup_small_list();
 
   slice_len = l->length;
-
   i = 0;
 
-  err = arl_slice(l, i, slice_len, &p);
+  errno = 0;
 
-  TEST_ASSERT_EQUAL_ERROR(CLL_ERROR_INVALID_ARGS, err);
+  success = arl_slice(l, i, slice_len, &p);
+
+  TEST_ASSERT_EQUAL_ERROR(CLL_ERROR_INVALID_ARGS, errno);
+  TEST_ASSERT_NULL(success);
 }
 
 void test_arl_slice_success(void) {
   size_t slice_len;
-  cll_error_t err;
+  void *success;
   int i;
   arl_ptr l = setup_small_list();
 
@@ -975,11 +989,14 @@ void test_arl_slice_success(void) {
 
   i = 1;
 
-  err = arl_slice(l, i, slice_len, slice);
+  errno = 0;
 
-  TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
+  success = arl_slice(l, i, slice_len, slice);
+
+  TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, errno);
   TEST_ASSERT_EQUAL_PTR_ARRAY(expected, slice,
                               sizeof(expected) / sizeof(void *));
+  TEST_ASSERT_NOT_NULL(success);
 }
 
 void test_arl_pop_multi_success_0(void) {
@@ -1000,12 +1017,12 @@ void test_arl_pop_multi_success_0(void) {
 
   success = arl_pop_multi(l, i, slice_len, slice);
 
-  TEST_ASSERT_NOT_NULL(success);
   TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, errno);
   TEST_ASSERT_EQUAL_PTR_ARRAY(expected_slice, slice,
                               sizeof(expected_slice) / sizeof(void *));
   TEST_ASSERT_EQUAL_PTR_ARRAY(expected_list_array, l->array,
                               sizeof(expected_list_array) / sizeof(void *));
+  TEST_ASSERT_NOT_NULL(success);
 }
 
 void test_arl_pop_multi_success_1(void) {
@@ -1026,12 +1043,12 @@ void test_arl_pop_multi_success_1(void) {
 
   success = arl_pop_multi(l, i, slice_len, slice);
 
-  TEST_ASSERT_NOT_NULL(success);
   TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, errno);
   TEST_ASSERT_EQUAL_PTR_ARRAY(expected_slice, slice,
                               sizeof(expected_slice) / sizeof(void *));
   TEST_ASSERT_EQUAL_PTR_ARRAY(expected_list_array, l->array,
                               sizeof(expected_list_array) / sizeof(void *));
+  TEST_ASSERT_NOT_NULL(success);
 }
 
 void test_arl_clear_no_callback(void) {

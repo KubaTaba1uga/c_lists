@@ -123,22 +123,26 @@ void *arl_get(arl_ptr l, size_t i) {
  *  Slice's length has to be bigger than elements amount.
  *  Otherwise behaviour is undefined.
  */
-cll_error_t arl_slice(arl_ptr l, size_t start_i, size_t elements_amount,
-                      void *slice[]) {
+void *arl_slice(arl_ptr l, size_t start_i, size_t elements_amount,
+                void *slice[]) {
   size_t k, last_elem_i;
 
-  if (arl_is_i_too_big(l, start_i))
-    return CLL_ERROR_INDEX_TOO_BIG;
+  if (arl_is_i_too_big(l, start_i)) {
+    errno = CLL_ERROR_INDEX_TOO_BIG;
+    return NULL;
+  }
 
   last_elem_i = start_i + elements_amount;
-  if (arl_is_i_too_big(l, last_elem_i))
-    return CLL_ERROR_INVALID_ARGS;
+  if (arl_is_i_too_big(l, last_elem_i)) {
+    errno = CLL_ERROR_INVALID_ARGS;
+    return NULL;
+  }
 
   for (k = 0; k < elements_amount; k++) {
     slice[k] = _arl_get(l, k + start_i);
   }
 
-  return CLL_SUCCESS;
+  return slice;
 }
 
 /* Sets value under the index.
@@ -146,13 +150,15 @@ cll_error_t arl_slice(arl_ptr l, size_t start_i, size_t elements_amount,
  *  `l` and `value` have to be valid pointers,
  *  otherwise behaviour is undefined.
  */
-cll_error_t arl_set(arl_ptr l, size_t i, void *value) {
-  if (arl_is_i_too_big(l, i))
-    return CLL_ERROR_INDEX_TOO_BIG;
+arl_ptr arl_set(arl_ptr l, size_t i, void *value) {
+  if (arl_is_i_too_big(l, i)) {
+    errno = CLL_ERROR_INDEX_TOO_BIG;
+    return NULL;
+  }
 
   _arl_set(l, i, value);
 
-  return CLL_SUCCESS;
+  return l;
 }
 
 /* Insert one element under the index.
@@ -189,8 +195,8 @@ arl_ptr arl_insert(arl_ptr l, size_t i, void *value) {
  *  i has to be smaller than l->length.
  *  values should hold valid pointers. v_len is values' length.
  */
-cll_error_t arl_insert_multi(arl_ptr l, size_t i, size_t v_len,
-                             void *values[v_len]) {
+arl_ptr arl_insert_multi(arl_ptr l, size_t i, size_t v_len,
+                         void *values[v_len]) {
   size_t new_length, k, move_by = v_len;
   void *success;
 
@@ -202,12 +208,12 @@ cll_error_t arl_insert_multi(arl_ptr l, size_t i, size_t v_len,
   while (new_length > l->capacity) {
     success = arl_grow_array_capacity(l);
     if (!success)
-      goto ERROR;
+      return NULL;
   }
 
   success = arl_move_elements_right(l, i, move_by);
   if (!success)
-    goto ERROR;
+    return NULL;
 
   for (k = i; k < i + v_len; k++) {
     _arl_set(l, k, values[k - i]);
@@ -215,9 +221,7 @@ cll_error_t arl_insert_multi(arl_ptr l, size_t i, size_t v_len,
 
   l->length = new_length;
 
-  return CLL_SUCCESS;
-ERROR:
-  return CLL_SUCCESS;
+  return l;
 }
 
 /* Appends one element to the list's end.
@@ -263,10 +267,9 @@ void *arl_pop(arl_ptr l, size_t i) {
 void *arl_pop_multi(arl_ptr l, size_t i, size_t elements_amount,
                     void *holder[]) {
   void *success;
-  cll_error_t err;
 
-  err = arl_slice(l, i, elements_amount, holder);
-  if (err)
+  success = arl_slice(l, i, elements_amount, holder);
+  if (!success)
     return NULL;
 
   if (cll_is_overflow_size_t_add(i, elements_amount)) {

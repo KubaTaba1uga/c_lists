@@ -24,15 +24,17 @@ void arl_destroy(arl_ptr l);
 size_t arl_length(arl_ptr l);
 
 // List's data operations
+//// Getters
 void *arl_get(arl_ptr l, size_t i);
-cll_error_t arl_slice(arl_ptr l, size_t start_i, size_t elements_amount,
-                      void *slice[]);
-cll_error_t arl_set(arl_ptr l, size_t i, void *value);
-arl_ptr arl_insert(arl_ptr l, size_t i, void *value);
+void *arl_slice(arl_ptr l, size_t start_i, size_t elements_amount,
+                void *slice[]);
+//// Setters
+arl_ptr arl_set(arl_ptr l, size_t i, void *value);
 arl_ptr arl_append(arl_ptr l, void *value);
-cll_error_t arl_insert_multi(arl_ptr l, size_t i, size_t v_len,
-                             void *values[v_len]);
-
+arl_ptr arl_insert(arl_ptr l, size_t i, void *value);
+arl_ptr arl_insert_multi(arl_ptr l, size_t i, size_t v_len,
+                         void *values[v_len]);
+//// Getters
 void *arl_pop(arl_ptr l, size_t i);
 void *arl_pop_multi(arl_ptr l, size_t i, size_t elements_amount,
                     void *holder[]);
