@@ -158,7 +158,7 @@ cll_error_t arl_set(arl_ptr l, size_t i, void *value) {
 /* Insert one element under the index.
  *  If index bigger than list's length, appends the value.
  */
-cll_error_t arl_insert(arl_ptr l, size_t i, void *value) {
+arl_ptr arl_insert(arl_ptr l, size_t i, void *value) {
   size_t new_length, move_by = 1;
   void *success;
 
@@ -170,21 +170,18 @@ cll_error_t arl_insert(arl_ptr l, size_t i, void *value) {
   if (new_length > l->capacity) {
     success = arl_grow_array_capacity(l);
     if (!success)
-      goto ERROR;
+      return NULL;
   }
 
   success = arl_move_elements_right(l, i, move_by);
   if (!success)
-    goto ERROR;
+    return NULL;
 
   _arl_set(l, i, value);
 
   l->length = new_length;
 
-  return CLL_SUCCESS;
-
-ERROR:
-  return CLL_SUCCESS;
+  return l;
 }
 
 /* Insert multiple elements. Better optimized for multiple
@@ -225,7 +222,7 @@ ERROR:
 
 /* Appends one element to the list's end.
  */
-cll_error_t arl_append(arl_ptr l, void *value) {
+arl_ptr arl_append(arl_ptr l, void *value) {
   return arl_insert(l, l->length + 1, value);
 }
 
