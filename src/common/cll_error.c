@@ -44,7 +44,7 @@ static const size_t CLL_ERROR_STRINGS_LEN =
  *    PUBLIC API
  ******************************************************************************/
 
-const char *cll_strerror(cll_error_t error) {
+const char *cll_strerror(cll_error error) {
   // Return string on success, NULL on failure.
   // This function is only exception from `always
   //  return cll_error_t` design decision.
