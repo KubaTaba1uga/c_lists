@@ -84,6 +84,7 @@ arl_ptr setup_small_list() {
 }
 
 void parametrize_test_arl_get_i_too_big_failure(arl_ptr l);
+void parametrize_test_arl_set_i_too_big_failure(arl_ptr l);
 
 void test_arl_create_memory_failure_array(void) {
   arl_ptr l;
@@ -154,6 +155,37 @@ void test_arl_get_success(void) {
 
     TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
     TEST_ASSERT_EQUAL(&arl_small_values[i], c);
+  }
+}
+void test_arl_set_i_too_big_failure(void) {
+  arl_ptr ls_to_param[] = {setup_empty_list(), setup_small_list()};
+
+  for (size_t i = 0; i < sizeof(ls_to_param) / sizeof(arl_ptr); i++)
+    parametrize_test_arl_set_i_too_big_failure(ls_to_param[i]);
+}
+
+void parametrize_test_arl_set_i_too_big_failure(arl_ptr l) {
+  size_t i, indexes_to_check[] = {l->length, l->length + 1, l->length + 2};
+  char value[] = "ABC";
+  cll_error err;
+
+  for (i = 0; i < sizeof(indexes_to_check) / sizeof(size_t); i++) {
+    err = arl_set(l, indexes_to_check[i], value);
+    TEST_ASSERT_EQUAL_ERROR(CLL_ERROR_INDEX_TOO_BIG, err);
+  }
+}
+
+void test_arl_set_success(void) {
+  arl_ptr l = setup_small_list();
+  int i, value = 13;
+  cll_error err;
+
+  for (i = 0; i < arl_small_length; i++) {
+    err = arl_set(l, i, (void *)&value);
+
+    TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
+    TEST_ASSERT_EQUAL_PTR(&value, l->array[i]);
+    TEST_ASSERT_EQUAL(value, *(int *)(l->array[i]));
   }
 }
 

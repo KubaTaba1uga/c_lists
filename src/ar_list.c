@@ -57,7 +57,7 @@ struct ar_list {
 
 static bool arl_is_i_too_big(arl_ptr l, size_t i);
 static CLL_VALUE_TYPE _arl_get(arl_ptr l, size_t i);
-/* static void _arl_set(arl_ptr l, size_t i, void *value); */
+static void _arl_set(arl_ptr l, size_t i, CLL_VALUE_TYPE value);
 /* static arl_ptr arl_grow_array_capacity(arl_ptr l); */
 /* static arl_ptr arl_move_elements_right(arl_ptr l, size_t start_i, */
 /*                                        size_t move_by); */
@@ -158,20 +158,18 @@ cll_error arl_get(arl_ptr l, size_t i, CLL_VALUE_TYPE *value) {
 /*   return slice; */
 /* } */
 
-/* /\* Sets value under the index. */
-/*  * Index has to be smaller than list's length. */
-/*  * Returns NULL and sets errno on failure. */
-/*  *\/ */
-/* arl_ptr arl_set(arl_ptr l, size_t i, void *value) { */
-/*   if (arl_is_i_too_big(l, i)) { */
-/*     errno = CLL_ERROR_INDEX_TOO_BIG; */
-/*     return NULL; */
-/*   } */
+/* Sets value under the index.
+ * Index has to be smaller than list's length.
+ * Returns NULL and sets errno on failure.
+ */
+cll_error arl_set(arl_ptr l, size_t i, CLL_VALUE_TYPE value) {
+  if (arl_is_i_too_big(l, i))
+    return CLL_ERROR_INDEX_TOO_BIG;
 
-/*   _arl_set(l, i, value); */
+  _arl_set(l, i, value);
 
-/*   return l; */
-/* } */
+  return CLL_SUCCESS;
+}
 
 /* /\* Insert one element under the index. */
 /*  * If index bigger than list's length, appends the value. */
@@ -351,7 +349,9 @@ cll_error arl_get(arl_ptr l, size_t i, CLL_VALUE_TYPE *value) {
  */
 
 CLL_VALUE_TYPE _arl_get(arl_ptr l, size_t i) { return l->array[i]; }
-/* void _arl_set(arl_ptr l, size_t i, void *value) { l->array[i] = value; } */
+void _arl_set(arl_ptr l, size_t i, CLL_VALUE_TYPE value) {
+  l->array[i] = value;
+}
 
 /* /\* Counts list's new capacity. */
 /*  * Prevents overflow by assigning ARL_CAPACITY_MAX, whenever overflow */
