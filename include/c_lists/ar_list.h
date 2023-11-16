@@ -11,6 +11,7 @@
 #include <stddef.h>
 
 // App
+#include "cll_def.h"
 #include "cll_error.h"
 
 /*******************************************************************************
@@ -19,13 +20,13 @@
 typedef struct ar_list *arl_ptr;
 
 // List operations
-arl_ptr arl_create(size_t default_size);
-void arl_destroy(arl_ptr l);
-size_t arl_length(arl_ptr l);
+cll_error arl_create(arl_ptr *l, size_t default_size);
+cll_error arl_destroy(arl_ptr l);
+cll_error arl_length(arl_ptr l, size_t *length);
 
 // List's data operations
 //// Getters
-void *arl_get(arl_ptr l, size_t i);
+cll_error arl_get(arl_ptr l, size_t i, CLL_VALUE_TYPE *value);
 void *arl_slice(arl_ptr l, size_t start_i, size_t elements_amount,
                 void *slice[]);
 //// Setters
