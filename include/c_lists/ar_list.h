@@ -40,6 +40,6 @@ void *arl_pop(arl_ptr l, size_t i);
 void *arl_pop_multi(arl_ptr l, size_t i, size_t elements_amount,
                     void *holder[]);
 arl_ptr arl_remove(arl_ptr l, size_t i, void (*callback)(void *));
-arl_ptr arl_clear(arl_ptr l, void (*callback)(void *));
+cll_error arl_clear(arl_ptr l, void (*callback)(CLL_VALUE_TYPE));
 
 #endif

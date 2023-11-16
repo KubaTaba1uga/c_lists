@@ -68,6 +68,8 @@ void TEST_ASSERT_EQUAL_ERROR(cll_error expected, cll_error received) {
   TEST_ASSERT_EQUAL_STRING(cll_strerror(expected), cll_strerror(received));
 }
 
+void dummy_free(char _) { free_counter++; }
+
 arl_ptr setup_empty_list() {
   arl_ptr l;
   cll_error err;
@@ -273,6 +275,27 @@ void test_arl_set_success(void) {
     TEST_ASSERT_EQUAL(value, l->array[i]);
     //
   }
+}
+
+void test_arl_clear_no_callback(void) {
+  cll_error err;
+  arl_ptr l = setup_small_list();
+
+  err = arl_clear(l, NULL);
+
+  TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
+  TEST_ASSERT_EQUAL(0, l->length);
+}
+
+void test_arl_clear_callback(void) {
+  cll_error err;
+  arl_ptr l = setup_small_list();
+
+  err = arl_clear(l, dummy_free);
+
+  TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
+  TEST_ASSERT_EQUAL(0, l->length);
+  TEST_ASSERT_EQUAL(arl_small_length, free_counter);
 }
 
 /*******************************************************************************

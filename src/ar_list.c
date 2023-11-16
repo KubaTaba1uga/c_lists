@@ -166,6 +166,33 @@ cll_error arl_set(arl_ptr l, size_t i, CLL_VALUE_TYPE value) {
   return CLL_SUCCESS;
 }
 
+/* Removes all elements from the list.
+ * Executes callback function on each removed element,
+ *  only if callback is not NULL.
+ */
+cll_error arl_clear(arl_ptr l, void (*callback)(CLL_VALUE_TYPE)) {
+  size_t i;
+  CLL_VALUE_TYPE value;
+  cll_error err;
+
+  // POP MULTI is not used here to avoid extra loop iteration and
+  // some memory. Slicing is unnecessary from clear's point of view.
+  if (callback) {
+    for (i = 0; i < l->length; i++) {
+      _arl_get(l, i, &value);
+      callback(value);
+    }
+  }
+
+  err = arl_move_elements_left(l, l->length, l->length);
+  if (err)
+    return err;
+
+  l->length = 0;
+
+  return CLL_SUCCESS;
+}
+
 /* Move elements to the right by `move_by`, starting from `start_i`.
  * Ex:
  *    INPUT  l.array {0, 1, 2, , ,}, start_i 1, move_by 2
