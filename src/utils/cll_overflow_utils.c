@@ -5,7 +5,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "../common/cll_def.h"
+#include "c_lists/cll_def.h"
 
 /*******************************************************************************
  *    PRIVATE API
