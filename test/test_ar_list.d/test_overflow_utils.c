@@ -1,13 +1,14 @@
 /*******************************************************************************
  *    IMPORTS
  ******************************************************************************/
+// C standard library
 #include <limits.h>
-
 #include <stddef.h>
+// Test framework
 #include <unity.h>
-
+// App
+#include "ar_list.c"
 #include "c_lists/cll_def.h"
-#include "utils/cll_overflow_utils.h"
 
 /*******************************************************************************
  *    PUBLIC API TESTS

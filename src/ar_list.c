@@ -41,8 +41,6 @@
 #include "c_lists/cll_def.h"
 #include "c_lists/cll_error.h"
 #include "cll_interfaces.h"
-#include "utils/cll_overflow_utils.h"
-#include "utils/cll_pointers_utils.h"
 
 /*******************************************************************************
  *    PRIVATE DECLARATIONS
@@ -61,12 +59,20 @@ struct ar_list {
 static bool arl_is_i_too_big(arl_ptr l, size_t i);
 static void _arl_get(arl_ptr l, size_t i, CLL_VALUE_TYPE *value);
 static void _arl_set(arl_ptr l, size_t i, CLL_VALUE_TYPE value);
-
 static cll_error arl_grow_array_capacity(arl_ptr l);
 static cll_error arl_move_elements_right(arl_ptr l, size_t start_i,
                                          size_t move_by);
 static cll_error arl_move_elements_left(arl_ptr l, size_t start_i,
                                         size_t move_by);
+// Pointers utils
+static bool cll_is_overflow_size_t_multi(size_t a, size_t b);
+static bool cll_is_overflow_size_t_add(size_t a, size_t b);
+static bool cll_is_underflow_size_t_sub(size_t a, size_t b);
+// Array utils
+static void cll_move_pointers_array_rstart(CLL_VALUE_TYPE dest[],
+                                           CLL_VALUE_TYPE src[], size_t n);
+static void cll_move_pointers_array_lstart(CLL_VALUE_TYPE dest[],
+                                           CLL_VALUE_TYPE src[], size_t n);
 
 /*******************************************************************************
  *    PUBLIC API
@@ -103,7 +109,8 @@ ERROR_OOM:
   return CLL_ERROR_OUT_OF_MEMORY;
 }
 
-/* Frees resouces allocated for array list's instance. */
+/* Frees resouces allocated for array list's instance.
+ */
 cll_error arl_destroy(arl_ptr l) {
   free(l->array);
   free(l);
@@ -111,7 +118,8 @@ cll_error arl_destroy(arl_ptr l) {
   return CLL_SUCCESS;
 }
 
-/* Gets list's length. */
+/* Gets list's length.
+ */
 cll_error arl_length(arl_ptr l, size_t *length) {
   *length = l->length;
 
@@ -352,8 +360,8 @@ bool arl_is_i_too_big(arl_ptr l, size_t i) { return i >= (l->length); }
 cll_error arl_count_new_capacity(size_t current_length, size_t current_capacity,
                                  size_t *new_capacity) {
 
-  /* Size is always smaller than capacity. There is no need in checking new_size
-   * divided by cur_size overflow.
+  /* Size is always smaller than capacity. There is no need in checking
+   * new_size divided by cur_size overflow.
    */
   if (cll_is_overflow_size_t_multi(current_length, 3) ||
       cll_is_overflow_size_t_add(current_capacity, 2)) {
@@ -396,7 +404,8 @@ cll_error arl_move_elements_right(arl_ptr l, size_t start_i, size_t move_by) {
 
   size_t new_length, elements_to_move_amount;
 
-  // Idea is to detect all failures upfront so recovery from half moved array
+  // Idea is to detect all failures upfront so recovery from half moved
+  // array
   //  is not required.
   if (cll_is_overflow_size_t_add(l->length, move_by))
     return CLL_ERROR_OVERFLOW;
@@ -440,7 +449,8 @@ cll_error arl_move_elements_left(arl_ptr l, size_t start_i, size_t move_by) {
   if (move_by > start_i)
     move_by = start_i;
 
-  // Idea is to detect all failures upfront so recovery from half moved array
+  // Idea is to detect all failures upfront so recovery from half moved
+  // array
   //  is not required.
 
   if (cll_is_underflow_size_t_sub(l->length, move_by))
@@ -469,4 +479,62 @@ cll_error arl_move_elements_left(arl_ptr l, size_t start_i, size_t move_by) {
   l->length = new_length;
 
   return CLL_SUCCESS;
+}
+
+/*******************************************************************************
+ *    OVERFLOW UTILS
+ ******************************************************************************/
+#define _is_overflow_multi(a, b, max) (a != 0) && (b > max / a)
+#define _is_overflow_add(a, b, max) (a > max - b)
+#define _is_underflow_sub(a, b) (a < b)
+
+bool cll_is_overflow_size_t_multi(size_t a, size_t b) {
+  return _is_overflow_multi(a, b, CLL_SIZE_T_MAX);
+}
+
+bool cll_is_overflow_size_t_add(size_t a, size_t b) {
+  return _is_overflow_add(a, b, CLL_SIZE_T_MAX);
+}
+
+bool cll_is_underflow_size_t_sub(size_t a, size_t b) {
+  return _is_underflow_sub(a, b);
+}
+
+/*******************************************************************************
+ *    ARRAY UTILS
+ ******************************************************************************/
+
+/* Move pointers from `src` to `dest`. N is number of elements to move.
+ *  Moving starts from the end, allowing specific arrays overlapping.
+ *  When dest is after source behaviour is well defined. Otherwise if it's not.
+ *  If arrays do not overlap than it doesn't matter.
+ */
+void cll_move_pointers_array_rstart(CLL_VALUE_TYPE dest[], CLL_VALUE_TYPE src[],
+                                    size_t n) {
+  while (n-- > 0) {
+    dest[n] = src[n];
+
+#ifdef DEBUG_MOVE_POINTERS
+    // This may cause bugs on some setups but is helpuful in testing
+    src[n] = 0;
+#endif
+  }
+}
+
+/* Move pointers from `src` to `dest`. N is number of elements to move.
+ * Moving starts from the beginning, allowing specific arrays overlapping.
+ * When dest is before source behaviour is well defined. Otherwise if it's
+ * not. If arrays do not overlap than it doesn't matter.
+ */
+void cll_move_pointers_array_lstart(CLL_VALUE_TYPE dest[], CLL_VALUE_TYPE src[],
+                                    size_t n) {
+  size_t i;
+  for (i = 0; i < n; i++) {
+    dest[i] = src[i];
+
+#ifdef DEBUG_MOVE_POINTERS
+    // This may cause bugs on some setups but is helpuful in testing
+    src[i] = 0;
+#endif
+  }
 }
