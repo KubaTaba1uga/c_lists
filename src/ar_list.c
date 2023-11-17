@@ -168,6 +168,35 @@ cll_error arl_set(arl_ptr l, size_t i, CLL_VALUE_TYPE value) {
 
   return CLL_SUCCESS;
 }
+
+/* Insert one element under the index.
+ *  If index bigger than list's length, appends the value.
+ */
+cll_error arl_insert(arl_ptr l, size_t i, CLL_VALUE_TYPE value) {
+  size_t new_length, move_by = 1;
+  cll_error err;
+
+  if (arl_is_i_too_big(l, i))
+    i = l->length;
+
+  new_length = l->length + move_by;
+
+  if (new_length > l->capacity) {
+    err = arl_grow_array_capacity(l);
+    if (err)
+      return err;
+  }
+
+  err = arl_move_elements_right(l, i, move_by);
+  if (err)
+    return err;
+
+  _arl_set(l, i, value);
+
+  l->length = new_length;
+
+  return CLL_SUCCESS;
+}
 /* Pops element from under the index. Sets
  * value to the popped element's value.
  * If list is empty, returns CLL_ERROR_POP_EMPTY_LIST.

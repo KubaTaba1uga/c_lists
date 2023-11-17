@@ -31,8 +31,8 @@ cll_error arl_slice(arl_ptr l, size_t start_i, size_t elements_amount,
                     CLL_VALUE_TYPE slice[]);
 //// Setters
 cll_error arl_set(arl_ptr l, size_t i, CLL_VALUE_TYPE value);
+cll_error arl_insert(arl_ptr l, size_t i, CLL_VALUE_TYPE value);
 arl_ptr arl_append(arl_ptr l, void *value);
-arl_ptr arl_insert(arl_ptr l, size_t i, void *value);
 arl_ptr arl_insert_multi(arl_ptr l, size_t i, size_t v_len,
                          void *values[v_len]);
 //// Removers

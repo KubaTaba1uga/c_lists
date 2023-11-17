@@ -63,6 +63,7 @@ void tearDown(void) {
  ******************************************************************************/
 void parametrize_test_arl_get_i_too_big_failure(arl_ptr l);
 void parametrize_test_arl_set_i_too_big_failure(arl_ptr l);
+void parametrize_test_arl_insert_success(arl_ptr l, size_t i, int value);
 
 void TEST_ASSERT_EQUAL_ERROR(cll_error expected, cll_error received) {
   TEST_ASSERT_EQUAL_STRING(cll_strerror(expected), cll_strerror(received));
@@ -277,6 +278,45 @@ void test_arl_set_success(void) {
   }
 }
 
+void test_arl_insert_success(void) {
+  int value = 13;
+  size_t i, is_to_check[] = {0, 1, 2, 3, 4, 5};
+  arl_ptr l;
+
+  for (i = 0; i < sizeof(is_to_check) / sizeof(size_t); i++) {
+    l = setup_small_list();
+
+    parametrize_test_arl_insert_success(l, is_to_check[i], value);
+
+    resetTest();
+  }
+}
+
+void parametrize_test_arl_insert_success(arl_ptr l, size_t i, int value) {
+
+  size_t k, old_len = l->length;
+  cll_error err;
+
+  err = arl_insert(l, i, &value);
+
+  // Check inserted value
+  TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
+  TEST_ASSERT_EQUAL(old_len + 1, l->length);
+  TEST_ASSERT_EQUAL_PTR(&value, l->array[i]);
+  TEST_ASSERT_EQUAL(value, *(int *)(l->array[i]));
+
+  // Check not moved values
+  for (k = 0; k < i; k++) {
+    TEST_ASSERT_NOT_NULL(l->array[k]);
+    TEST_ASSERT_EQUAL(arl_small_values[k], *(int *)l->array[k]);
+  }
+  // Check moved values
+  for (k = i + 1; k < l->length; k++) {
+    TEST_ASSERT_NOT_NULL(l->array[k]);
+    TEST_ASSERT_EQUAL(arl_small_values[k - 1], *(int *)l->array[k]);
+  }
+}
+
 void test_arl_pop_i_overflow(void) {
 
   void *expected, *received;
@@ -296,7 +336,7 @@ void test_arl_pop_i_overflow(void) {
   TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
   TEST_ASSERT_EQUAL_PTR(expected, received);
   TEST_ASSERT_EQUAL(len_cp - 1, l->length);
-  TEST_ASSERT_EQUAL_PTR_ARRAY(array_after_move, l->array, l->length);
+  TEST_ASSERT_EQUAL_PTR_ARRAY(array_after_move, l->array, arl_small_length);
 }
 
 void test_arl_pop_empty_list(void) {
