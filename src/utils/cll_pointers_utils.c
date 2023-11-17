@@ -19,6 +19,11 @@ void cll_move_pointers_array_rstart(CLL_VALUE_TYPE dest[], CLL_VALUE_TYPE src[],
                                     size_t n) {
   while (n-- > 0) {
     dest[n] = src[n];
+
+#ifdef DEBUG_MOVE_POINTERS
+    // This may cause bugs on some setups but is helpuful in testing
+    src[n] = NULL;
+#endif
   }
 }
 
@@ -32,5 +37,10 @@ void cll_move_pointers_array_lstart(CLL_VALUE_TYPE dest[], CLL_VALUE_TYPE src[],
   size_t i;
   for (i = 0; i < n; i++) {
     dest[i] = src[i];
+
+#ifdef DEBUG_MOVE_POINTERS
+    // This may cause bugs on some setups but is helpuful in testing
+    src[i] = NULL;
+#endif
   }
 }

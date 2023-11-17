@@ -100,13 +100,13 @@ arl_ptr setup_small_list() {
 void mock_app_realloc(arl_ptr l, size_t new_array_size) {
   // Do not use realloc, it would invalidate l->array
   // before actual function execution.
-  void *new_array;
+  char *new_array;
 
   new_array = malloc(new_array_size);
   if (!new_array)
     TEST_FAIL_MESSAGE("Unable to allocate memory for realloc mock!");
 
-  new_array = memcpy(new_array, l->array, l->capacity * CLL_PTR_SIZE);
+  new_array = memcpy(new_array, l->array, l->capacity * sizeof(char));
 
   if (!new_array)
     TEST_FAIL_MESSAGE("Unable to copy memory for realloc mock!");

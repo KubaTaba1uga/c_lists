@@ -106,7 +106,7 @@ void mock_app_realloc(arl_ptr l, size_t new_array_size) {
   if (!new_array)
     TEST_FAIL_MESSAGE("Unable to allocate memory for realloc mock!");
 
-  new_array = memcpy(new_array, l->array, l->capacity * CLL_PTR_SIZE);
+  new_array = memcpy(new_array, l->array, l->capacity * sizeof(void *));
 
   if (!new_array)
     TEST_FAIL_MESSAGE("Unable to copy memory for realloc mock!");
@@ -346,7 +346,7 @@ void test_arl_append_grow_array_capacity(void) {
   err = arl_count_new_capacity(l->length, l->capacity, &new_capacity);
   TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
 
-  new_array_size = new_capacity * CLL_PTR_SIZE;
+  new_array_size = new_capacity * sizeof(void *);
 
   mock_app_realloc(l, new_array_size);
 
