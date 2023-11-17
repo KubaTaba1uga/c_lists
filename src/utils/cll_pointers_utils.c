@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <stdio.h>
 
+#include "c_lists/cll_def.h"
 /*******************************************************************************
  *    PUBLIC API
  ******************************************************************************/
@@ -14,10 +15,15 @@
  *  When dest is after source behaviour is well defined. Otherwise if it's not.
  *  If arrays do not overlap than it doesn't matter.
  */
-void cll_move_pointers_array_rstart(void *dest[], void *src[], size_t n) {
+void cll_move_pointers_array_rstart(CLL_VALUE_TYPE dest[], CLL_VALUE_TYPE src[],
+                                    size_t n) {
   while (n-- > 0) {
     dest[n] = src[n];
-    src[n] = NULL;
+
+#ifdef DEBUG_MOVE_POINTERS
+    // This may cause bugs on some setups but is helpuful in testing
+    src[n] = 0;
+#endif
   }
 }
 
@@ -26,10 +32,15 @@ void cll_move_pointers_array_rstart(void *dest[], void *src[], size_t n) {
  * When dest is before source behaviour is well defined. Otherwise if it's
  * not. If arrays do not overlap than it doesn't matter.
  */
-void cll_move_pointers_array_lstart(void *dest[], void *src[], size_t n) {
+void cll_move_pointers_array_lstart(CLL_VALUE_TYPE dest[], CLL_VALUE_TYPE src[],
+                                    size_t n) {
   size_t i;
   for (i = 0; i < n; i++) {
     dest[i] = src[i];
-    src[i] = NULL;
+
+#ifdef DEBUG_MOVE_POINTERS
+    // This may cause bugs on some setups but is helpuful in testing
+    src[i] = 0;
+#endif
   }
 }

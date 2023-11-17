@@ -2,6 +2,14 @@
 
 Simple and leightwight library for lists datastructures, no dependencies, C99 compliant, cross platform (Windows/Linux/MacOs).
 
+User can generate version of each list's seperatlly, based on defined macro.
+User can use it's own structs/enums. How give capability to include user's file in project's so? Can it be done only during linking? 
+Can we use sth lie opaque pointer? but without pointer?
+Ideal scenario would be sth like this:
+```
+compile array list -DCLL_VALUE_TYPE=mytype -I../my_proj
+```
+
 Template for new c projects. Includes build system, test, mocking, readme, license, pipelines. 
 
 1. [Getting Started](#Getting-Started)
