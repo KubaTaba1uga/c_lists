@@ -422,6 +422,44 @@ void test_arl_pop_multi_success_1(void) {
                                sizeof(expected_list_array) / sizeof(char));
 }
 
+void test_arl_remove_success_no_callback(void) {
+  size_t len_cp;
+  cll_error err;
+  int i;
+  arl_ptr l = setup_small_list();
+  char array_after_move[] = {l->array[0], l->array[2], l->array[3], l->array[4],
+                             l->array[5]};
+
+  len_cp = l->length;
+  i = 1;
+
+  err = arl_remove(l, i, NULL);
+
+  TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
+  TEST_ASSERT_EQUAL(len_cp - 1, l->length);
+  TEST_ASSERT_EQUAL_CHAR_ARRAY(array_after_move, l->array, l->length);
+  TEST_ASSERT_EQUAL(0, free_counter);
+}
+
+void test_arl_remove_success_callback(void) {
+  size_t len_cp;
+  cll_error err;
+  int i;
+  arl_ptr l = setup_small_list();
+  char array_after_move[] = {l->array[0], l->array[2], l->array[3], l->array[4],
+                             l->array[5]};
+
+  len_cp = l->length;
+  i = 1;
+
+  err = arl_remove(l, i, dummy_free);
+
+  TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
+  TEST_ASSERT_EQUAL(len_cp - 1, l->length);
+  TEST_ASSERT_EQUAL_CHAR_ARRAY(array_after_move, l->array, l->length);
+  TEST_ASSERT_EQUAL(1, free_counter);
+}
+
 void test_arl_clear_no_callback(void) {
   cll_error err;
   arl_ptr l = setup_small_list();

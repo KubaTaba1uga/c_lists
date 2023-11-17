@@ -220,6 +220,24 @@ cll_error arl_pop_multi(arl_ptr l, size_t i, size_t elements_amount,
   return CLL_SUCCESS;
 }
 
+/* Removes element from under the index.
+ * Executes callback function on removed element,
+ *  only if callback is not NULL.
+ */
+cll_error arl_remove(arl_ptr l, size_t i, void (*callback)(CLL_VALUE_TYPE)) {
+  void *p;
+  cll_error err;
+
+  err = arl_pop(l, i, &p);
+  if (err)
+    return err;
+
+  if (callback)
+    callback(p);
+
+  return CLL_SUCCESS;
+}
+
 /* Removes all elements from the list.
  * Executes callback function on each removed element,
  *  only if callback is not NULL.
