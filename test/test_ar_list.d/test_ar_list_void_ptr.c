@@ -7,8 +7,8 @@
 
 // App
 #include "ar_list.c"
+#include "c_lists/cll_def.h"
 #include "c_lists/cll_error.h"
-#include "common/cll_def.h"
 
 // Test framework
 #include "../interfaces.h"
@@ -69,7 +69,7 @@ void TEST_ASSERT_EQUAL_ERROR(cll_error expected, cll_error received) {
   TEST_ASSERT_EQUAL_STRING(cll_strerror(expected), cll_strerror(received));
 }
 
-void dummy_free(char _) { free_counter++; }
+void dummy_free(void *_) { free_counter++; }
 
 arl_ptr setup_empty_list() {
   arl_ptr l;

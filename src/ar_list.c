@@ -246,7 +246,7 @@ cll_error arl_insert_multi(arl_ptr l, size_t i, size_t v_len,
  */
 cll_error arl_pop(arl_ptr l, size_t i, CLL_VALUE_TYPE *value) {
   const size_t offset = 1;
-  void *value_holder;
+  CLL_VALUE_TYPE value_holder;
   cll_error err;
 
   if (arl_is_i_too_big(l, i))
@@ -295,7 +295,7 @@ cll_error arl_pop_multi(arl_ptr l, size_t i, size_t elements_amount,
  *  only if callback is not NULL.
  */
 cll_error arl_remove(arl_ptr l, size_t i, void (*callback)(CLL_VALUE_TYPE)) {
-  void *p;
+  CLL_VALUE_TYPE p;
   cll_error err;
 
   err = arl_pop(l, i, &p);
@@ -439,8 +439,8 @@ cll_error arl_count_new_capacity(size_t current_length, size_t current_capacity,
   /* Size is always smaller than capacity. There is no need in checking new_size
    * divided by cur_size overflow.
    */
-  if (cll_is_overflow_l_capacity_multi(current_length, 3) ||
-      cll_is_overflow_l_capacity_add(current_capacity, 2)) {
+  if (cll_is_overflow_size_t_multi(current_length, 3) ||
+      cll_is_overflow_size_t_add(current_capacity, 2)) {
 
     return CLL_ERROR_OVERFLOW;
   }

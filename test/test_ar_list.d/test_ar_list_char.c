@@ -426,7 +426,7 @@ void test_arl_pop_empty_list(void) {
 
 void test_arl_pop_first_success(void) {
 
-  char expected, *received;
+  char expected, received;
   size_t len_cp;
   cll_error err;
   int i;
@@ -448,7 +448,7 @@ void test_arl_pop_first_success(void) {
 
 void test_arl_pop_middle_success(void) {
 
-  char expected, *received;
+  char expected, received;
   size_t len_cp;
   cll_error err;
   int i;
@@ -470,7 +470,7 @@ void test_arl_pop_middle_success(void) {
 
 void test_arl_pop_last_success(void) {
 
-  char expected, *received;
+  char expected, received;
   size_t len_cp;
   cll_error err;
   size_t i;

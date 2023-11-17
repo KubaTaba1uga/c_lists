@@ -11,8 +11,8 @@
 
 // App
 #include "ar_list.c"
+#include "c_lists/cll_def.h"
 #include "c_lists/cll_error.h"
-#include "common/cll_def.h"
 
 // Test framework
 #include "../interfaces.h"
