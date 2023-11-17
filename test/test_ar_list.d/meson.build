@@ -19,7 +19,7 @@ test_ar_list_exe = executable(test_name,
     '-zmuldefs',
   ],
   c_args: [
-    '-Wno-error=unused-function',
+    # '-Wno-error=unused-function',
   ]
 
 )
@@ -48,7 +48,6 @@ test_ar_list_exe = executable(test_name,
   ],
   c_args: [
     '-DCLL_VALUE_TYPE=void *',
-    '-w'
   ]
 )
 
@@ -77,7 +76,6 @@ test_ar_list_exe = executable(test_name,
   ],
   c_args: [
     '-DCLL_VALUE_TYPE=char',
-    '-w'
   ]
 )
 
