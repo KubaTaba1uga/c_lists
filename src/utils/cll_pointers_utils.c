@@ -22,7 +22,7 @@ void cll_move_pointers_array_rstart(CLL_VALUE_TYPE dest[], CLL_VALUE_TYPE src[],
 
 #ifdef DEBUG_MOVE_POINTERS
     // This may cause bugs on some setups but is helpuful in testing
-    src[n] = NULL;
+    src[n] = 0;
 #endif
   }
 }
@@ -40,7 +40,7 @@ void cll_move_pointers_array_lstart(CLL_VALUE_TYPE dest[], CLL_VALUE_TYPE src[],
 
 #ifdef DEBUG_MOVE_POINTERS
     // This may cause bugs on some setups but is helpuful in testing
-    src[i] = NULL;
+    src[i] = 0;
 #endif
   }
 }
