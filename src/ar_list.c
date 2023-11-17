@@ -72,15 +72,7 @@ static cll_error arl_move_elements_left(arl_ptr l, size_t start_i,
  *    PUBLIC API
  ******************************************************************************/
 
-/* Returns list's length. */
-cll_error arl_length(arl_ptr l, size_t *length) {
-  *length = l->length;
-
-  return CLL_SUCCESS;
-}
-
-/* Creates array list's instance. Returns NULL and sets
- *  errno on failure.
+/* Creates array list's instance.
  * Behaviour is undefined if `default_capacity` is equal 0.
  */
 cll_error arl_create(arl_ptr *l, size_t default_capacity) {
@@ -119,9 +111,14 @@ cll_error arl_destroy(arl_ptr l) {
   return CLL_SUCCESS;
 }
 
-/* Gets the value under the index.
- * Returns 0 and sets errno on failure.
- * On success returns value and doesn't set errno.
+/* Gets list's length. */
+cll_error arl_length(arl_ptr l, size_t *length) {
+  *length = l->length;
+
+  return CLL_SUCCESS;
+}
+
+/* Gets value under the index.
  */
 cll_error arl_get(arl_ptr l, size_t i, CLL_VALUE_TYPE *value) {
   if (arl_is_i_too_big(l, i))
@@ -335,6 +332,61 @@ cll_error arl_clear(arl_ptr l, void (*callback)(CLL_VALUE_TYPE)) {
   return CLL_SUCCESS;
 }
 
+/*******************************************************************************
+ *    PRIVATE API
+ ******************************************************************************/
+void _arl_get(arl_ptr l, size_t i, CLL_VALUE_TYPE *value) {
+  *value = l->array[i];
+}
+void _arl_set(arl_ptr l, size_t i, CLL_VALUE_TYPE value) {
+  l->array[i] = value;
+}
+
+/* Checks if index is within list boundaries.
+ * The behaviour is undefined if is not a valid pointer.
+ */
+bool arl_is_i_too_big(arl_ptr l, size_t i) { return i >= (l->length); }
+
+/* Counts list's new capacity.
+ */
+cll_error arl_count_new_capacity(size_t current_length, size_t current_capacity,
+                                 size_t *new_capacity) {
+
+  /* Size is always smaller than capacity. There is no need in checking new_size
+   * divided by cur_size overflow.
+   */
+  if (cll_is_overflow_size_t_multi(current_length, 3) ||
+      cll_is_overflow_size_t_add(current_capacity, 2)) {
+
+    return CLL_ERROR_OVERFLOW;
+  }
+
+  *new_capacity = 3 * current_length / 2 + current_capacity;
+
+  return CLL_SUCCESS;
+}
+
+/* Grows underlaying array. */
+cll_error arl_grow_array_capacity(arl_ptr l) {
+  void *p;
+  size_t new_capacity;
+  cll_error err;
+
+  err = arl_count_new_capacity(l->length, l->capacity, &new_capacity);
+  if (err)
+    return err;
+
+  p = realloc(l->array, new_capacity * CLL_VALUE_SIZE);
+  if (!p) {
+    return CLL_ERROR_OUT_OF_MEMORY;
+  }
+
+  l->capacity = new_capacity;
+  l->array = p;
+
+  return CLL_SUCCESS;
+};
+
 /* Move elements to the right by `move_by`, starting from `start_i`.
  * Ex:
  *    INPUT  l.array {0, 1, 2, , ,}, start_i 1, move_by 2
@@ -418,55 +470,3 @@ cll_error arl_move_elements_left(arl_ptr l, size_t start_i, size_t move_by) {
 
   return CLL_SUCCESS;
 }
-
-void _arl_get(arl_ptr l, size_t i, CLL_VALUE_TYPE *value) {
-  *value = l->array[i];
-}
-void _arl_set(arl_ptr l, size_t i, CLL_VALUE_TYPE value) {
-  l->array[i] = value;
-}
-
-/* Checks if index is within list boundaries.
- * The behaviour is undefined if is not a valid pointer.
- */
-bool arl_is_i_too_big(arl_ptr l, size_t i) { return i >= (l->length); }
-
-/* Counts list's new capacity.
- */
-cll_error arl_count_new_capacity(size_t current_length, size_t current_capacity,
-                                 size_t *new_capacity) {
-
-  /* Size is always smaller than capacity. There is no need in checking new_size
-   * divided by cur_size overflow.
-   */
-  if (cll_is_overflow_size_t_multi(current_length, 3) ||
-      cll_is_overflow_size_t_add(current_capacity, 2)) {
-
-    return CLL_ERROR_OVERFLOW;
-  }
-
-  *new_capacity = 3 * current_length / 2 + current_capacity;
-
-  return CLL_SUCCESS;
-}
-
-/* Grows underlaying array. */
-cll_error arl_grow_array_capacity(arl_ptr l) {
-  void *p;
-  size_t new_capacity;
-  cll_error err;
-
-  err = arl_count_new_capacity(l->length, l->capacity, &new_capacity);
-  if (err)
-    return err;
-
-  p = realloc(l->array, new_capacity * CLL_VALUE_SIZE);
-  if (!p) {
-    return CLL_ERROR_OUT_OF_MEMORY;
-  }
-
-  l->capacity = new_capacity;
-  l->array = p;
-
-  return CLL_SUCCESS;
-};
