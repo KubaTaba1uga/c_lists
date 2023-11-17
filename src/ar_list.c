@@ -196,6 +196,30 @@ cll_error arl_pop(arl_ptr l, size_t i, CLL_VALUE_TYPE *value) {
   return CLL_SUCCESS;
 }
 
+/* Fills holder with elements starting from index i till index
+ *  i+elements aomunt. Holder's length has to be bigger than
+ *  elements amount. Otherwise behaviour is undefined.
+ *  Better optimized for multiple pops than pop. Elements are
+ *  moved only once.
+ */
+cll_error arl_pop_multi(arl_ptr l, size_t i, size_t elements_amount,
+                        CLL_VALUE_TYPE holder[]) {
+  cll_error err;
+
+  err = arl_slice(l, i, elements_amount, holder);
+  if (err)
+    return err;
+
+  if (cll_is_overflow_size_t_add(i, elements_amount))
+    return CLL_ERROR_OVERFLOW;
+
+  err = arl_move_elements_left(l, i + elements_amount, elements_amount);
+  if (err)
+    return err;
+
+  return CLL_SUCCESS;
+}
+
 /* Removes all elements from the list.
  * Executes callback function on each removed element,
  *  only if callback is not NULL.
