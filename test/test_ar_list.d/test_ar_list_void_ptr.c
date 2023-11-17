@@ -415,7 +415,7 @@ void test_arl_pop_i_overflow(void) {
   TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
   TEST_ASSERT_EQUAL_PTR(expected, received);
   TEST_ASSERT_EQUAL(len_cp - 1, l->length);
-  TEST_ASSERT_EQUAL_PTR_ARRAY(array_after_move, l->array, arl_small_length);
+  TEST_ASSERT_EQUAL_PTR_ARRAY(array_after_move, l->array, l->length);
 }
 
 void test_arl_pop_empty_list(void) {
