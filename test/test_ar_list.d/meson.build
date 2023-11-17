@@ -1,11 +1,16 @@
+ar_list_test_sources = ar_list_sources + interfaces_h
+ar_list_test_linker_flags = [
+  '-zmuldefs',
+]
+
 ################################################
 # TEST AR LIST LOGIC
 ################################################
 test_file_name = 'test_ar_list_logic.c'
 test_name = 'test_ar_list_logic'
 
-test_src = files(test_file_name) + interfaces_h
-test_src += sources
+test_src = files(test_file_name)
+test_src += ar_list_test_sources
 
 test_ar_list_exe = executable(test_name,
   sources: [
@@ -15,9 +20,7 @@ test_ar_list_exe = executable(test_name,
   ],
   include_directories: tests_include,
   dependencies: tests_dependencies,
-  link_args: [
-    '-zmuldefs',
-  ],
+  link_args: ar_list_test_linker_flags,
   c_args: [
     # '-Wno-error=unused-function',
   ]
@@ -32,8 +35,8 @@ test(test_name, test_ar_list_exe)
 test_file_name = 'test_ar_list_void_ptr.c'
 test_name = 'test_ar_list_logic_void_ptr'
 
-test_src = files(test_file_name) + interfaces_h
-test_src += sources
+test_src = files(test_file_name)
+test_src += ar_list_test_sources
 
 test_ar_list_exe = executable(test_name,
   sources: [
@@ -43,9 +46,7 @@ test_ar_list_exe = executable(test_name,
   ],
   include_directories: tests_include,
   dependencies: tests_dependencies,
-  link_args: [
-    '-zmuldefs',
-  ],
+  link_args: ar_list_test_linker_flags,
   c_args: [
     '-DCLL_VALUE_TYPE=void *',
   ]
@@ -59,8 +60,8 @@ test(test_name, test_ar_list_exe)
 test_file_name = 'test_ar_list_char.c'
 test_name = 'test_ar_list_logic_char'
 
-test_src = files(test_file_name) + interfaces_h
-test_src += sources
+test_src = files(test_file_name)
+test_src += ar_list_test_sources
 
 test_ar_list_exe = executable(test_name,
   sources: [
@@ -70,10 +71,7 @@ test_ar_list_exe = executable(test_name,
   ],
   include_directories: tests_include,
   dependencies: tests_dependencies,
-  link_args: [
-    # allow static functions testing
-    '-zmuldefs',
-  ],
+  link_args: ar_list_test_linker_flags,
   c_args: [
     '-DCLL_VALUE_TYPE=char',
   ]
@@ -88,7 +86,7 @@ test_overflow_utils_file = 'test_overflow_utils.c'
 test_overflow_utils_name = 'test_overflow_utils'
 
 test_overflow_utils_src = files(test_overflow_utils_file)
-test_overflow_utils_src += ar_list_sources
+test_overflow_utils_src += ar_list_test_sources
 
 test_overflow_exe = executable(test_overflow_utils_name,
   sources: [
@@ -97,6 +95,7 @@ test_overflow_exe = executable(test_overflow_utils_name,
   ],
   include_directories: tests_include,
   dependencies: tests_dependencies,
+  link_args: ar_list_test_linker_flags,
 )
 
 test(test_overflow_utils_name, test_overflow_exe, suite: 'test_utils')
@@ -109,7 +108,7 @@ test_pointers_utils_file = 'test_pointers_utils.c'
 test_pointers_utils_name = 'test_pointers_utils'
 
 test_pointers_utils_src = files(test_pointers_utils_file)
-test_pointers_utils_src += ar_list_sources
+test_pointers_utils_src += ar_list_test_sources
 
 test_pointers_utils_exe = executable(test_pointers_utils_name,
   sources: [
@@ -118,6 +117,7 @@ test_pointers_utils_exe = executable(test_pointers_utils_name,
   ],
   include_directories: tests_include,
   dependencies: tests_dependencies,
+  link_args: ar_list_test_linker_flags,  
   c_args: [
     '-DCLL_VALUE_TYPE=void *',
     '-DDEBUG_MOVE_POINTERS=true'
