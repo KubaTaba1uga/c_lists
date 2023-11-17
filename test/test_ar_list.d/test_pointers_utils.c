@@ -11,7 +11,7 @@
 #include "unity.h"
 
 // App
-#include "utils/cll_pointers_utils.h"
+#include "ar_list.c"
 
 /*******************************************************************************
  *    TESTS DATA

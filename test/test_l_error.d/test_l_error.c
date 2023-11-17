@@ -2,7 +2,7 @@
 
 #include <unity.h>
 
-#include "common/cll_error.c"
+#include "cll_error.c"
 
 void test_errors_string_matching(void) {
   size_t error_strings_size = sizeof(CLL_ERROR_STRINGS) / sizeof(char *);

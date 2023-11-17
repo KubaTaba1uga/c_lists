@@ -1,7 +1,7 @@
 test_name = 'test_l_error.c'
 
 test_src = files(test_name) + interfaces_h
-test_objs = c_lists_lib.extract_objects(l_error)
+test_objs = c_lists_lib.extract_objects(error_sources)
 
 test_l_error_exe = executable('test_l_error',
   sources: [
