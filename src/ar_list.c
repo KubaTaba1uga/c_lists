@@ -168,6 +168,33 @@ cll_error arl_set(arl_ptr l, size_t i, CLL_VALUE_TYPE value) {
 
   return CLL_SUCCESS;
 }
+/* Pops element from under the index. Sets
+ * value to the popped element's value.
+ * If list is empty, returns CLL_ERROR_POP_EMPTY_LIST.
+ * If i bigger tan list's lenth, substitues it with
+ *  maximum poppable i.
+ */
+cll_error arl_pop(arl_ptr l, size_t i, CLL_VALUE_TYPE *value) {
+  const size_t offset = 1;
+  void *value_holder;
+  cll_error err;
+
+  if (arl_is_i_too_big(l, i))
+    i = l->length - 1;
+  if (l->length == 0) {
+    return CLL_ERROR_POP_EMPTY_LIST;
+  }
+
+  _arl_get(l, i, &value_holder);
+
+  err = arl_move_elements_left(l, ++i, offset);
+  if (err)
+    return err;
+
+  *value = value_holder;
+
+  return CLL_SUCCESS;
+}
 
 /* Removes all elements from the list.
  * Executes callback function on each removed element,

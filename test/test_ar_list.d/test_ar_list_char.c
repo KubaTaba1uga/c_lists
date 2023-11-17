@@ -277,6 +277,105 @@ void test_arl_set_success(void) {
   }
 }
 
+void test_arl_pop_i_overflow(void) {
+
+  char expected, received;
+  size_t len_cp;
+  cll_error err;
+  int i;
+  arl_ptr l = setup_small_list();
+  char array_after_move[] = {l->array[0], l->array[1], l->array[2], l->array[3],
+                             l->array[4]};
+
+  len_cp = l->length;
+  i = 999;
+  _arl_get(l, len_cp - 1, &expected);
+
+  err = arl_pop(l, i, &received);
+
+  TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
+  TEST_ASSERT_EQUAL_CHAR(expected, received);
+  TEST_ASSERT_EQUAL(len_cp - 1, l->length);
+  TEST_ASSERT_EQUAL_CHAR_ARRAY(array_after_move, l->array, l->length);
+}
+
+void test_arl_pop_empty_list(void) {
+
+  char received;
+  cll_error err;
+  arl_ptr l = setup_empty_list();
+
+  err = arl_pop(l, 0, &received);
+
+  TEST_ASSERT_EQUAL_ERROR(CLL_ERROR_POP_EMPTY_LIST, err);
+}
+
+void test_arl_pop_first_success(void) {
+
+  char expected, *received;
+  size_t len_cp;
+  cll_error err;
+  int i;
+  arl_ptr l = setup_small_list();
+  char array_after_move[] = {l->array[1], l->array[2], l->array[3], l->array[4],
+                             l->array[5]};
+
+  len_cp = l->length;
+  i = 0;
+  _arl_get(l, i, &expected);
+
+  err = arl_pop(l, i, &received);
+
+  TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
+  TEST_ASSERT_EQUAL_CHAR(expected, received);
+  TEST_ASSERT_EQUAL(len_cp - 1, l->length);
+  TEST_ASSERT_EQUAL_CHAR_ARRAY(array_after_move, l->array, l->length);
+}
+
+void test_arl_pop_middle_success(void) {
+
+  char expected, *received;
+  size_t len_cp;
+  cll_error err;
+  int i;
+  arl_ptr l = setup_small_list();
+  char array_after_move[] = {l->array[0], l->array[1], l->array[2], l->array[4],
+                             l->array[5]};
+
+  len_cp = l->length;
+  i = 3;
+  _arl_get(l, i, &expected);
+
+  err = arl_pop(l, i, &received);
+
+  TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
+  TEST_ASSERT_EQUAL_CHAR(expected, received);
+  TEST_ASSERT_EQUAL(len_cp - 1, l->length);
+  TEST_ASSERT_EQUAL_CHAR_ARRAY(array_after_move, l->array, l->length);
+}
+
+void test_arl_pop_last_success(void) {
+
+  char expected, *received;
+  size_t len_cp;
+  cll_error err;
+  size_t i;
+  arl_ptr l = setup_small_list();
+  char array_after_move[] = {l->array[0], l->array[1], l->array[2], l->array[3],
+                             l->array[4]};
+
+  len_cp = l->length;
+  i = l->length - 1;
+  _arl_get(l, i, &expected);
+
+  err = arl_pop(l, i, &received);
+
+  TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
+  TEST_ASSERT_EQUAL_CHAR(expected, received);
+  TEST_ASSERT_EQUAL(len_cp - 1, l->length);
+  TEST_ASSERT_EQUAL_CHAR_ARRAY(array_after_move, l->array, l->length);
+}
+
 void test_arl_clear_no_callback(void) {
   cll_error err;
   arl_ptr l = setup_small_list();

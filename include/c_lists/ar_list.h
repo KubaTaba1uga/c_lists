@@ -36,7 +36,7 @@ arl_ptr arl_insert(arl_ptr l, size_t i, void *value);
 arl_ptr arl_insert_multi(arl_ptr l, size_t i, size_t v_len,
                          void *values[v_len]);
 //// Removers
-void *arl_pop(arl_ptr l, size_t i);
+cll_error arl_pop(arl_ptr l, size_t i, CLL_VALUE_TYPE *value);
 void *arl_pop_multi(arl_ptr l, size_t i, size_t elements_amount,
                     void *holder[]);
 arl_ptr arl_remove(arl_ptr l, size_t i, void (*callback)(void *));
