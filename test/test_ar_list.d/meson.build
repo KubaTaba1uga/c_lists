@@ -19,7 +19,7 @@ test_ar_list_exe = executable(test_name,
     '-zmuldefs',
   ],
   c_args: [
-    '-Wno-error=unused-function',
+    # '-Wno-error=unused-function',
   ]
 
 )
