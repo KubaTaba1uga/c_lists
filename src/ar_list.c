@@ -197,6 +197,47 @@ cll_error arl_insert(arl_ptr l, size_t i, CLL_VALUE_TYPE value) {
 
   return CLL_SUCCESS;
 }
+
+/* Appends one element to the list's end.
+ */
+cll_error arl_append(arl_ptr l, CLL_VALUE_TYPE value) {
+  return arl_insert(l, l->length + 1, value);
+}
+
+/* Insert multiple elements. Better optimized for multiple
+ *  inserts than insert. Moving elements is done only once.
+ *  i has to be smaller than l->length.
+ *  values should hold valid pointers. v_len is values' length.
+ */
+cll_error arl_insert_multi(arl_ptr l, size_t i, size_t v_len,
+                           CLL_VALUE_TYPE values[v_len]) {
+  size_t new_length, k, move_by = v_len;
+  cll_error err;
+
+  if (arl_is_i_too_big(l, i))
+    i = l->length;
+
+  new_length = l->length + move_by;
+
+  while (new_length > l->capacity) {
+    err = arl_grow_array_capacity(l);
+    if (err)
+      return err;
+  }
+
+  err = arl_move_elements_right(l, i, move_by);
+  if (err)
+    return err;
+
+  for (k = i; k < i + v_len; k++) {
+    _arl_set(l, k, values[k - i]);
+  }
+
+  l->length = new_length;
+
+  return CLL_SUCCESS;
+}
+
 /* Pops element from under the index. Sets
  * value to the popped element's value.
  * If list is empty, returns CLL_ERROR_POP_EMPTY_LIST.

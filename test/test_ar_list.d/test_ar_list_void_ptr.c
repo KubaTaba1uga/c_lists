@@ -317,6 +317,85 @@ void parametrize_test_arl_insert_success(arl_ptr l, size_t i, int value) {
   }
 }
 
+void test_arl_append_grow_array_capacity(void) {
+
+  arl_ptr l = setup_small_list();
+  int value = 13;
+  size_t i, new_capacity, new_array_size;
+  cll_error err;
+
+  void *expected[] = {&arl_small_values[0],
+                      &arl_small_values[1],
+                      &arl_small_values[2],
+                      &arl_small_values[3],
+                      &arl_small_values[4],
+                      &arl_small_values[5],
+                      &value,
+                      &value,
+                      &value,
+                      &value,
+                      &value};
+  size_t expected_length = sizeof(expected) / sizeof(void *);
+
+  // Fill array, so next append means growing
+  for (i = l->length; i < l->capacity; i++) {
+    err = arl_append(l, expected[i]);
+    TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
+  }
+
+  err = arl_count_new_capacity(l->length, l->capacity, &new_capacity);
+  TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
+
+  new_array_size = new_capacity * CLL_PTR_SIZE;
+
+  mock_app_realloc(l, new_array_size);
+
+  // Growing
+  err = arl_append(l, &value);
+
+  TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
+  TEST_ASSERT_EQUAL(new_capacity, l->capacity);
+  TEST_ASSERT_EQUAL(expected_length, l->length);
+  TEST_ASSERT_EQUAL_INT_ARRAY(expected, l->array, expected_length);
+}
+
+void test_arl_append_success(void) {
+  arl_ptr l = setup_small_list();
+  size_t old_len = l->length;
+  int value = 13;
+  cll_error err;
+
+  err = arl_append(l, &value);
+
+  TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
+  TEST_ASSERT_EQUAL(old_len + 1, l->length);
+  TEST_ASSERT_EQUAL_PTR(&value, l->array[old_len]);
+  TEST_ASSERT_EQUAL(value, *(int *)(l->array[old_len]));
+}
+
+void test_arl_insert_multi_success(void) {
+  size_t len_cp, len_to_insert;
+  cll_error err;
+  int i;
+  arl_ptr l = setup_small_list();
+
+  void *to_insert[] = {l->array[0], l->array[2]};
+  len_to_insert = sizeof(to_insert) / sizeof(void *);
+  void *array_after_move[] = {l->array[0], l->array[1], l->array[0],
+                              l->array[2], l->array[2], l->array[3],
+                              l->array[4], l->array[5]};
+
+  len_cp = l->length;
+  i = 2;
+
+  err = arl_insert_multi(l, i, len_to_insert, to_insert);
+
+  TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
+  TEST_ASSERT_EQUAL(len_cp + len_to_insert, l->length);
+  TEST_ASSERT_EQUAL_PTR_ARRAY(array_after_move, l->array,
+                              sizeof(array_after_move) / sizeof(void *));
+}
+
 void test_arl_pop_i_overflow(void) {
 
   void *expected, *received;
