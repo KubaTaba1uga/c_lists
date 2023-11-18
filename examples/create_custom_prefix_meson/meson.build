@@ -5,7 +5,7 @@ project('example', 'c',
          version: '0.0.1',
 	 meson_version: '>=1.0.1',
 	 default_options: [
-           'werror=true',
+           'werror=false',
            'c_std=c99',
          ])
 
@@ -15,15 +15,17 @@ add_project_arguments('-save-temps', language : 'c')
 # DEPS
 ###############
 c_lists_int = subproject('c_lists_int',
-                                default_options: [
+                         default_options: [
+#                           'default_library=static',
                                   'enable_tests=false',
                                   'arl_prefix=int',
-                                  'arl_type=ababab'
+                                  'arl_type=int'
                                 ]
                                )
 
 c_lists_char = subproject('c_lists_char',
-                                default_options: [
+                          default_options: [
+#                                                       'default_library=dynamic',
                                   'enable_tests=false',
                                   'arl_prefix=chr',
                                   'arl_type=char'
