@@ -11,9 +11,7 @@
 
 // App
 #include "arl_list.c"
-#include "c_lists/ar_list.h"
 #include "c_lists/cll_def.h"
-#include "c_lists/cll_error.h"
 
 // Test framework
 #include "../interfaces.h"
@@ -66,20 +64,20 @@ void tearDown(void) {
 /*******************************************************************************
  *    TESTS UTILS
  ******************************************************************************/
-void TEST_ASSERT_EQUAL_ERROR(cll_error expected, cll_error received) {
-  TEST_ASSERT_EQUAL_STRING(cll_strerror(expected), cll_strerror(received));
+void TEST_ASSERT_EQUAL_ERROR(arl_error expected, arl_error received) {
+  TEST_ASSERT_EQUAL_STRING(arl_strerror(expected), arl_strerror(received));
 }
 
 arl_ptr setup_empty_list() {
   arl_ptr l;
-  cll_error err;
+  arl_error err;
 
   app_malloc_ExpectAndReturn(array_memory_mock_size, array_memory_mock);
   app_malloc_ExpectAndReturn(list_memory_mock_size, list_memory_mock);
 
   err = arl_create(&l, default_capacity);
 
-  TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
+  TEST_ASSERT_EQUAL_ERROR(ARL_SUCCESS, err);
 
   return l;
 }
@@ -130,14 +128,14 @@ void test__count_new_capacity(void) {
   size_t capacity = 1000;
   size_t value;
   size_t i;
-  cll_error err;
+  arl_error err;
 
   for (i = 0; i < (sizeof(expected_values) / sizeof(size_t)); i++) {
     err = _count_new_capacity(length, capacity, &value);
 
     capacity = length = value;
 
-    TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
+    TEST_ASSERT_EQUAL_ERROR(ARL_SUCCESS, err);
     TEST_ASSERT_EQUAL(expected_values[i], capacity);
   }
 }
@@ -146,23 +144,23 @@ void test__count_new_capacity_overflow_failure(void) {
   /* Show array growth stop. */
   /* Upper bound of list is well defined. */
   size_t length, capacity, value;
-  cll_error err;
+  arl_error err;
 
   capacity = length = CLL_SIZE_T_MAX;
 
   err = _count_new_capacity(length, capacity, &value);
-  TEST_ASSERT_EQUAL_ERROR(CLL_ERROR_OVERFLOW, err);
+  TEST_ASSERT_EQUAL_ERROR(ARL_ERROR_OVERFLOW, err);
 }
 
 void test__grow_array_capacity_memory_failure(void) {
   arl_ptr l = setup_small_list();
-  cll_error err;
+  arl_error err;
 
   app_realloc_IgnoreAndReturn(NULL);
 
   err = _grow_array_capacity(l);
 
-  TEST_ASSERT_EQUAL_ERROR(CLL_ERROR_OUT_OF_MEMORY, err);
+  TEST_ASSERT_EQUAL_ERROR(ARL_ERROR_OUT_OF_MEMORY, err);
   TEST_ASSERT_EQUAL_PTR(array_memory_mock, l->array);
   TEST_ASSERT_EQUAL(arl_small_length, l->length);
   TEST_ASSERT_EQUAL(array_memory_mock_size / sizeof(void *), l->capacity);
@@ -170,23 +168,23 @@ void test__grow_array_capacity_memory_failure(void) {
 
 void test__grow_array_capacity_max_failure(void) {
   arl_ptr l = setup_small_list();
-  cll_error err;
+  arl_error err;
 
   l->capacity = CLL_SIZE_T_MAX;
 
   err = _grow_array_capacity(l);
 
-  TEST_ASSERT_EQUAL_ERROR(CLL_ERROR_OVERFLOW, err);
+  TEST_ASSERT_EQUAL_ERROR(ARL_ERROR_OVERFLOW, err);
 }
 
 void test__grow_array_capacity_success(void) {
   arl_ptr l = setup_small_list();
   size_t new_l_capacity, new_array_size;
-  cll_error err;
+  arl_error err;
 
   err = _count_new_capacity(l->length, l->capacity, &new_l_capacity);
 
-  TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
+  TEST_ASSERT_EQUAL_ERROR(ARL_SUCCESS, err);
 
   new_array_size = new_l_capacity * sizeof(void *);
 
@@ -194,7 +192,7 @@ void test__grow_array_capacity_success(void) {
 
   err = _grow_array_capacity(l);
 
-  TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
+  TEST_ASSERT_EQUAL_ERROR(ARL_SUCCESS, err);
   TEST_ASSERT_EQUAL_PTR(array_memory_mock, l->array);
   TEST_ASSERT_EQUAL(new_l_capacity, l->capacity);
 }

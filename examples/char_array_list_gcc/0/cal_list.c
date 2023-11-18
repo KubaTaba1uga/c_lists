@@ -37,17 +37,15 @@
 #include <string.h>
 
 // App
-#include "c_lists/arl_list.h"
+#include "c_lists/cal_list.h"
 #include "c_lists/cll_def.h"
 #include "c_lists/cll_error.h"
-#ifdef ENABLE_TESTS
 #include "cll_interfaces.h"
-#endif
 
 /*******************************************************************************
  *    PRIVATE DECLARATIONS
  ******************************************************************************/
-struct arl_def {
+struct cal_def {
   /* Number of elements.*/
   size_t length;
 
@@ -58,13 +56,13 @@ struct arl_def {
   CLL_VALUE_TYPE *array;
 };
 
-static bool _is_i_too_big(arl_ptr l, size_t i);
-static void _get(arl_ptr l, size_t i, CLL_VALUE_TYPE *value);
-static void _set(arl_ptr l, size_t i, CLL_VALUE_TYPE value);
-static arl_error _grow_array_capacity(arl_ptr l);
-static arl_error _move_elements_right(arl_ptr l, size_t start_i,
+static bool _is_i_too_big(cal_ptr l, size_t i);
+static void _get(cal_ptr l, size_t i, CLL_VALUE_TYPE *value);
+static void _set(cal_ptr l, size_t i, CLL_VALUE_TYPE value);
+static cll_error _grow_array_capacity(cal_ptr l);
+static cll_error _move_elements_right(cal_ptr l, size_t start_i,
                                       size_t move_by);
-static arl_error _move_elements_left(arl_ptr l, size_t start_i, size_t move_by);
+static cll_error _move_elements_left(cal_ptr l, size_t start_i, size_t move_by);
 // Pointers utils
 static bool _is_overflow_size_t_multi(size_t a, size_t b);
 static bool _is_overflow_size_t_add(size_t a, size_t b);
@@ -74,29 +72,6 @@ static void _move_array_elements_rstart(CLL_VALUE_TYPE dest[],
                                         CLL_VALUE_TYPE src[], size_t n);
 static void _move_array_elements_lstart(CLL_VALUE_TYPE dest[],
                                         CLL_VALUE_TYPE src[], size_t n);
-// Error utils
-static const char *const ARL_ERROR_STRINGS[] = {
-    // 0
-    "Success",
-    // 1
-    "Invalid arguments",
-    // 2
-    "Overflow",
-    // 3
-    "Underflow",
-    // 4
-    "Not enough memory",
-    // 5
-    "Index too big",
-    // 6
-    "Array's maximum capacity reached",
-    // 7
-    "Popping empty list is disallowed",
-
-};
-
-static const size_t ARL_ERROR_STRINGS_LEN =
-    sizeof(ARL_ERROR_STRINGS) / sizeof(char *);
 
 /*******************************************************************************
  *    PUBLIC API
@@ -105,16 +80,16 @@ static const size_t ARL_ERROR_STRINGS_LEN =
 /* Creates array list's instance.
  * Behaviour is undefined if `default_capacity` is equal 0.
  */
-arl_error arl_create(arl_ptr *l, size_t default_capacity) {
+cll_error cal_create(cal_ptr *l, size_t default_capacity) {
   if (_is_overflow_size_t_multi(default_capacity, CLL_VALUE_SIZE))
-    return ARL_ERROR_OVERFLOW;
+    return CLL_ERROR_OVERFLOW;
 
   void *l_array = malloc(default_capacity * CLL_VALUE_SIZE);
 
   if (!l_array)
     goto ERROR_OOM;
 
-  arl_ptr l_local = malloc(sizeof(struct arl_def));
+  cal_ptr l_local = malloc(sizeof(struct cal_def));
 
   if (!l_local)
     goto CLEANUP_L_LOCAL_OOM;
@@ -125,40 +100,40 @@ arl_error arl_create(arl_ptr *l, size_t default_capacity) {
 
   *l = l_local;
 
-  return ARL_SUCCESS;
+  return CLL_SUCCESS;
 
 CLEANUP_L_LOCAL_OOM:
   free(l_array);
 ERROR_OOM:
-  return ARL_ERROR_OUT_OF_MEMORY;
+  return CLL_ERROR_OUT_OF_MEMORY;
 }
 
 /* Frees resouces allocated for array list's instance.
  */
-arl_error arl_destroy(arl_ptr l) {
+cll_error cal_destroy(cal_ptr l) {
   free(l->array);
   free(l);
 
-  return ARL_SUCCESS;
+  return CLL_SUCCESS;
 }
 
 /* Gets list's length.
  */
-arl_error arl_length(arl_ptr l, size_t *length) {
+cll_error cal_length(cal_ptr l, size_t *length) {
   *length = l->length;
 
-  return ARL_SUCCESS;
+  return CLL_SUCCESS;
 }
 
 /* Gets value under the index.
  */
-arl_error arl_get(arl_ptr l, size_t i, CLL_VALUE_TYPE *value) {
+cll_error cal_get(cal_ptr l, size_t i, CLL_VALUE_TYPE *value) {
   if (_is_i_too_big(l, i))
-    return ARL_ERROR_INDEX_TOO_BIG;
+    return CLL_ERROR_INDEX_TOO_BIG;
 
   _get(l, i, value);
 
-  return ARL_SUCCESS;
+  return CLL_SUCCESS;
 }
 
 /* Fills slice with elements from index i till index
@@ -167,43 +142,43 @@ arl_error arl_get(arl_ptr l, size_t i, CLL_VALUE_TYPE *value) {
  *  Slice's length has to be bigger than elements amount.
  *  Otherwise behaviour is undefined.
  */
-arl_error arl_slice(arl_ptr l, size_t start_i, size_t elements_amount,
+cll_error cal_slice(cal_ptr l, size_t start_i, size_t elements_amount,
                     CLL_VALUE_TYPE slice[]) {
   size_t k, last_elem_i;
 
   if (_is_i_too_big(l, start_i))
-    return ARL_ERROR_INDEX_TOO_BIG;
+    return CLL_ERROR_INDEX_TOO_BIG;
 
   last_elem_i = start_i + elements_amount;
   if (_is_i_too_big(l, last_elem_i))
-    return ARL_ERROR_INVALID_ARGS;
+    return CLL_ERROR_INVALID_ARGS;
 
   for (k = 0; k < elements_amount; k++) {
     _get(l, k + start_i, &slice[k]);
   }
 
-  return ARL_SUCCESS;
+  return CLL_SUCCESS;
 }
 
 /* Sets value under the index.
  * Index has to be smaller than list's length.
  * Returns NULL and sets errno on failure.
  */
-arl_error arl_set(arl_ptr l, size_t i, CLL_VALUE_TYPE value) {
+cll_error cal_set(cal_ptr l, size_t i, CLL_VALUE_TYPE value) {
   if (_is_i_too_big(l, i))
-    return ARL_ERROR_INDEX_TOO_BIG;
+    return CLL_ERROR_INDEX_TOO_BIG;
 
   _set(l, i, value);
 
-  return ARL_SUCCESS;
+  return CLL_SUCCESS;
 }
 
 /* Insert one element under the index.
  *  If index bigger than list's length, appends the value.
  */
-arl_error arl_insert(arl_ptr l, size_t i, CLL_VALUE_TYPE value) {
+cll_error cal_insert(cal_ptr l, size_t i, CLL_VALUE_TYPE value) {
   size_t new_length, move_by = 1;
-  arl_error err;
+  cll_error err;
 
   if (_is_i_too_big(l, i))
     i = l->length;
@@ -224,13 +199,13 @@ arl_error arl_insert(arl_ptr l, size_t i, CLL_VALUE_TYPE value) {
 
   l->length = new_length;
 
-  return ARL_SUCCESS;
+  return CLL_SUCCESS;
 }
 
 /* Appends one element to the list's end.
  */
-arl_error arl_append(arl_ptr l, CLL_VALUE_TYPE value) {
-  return arl_insert(l, l->length + 1, value);
+cll_error cal_append(cal_ptr l, CLL_VALUE_TYPE value) {
+  return cal_insert(l, l->length + 1, value);
 }
 
 /* Insert multiple elements. Better optimized for multiple
@@ -238,10 +213,10 @@ arl_error arl_append(arl_ptr l, CLL_VALUE_TYPE value) {
  *  i has to be smaller than l->length.
  *  values should hold valid pointers. v_len is values' length.
  */
-arl_error arl_insert_multi(arl_ptr l, size_t i, size_t v_len,
+cll_error cal_insert_multi(cal_ptr l, size_t i, size_t v_len,
                            CLL_VALUE_TYPE values[v_len]) {
   size_t new_length, k, move_by = v_len;
-  arl_error err;
+  cll_error err;
 
   if (_is_i_too_big(l, i))
     i = l->length;
@@ -264,24 +239,24 @@ arl_error arl_insert_multi(arl_ptr l, size_t i, size_t v_len,
 
   l->length = new_length;
 
-  return ARL_SUCCESS;
+  return CLL_SUCCESS;
 }
 
 /* Pops element from under the index. Sets
  * value to the popped element's value.
- * If list is empty, returns ARL_ERROR_POP_EMPTY_LIST.
+ * If list is empty, returns CLL_ERROR_POP_EMPTY_LIST.
  * If i bigger tan list's lenth, substitues it with
  *  maximum poppable i.
  */
-arl_error arl_pop(arl_ptr l, size_t i, CLL_VALUE_TYPE *value) {
+cll_error cal_pop(cal_ptr l, size_t i, CLL_VALUE_TYPE *value) {
   const size_t offset = 1;
   CLL_VALUE_TYPE value_holder;
-  arl_error err;
+  cll_error err;
 
   if (_is_i_too_big(l, i))
     i = l->length - 1;
   if (l->length == 0) {
-    return ARL_ERROR_POP_EMPTY_LIST;
+    return CLL_ERROR_POP_EMPTY_LIST;
   }
 
   _get(l, i, &value_holder);
@@ -292,7 +267,7 @@ arl_error arl_pop(arl_ptr l, size_t i, CLL_VALUE_TYPE *value) {
 
   *value = value_holder;
 
-  return ARL_SUCCESS;
+  return CLL_SUCCESS;
 }
 
 /* Fills holder with elements starting from index i till index
@@ -301,50 +276,50 @@ arl_error arl_pop(arl_ptr l, size_t i, CLL_VALUE_TYPE *value) {
  *  Better optimized for multiple pops than pop. Elements are
  *  moved only once.
  */
-arl_error arl_pop_multi(arl_ptr l, size_t i, size_t elements_amount,
+cll_error cal_pop_multi(cal_ptr l, size_t i, size_t elements_amount,
                         CLL_VALUE_TYPE holder[]) {
-  arl_error err;
+  cll_error err;
 
-  err = arl_slice(l, i, elements_amount, holder);
+  err = cal_slice(l, i, elements_amount, holder);
   if (err)
     return err;
 
   if (_is_overflow_size_t_add(i, elements_amount))
-    return ARL_ERROR_OVERFLOW;
+    return CLL_ERROR_OVERFLOW;
 
   err = _move_elements_left(l, i + elements_amount, elements_amount);
   if (err)
     return err;
 
-  return ARL_SUCCESS;
+  return CLL_SUCCESS;
 }
 
 /* Removes element from under the index.
  * Executes callback function on removed element,
  *  only if callback is not NULL.
  */
-arl_error arl_remove(arl_ptr l, size_t i, void (*callback)(CLL_VALUE_TYPE)) {
+cll_error cal_remove(cal_ptr l, size_t i, void (*callback)(CLL_VALUE_TYPE)) {
   CLL_VALUE_TYPE p;
-  arl_error err;
+  cll_error err;
 
-  err = arl_pop(l, i, &p);
+  err = cal_pop(l, i, &p);
   if (err)
     return err;
 
   if (callback)
     callback(p);
 
-  return ARL_SUCCESS;
+  return CLL_SUCCESS;
 }
 
 /* Removes all elements from the list.
  * Executes callback function on each removed element,
  *  only if callback is not NULL.
  */
-arl_error arl_clear(arl_ptr l, void (*callback)(CLL_VALUE_TYPE)) {
+cll_error cal_clear(cal_ptr l, void (*callback)(CLL_VALUE_TYPE)) {
   size_t i;
   CLL_VALUE_TYPE value;
-  arl_error err;
+  cll_error err;
 
   // POP MULTI is not used here to avoid extra loop iteration and
   // some memory. Slicing is unnecessary from clear's point of view.
@@ -361,42 +336,23 @@ arl_error arl_clear(arl_ptr l, void (*callback)(CLL_VALUE_TYPE)) {
 
   l->length = 0;
 
-  return ARL_SUCCESS;
-}
-
-/*******************************************************************************
- *    ERRORS UTILS
- ******************************************************************************/
-
-const char *arl_strerror(arl_error error) {
-  // Return string on success, NULL on failure.
-  // This function is only exception from `always
-  //  return arl_error_t` design decision.
-  // Idea is to mimic org strerror.
-
-  if ( // Upper bound
-      (error >= ARL_ERROR_LEN) || (error >= ARL_ERROR_STRINGS_LEN) ||
-      // Lower bound
-      (error < 0))
-    return NULL;
-
-  return ARL_ERROR_STRINGS[error];
+  return CLL_SUCCESS;
 }
 
 /*******************************************************************************
  *    PRIVATE API
  ******************************************************************************/
-void _get(arl_ptr l, size_t i, CLL_VALUE_TYPE *value) { *value = l->array[i]; }
-void _set(arl_ptr l, size_t i, CLL_VALUE_TYPE value) { l->array[i] = value; }
+void _get(cal_ptr l, size_t i, CLL_VALUE_TYPE *value) { *value = l->array[i]; }
+void _set(cal_ptr l, size_t i, CLL_VALUE_TYPE value) { l->array[i] = value; }
 
 /* Checks if index is within list boundaries.
  * The behaviour is undefined if is not a valid pointer.
  */
-bool _is_i_too_big(arl_ptr l, size_t i) { return i >= (l->length); }
+bool _is_i_too_big(cal_ptr l, size_t i) { return i >= (l->length); }
 
 /* Counts list's new capacity.
  */
-arl_error _count_new_capacity(size_t current_length, size_t current_capacity,
+cll_error _count_new_capacity(size_t current_length, size_t current_capacity,
                               size_t *new_capacity) {
 
   /* Size is always smaller than capacity. There is no need in checking
@@ -405,19 +361,19 @@ arl_error _count_new_capacity(size_t current_length, size_t current_capacity,
   if (_is_overflow_size_t_multi(current_length, 3) ||
       _is_overflow_size_t_add(current_capacity, 2)) {
 
-    return ARL_ERROR_OVERFLOW;
+    return CLL_ERROR_OVERFLOW;
   }
 
   *new_capacity = 3 * current_length / 2 + current_capacity;
 
-  return ARL_SUCCESS;
+  return CLL_SUCCESS;
 }
 
 /* Grows underlaying array. */
-arl_error _grow_array_capacity(arl_ptr l) {
+cll_error _grow_array_capacity(cal_ptr l) {
   void *p;
   size_t new_capacity;
-  arl_error err;
+  cll_error err;
 
   err = _count_new_capacity(l->length, l->capacity, &new_capacity);
   if (err)
@@ -425,13 +381,13 @@ arl_error _grow_array_capacity(arl_ptr l) {
 
   p = realloc(l->array, new_capacity * CLL_VALUE_SIZE);
   if (!p) {
-    return ARL_ERROR_OUT_OF_MEMORY;
+    return CLL_ERROR_OUT_OF_MEMORY;
   }
 
   l->capacity = new_capacity;
   l->array = p;
 
-  return ARL_SUCCESS;
+  return CLL_SUCCESS;
 };
 
 /* Move elements to the right by `move_by`, starting from `start_i`.
@@ -439,7 +395,7 @@ arl_error _grow_array_capacity(arl_ptr l) {
  *    INPUT  l.array {0, 1, 2, , ,}, start_i 1, move_by 2
  *    OUTPUT l.array {0, , , 1, 2}
  */
-arl_error _move_elements_right(arl_ptr l, size_t start_i, size_t move_by) {
+cll_error _move_elements_right(cal_ptr l, size_t start_i, size_t move_by) {
 
   size_t new_length, elements_to_move_amount;
 
@@ -447,27 +403,27 @@ arl_error _move_elements_right(arl_ptr l, size_t start_i, size_t move_by) {
   // array
   //  is not required.
   if (_is_overflow_size_t_add(l->length, move_by))
-    return ARL_ERROR_OVERFLOW;
+    return CLL_ERROR_OVERFLOW;
 
   new_length = l->length + move_by;
 
   if (new_length > (l->capacity))
-    return ARL_ERROR_INVALID_ARGS;
+    return CLL_ERROR_INVALID_ARGS;
 
   if (_is_underflow_size_t_sub(l->length, start_i))
-    return ARL_ERROR_UNDERFLOW;
+    return CLL_ERROR_UNDERFLOW;
 
   elements_to_move_amount = l->length - start_i;
 
   if (elements_to_move_amount == 0)
-    return ARL_SUCCESS;
+    return CLL_SUCCESS;
 
   _move_array_elements_rstart(l->array + start_i + move_by, l->array + start_i,
                               elements_to_move_amount);
 
   l->length = new_length;
 
-  return ARL_SUCCESS;
+  return CLL_SUCCESS;
 }
 
 /* Move elements to the left by `move_by`, starting from start_i
@@ -475,7 +431,7 @@ arl_error _move_elements_right(arl_ptr l, size_t start_i, size_t move_by) {
  *    INPUT  l.array {0, 1, 2, , ,}, start_i 2, move_by 1
  *    OUTPUT l.array {1, 2, , ,}
  */
-arl_error _move_elements_left(arl_ptr l, size_t start_i, size_t move_by) {
+cll_error _move_elements_left(cal_ptr l, size_t start_i, size_t move_by) {
   /* ove_byop elements starting from index 5 till index 8
    *  If start_i is bigger or equal to l->length, assumes
    *   end of the list.
@@ -493,12 +449,12 @@ arl_error _move_elements_left(arl_ptr l, size_t start_i, size_t move_by) {
   //  is not required.
 
   if (_is_underflow_size_t_sub(l->length, move_by))
-    return ARL_ERROR_UNDERFLOW;
+    return CLL_ERROR_UNDERFLOW;
 
   new_length = l->length - move_by;
 
   if (_is_underflow_size_t_sub(l->length, start_i))
-    return ARL_ERROR_UNDERFLOW;
+    return CLL_ERROR_UNDERFLOW;
 
   elements_to_move_amount = l->length - start_i;
 
@@ -517,7 +473,7 @@ arl_error _move_elements_left(arl_ptr l, size_t start_i, size_t move_by) {
 
   l->length = new_length;
 
-  return ARL_SUCCESS;
+  return CLL_SUCCESS;
 }
 
 /*******************************************************************************

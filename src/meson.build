@@ -1,24 +1,11 @@
 c_lists_dir = [include_directories('.')]
 
-common_sources = files(
- 'cll_interfaces.h',
+ar_list_sources = files(
+  'arl_list.c'
 )
-
-error_sources = files(
- 'cll_error.c',  
-)
-
-common_sources += error_sources
 
 if get_option('enable_tests')
+  ar_list_sources += files('cll_interfaces.h')
   subdir('interfaces')
 endif
-
-
-ar_list_sources = files(
-  'arl_list.c',
-) + common_sources
-
-sources = ar_list_sources
-
 

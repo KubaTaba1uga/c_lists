@@ -26,4 +26,4 @@ cmock_gen_mock = generator(
 interfaces_h = files('interfaces.h')
 
 subdir('test_ar_list.d')
-subdir('test_l_error.d')
+

@@ -106,6 +106,7 @@ test_pointers_utils_name = 'test_pointers_utils'
 test_pointers_utils_src = files(test_pointers_utils_file)
 test_pointers_utils_src += ar_list_test_sources
 
+
 test_pointers_utils_exe = executable(test_pointers_utils_name,
   sources: [
    test_pointers_utils_src,
@@ -122,3 +123,24 @@ test_pointers_utils_exe = executable(test_pointers_utils_name,
 )
 
 test(test_pointers_utils_name, test_pointers_utils_exe, suite: 'test_utils')
+
+################################################
+# TEST ERRORS UTILS
+################################################
+test_name = 'test_errors_utils.c'
+
+test_src = files(test_name)
+test_src += ar_list_test_sources
+
+test_l_error_exe = executable('test_errors_utils',
+  sources: [
+    test_src,
+    cmock_gen_runner.process(test_name),
+  ],
+  include_directories: tests_include,
+  dependencies: tests_dependencies,
+  link_args: ar_list_test_linker_flags,
+)
+
+
+test('test_l_error', test_l_error_exe)

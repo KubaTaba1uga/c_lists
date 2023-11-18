@@ -1,7 +1,6 @@
 #ifndef _interfaces_src_protector_h
 #define _interfaces_src_protector_h
 
-#ifdef ENABLE_TESTS
 #include "interfaces/cll_std_lib_interface.h"
 
 // Make local copies
@@ -13,7 +12,5 @@
 #define malloc app_malloc
 #define realloc app_realloc
 #define free app_free
-
-#endif
 
 #endif
