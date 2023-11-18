@@ -37,8 +37,7 @@ arl_lib = library(_arl_prefix,
                   include_directories: c_lists_include,                       
                   sources: [arl_list_sources + _arl_list_gen_sources],
                   c_args: [
-                    #                    '-D' + _arl_prefix.to_upper() + '_VALUE_TYPE=' + get_option('arl_type'),
-                    '-DCHR_VALUE_TYPE=char'
+                    '-D' + _arl_prefix.to_upper() + '_VALUE_TYPE=' + get_option('arl_type'),
                   ],
                   name_prefix: 'lib_')
 

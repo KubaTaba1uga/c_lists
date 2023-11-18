@@ -18,7 +18,7 @@ c_lists_int = subproject('c_lists_int',
                                 default_options: [
                                   'enable_tests=false',
                                   'arl_prefix=int',
-                                  'arl_type=int'
+                                  'arl_type=ababab'
                                 ]
                                )
 
