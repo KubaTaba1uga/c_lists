@@ -39,8 +39,9 @@ arl_lib = library(_arl_prefix,
                   ],
                   name_prefix: 'lib_')
 
-arl_lib_dep = declare_dependency(link_with: arl_lib,
-                                 include_directories: c_lists_include)
+arl_lib_dep = declare_dependency(sources: _arl_list_gen_sources[1],
+                                 link_with: arl_lib,
+                                 include_directories: arl_lib.private_dir_include())
 
 # ******************************************************************************
 # *    Tests

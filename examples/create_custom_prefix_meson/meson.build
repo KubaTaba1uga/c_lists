@@ -15,7 +15,7 @@ project('example', 'c',
 c_lists_int = subproject('c_lists_int',
                                 default_options: [
                                   'enable_tests=false',
-                                  'arl_prefix=kuba',
+                                  'arl_prefix=int',
                                   'arl_type=int'
                                 ]
                                )
@@ -23,9 +23,17 @@ c_lists_int = subproject('c_lists_int',
 c_lists_char = subproject('c_lists_char',
                                 default_options: [
                                   'enable_tests=false',
-                                  'arl_prefix=dupa',
+                                  'arl_prefix=chr',
                                   'arl_type=char'
                                 ]
                                )
 
+int_dep = c_lists_int.get_variable('arl_lib_dep')
+int_lib = c_lists_int.get_variable('arl_lib')
 
+
+char_dep = c_lists_char.get_variable('arl_lib_dep')
+###############
+# EXAMPLE
+###############
+main = executable('main', sources: ['main.c'], dependencies: [int_dep])
