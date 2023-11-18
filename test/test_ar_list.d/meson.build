@@ -21,10 +21,6 @@ test_ar_list_exe = executable(test_name,
   include_directories: tests_include,
   dependencies: tests_dependencies,
   link_args: ar_list_test_linker_flags,
-  c_args: [
-    # '-Wno-error=unused-function',
-  ]
-
 )
 
 test(test_name, test_ar_list_exe)

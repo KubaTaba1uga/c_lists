@@ -1,8 +1,8 @@
 /* Array list implementation, as described here: */
 /*   https://en.wikipedia.org/wiki/Dynamic_array   */
 
-#ifndef _ar_list_h
-#define _ar_list_h
+#ifndef _arl_list_h
+#define _arl_list_h
 
 /*******************************************************************************
  *    IMPORTS
@@ -17,7 +17,7 @@
 /*******************************************************************************
  *    PUBLIC API
  ******************************************************************************/
-typedef struct ar_list *arl_ptr;
+typedef struct arl_def *arl_ptr;
 
 // List operations
 cll_error arl_create(arl_ptr *l, size_t default_size);

@@ -6,7 +6,9 @@ Library instance can be generated for basic types (`char`, `float`, `int` etc.) 
 My goal is to have one lis't interface, to whatever type You may need to put inside it.
 Names and types can vary, but API/logic remain the same. 
 
-User can generate version of each list's seperatlly, based on defined macros.
+You may want to create multiple list vaersions, to avoid name collisions look on generating_sources section.
+
+
 
 Template for new c projects. Includes build system, test, mocking, readme, license, pipelines. 
 

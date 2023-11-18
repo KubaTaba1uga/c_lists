@@ -6,7 +6,7 @@
 #include <stdint.h>
 
 // App
-#include "ar_list.c"
+#include "arl_list.c"
 #include "c_lists/cll_def.h"
 #include "c_lists/cll_error.h"
 
@@ -39,7 +39,7 @@ void setUp(void) {
     TEST_FAIL_MESSAGE("Unable to allocate memory for `array_memory_mock`. "
                       "Mocking malloc failed!");
 
-  list_memory_mock_size = sizeof(struct ar_list);
+  list_memory_mock_size = sizeof(struct arl_def);
 
   list_memory_mock = malloc(list_memory_mock_size);
   if (!list_memory_mock)
@@ -340,7 +340,7 @@ void test_arl_append_grow_array_capacity(void) {
     TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
   }
 
-  err = arl_count_new_capacity(l->length, l->capacity, &new_capacity);
+  err = _count_new_capacity(l->length, l->capacity, &new_capacity);
   TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
 
   new_array_size = new_capacity * CLL_VALUE_SIZE;
@@ -403,7 +403,7 @@ void test_arl_pop_i_overflow(void) {
 
   len_cp = l->length;
   i = 999;
-  _arl_get(l, len_cp - 1, &expected);
+  _get(l, len_cp - 1, &expected);
 
   err = arl_pop(l, i, &received);
 
@@ -436,7 +436,7 @@ void test_arl_pop_first_success(void) {
 
   len_cp = l->length;
   i = 0;
-  _arl_get(l, i, &expected);
+  _get(l, i, &expected);
 
   err = arl_pop(l, i, &received);
 
@@ -458,7 +458,7 @@ void test_arl_pop_middle_success(void) {
 
   len_cp = l->length;
   i = 3;
-  _arl_get(l, i, &expected);
+  _get(l, i, &expected);
 
   err = arl_pop(l, i, &received);
 
@@ -480,7 +480,7 @@ void test_arl_pop_last_success(void) {
 
   len_cp = l->length;
   i = l->length - 1;
-  _arl_get(l, i, &expected);
+  _get(l, i, &expected);
 
   err = arl_pop(l, i, &received);
 
@@ -599,39 +599,38 @@ void test_arl_clear_callback(void) {
  *    PRIVATE API TESTS
  ******************************************************************************/
 
-void test_arl_move_elements_right_new_length_overflow_failure(void) {
+void test__move_elements_right_new_length_overflow_failure(void) {
   arl_ptr l = setup_small_list();
   cll_error err;
 
-  err = arl_move_elements_right(l, 0, CLL_SIZE_T_MAX);
+  err = _move_elements_right(l, 0, CLL_SIZE_T_MAX);
 
   TEST_ASSERT_EQUAL_ERROR(CLL_ERROR_OVERFLOW, err);
 }
 
-void test_arl_move_elements_right_new_length_invalid(void) {
+void test__move_elements_right_new_length_invalid(void) {
   arl_ptr l = setup_small_list();
   cll_error err;
 
-  err = arl_move_elements_right(l, 0, l->capacity + 1);
+  err = _move_elements_right(l, 0, l->capacity + 1);
 
   TEST_ASSERT_EQUAL_ERROR(CLL_ERROR_INVALID_ARGS, err);
 }
 
-void test_arl_move_elements_right_elements_to_move_amount_underflow_failure(
-    void) {
+void test__move_elements_right_elements_to_move_amount_underflow_failure(void) {
   arl_ptr l = setup_small_list();
   cll_error err;
 
-  err = arl_move_elements_right(l, l->length + 1, 0);
+  err = _move_elements_right(l, l->length + 1, 0);
 
   TEST_ASSERT_EQUAL_ERROR(CLL_ERROR_UNDERFLOW, err);
 }
 
-void test_arl_move_elements_right_no_elements_to_move(void) {
+void test__move_elements_right_no_elements_to_move(void) {
   arl_ptr l = setup_small_list();
   cll_error err;
 
-  err = arl_move_elements_right(l, l->length, 0);
+  err = _move_elements_right(l, l->length, 0);
 
   TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
 }
@@ -640,7 +639,7 @@ void test_arl_move_elements_right_no_elements_to_move(void) {
  *    INPUT  l.array {0, 1, 2, 3, 4, 5, , , , }, start_i 1, move_by 2
  *    OUTPUT l.array {0, , , 1, 2, 3, 4, 5, , }
  */
-void test_arl_move_elements_right_success(void) {
+void test__move_elements_right_success(void) {
   int null_indexes[] = {1, 2, 3};
   size_t null_i_length = sizeof(null_indexes) / sizeof(int);
 
@@ -649,7 +648,7 @@ void test_arl_move_elements_right_success(void) {
   char value;
   cll_error err;
 
-  err = arl_move_elements_right(l, 1, 3);
+  err = _move_elements_right(l, 1, 3);
 
   TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
   TEST_ASSERT_EQUAL(8, l->length);
@@ -673,127 +672,127 @@ void test_arl_move_elements_right_success(void) {
   }
 }
 
-void test_arl_move_elements_left_new_length_underflow_failure(void) {
+void test__move_elements_left_new_length_underflow_failure(void) {
   arl_ptr l = setup_small_list();
   cll_error err;
 
-  err = arl_move_elements_left(l, l->length + 1, l->length + 1);
+  err = _move_elements_left(l, l->length + 1, l->length + 1);
 
   TEST_ASSERT_EQUAL_ERROR(CLL_ERROR_UNDERFLOW, err);
 }
 
-void test_arl_move_elements_left_elements_to_move_underflow_failure(void) {
+void test__move_elements_left_elements_to_move_underflow_failure(void) {
   arl_ptr l = setup_small_list();
   cll_error err;
 
-  err = arl_move_elements_left(l, l->length + 1, 0);
+  err = _move_elements_left(l, l->length + 1, 0);
 
   TEST_ASSERT_EQUAL_ERROR(CLL_ERROR_UNDERFLOW, err);
 }
 
-void test_arl_move_elements_left_delete_index_0(void) {
+void test__move_elements_left_delete_index_0(void) {
   arl_ptr l = setup_small_list();
   char expected[] = {l->array[1], l->array[2], l->array[3], l->array[4]};
   cll_error err;
   //
 
-  err = arl_move_elements_left(l, 1, 1);
+  err = _move_elements_left(l, 1, 1);
 
   TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
   TEST_ASSERT_EQUAL_CHAR_ARRAY(expected, l->array, 4);
 }
 
-void test_arl_move_elements_left_delete_index_1(void) {
+void test__move_elements_left_delete_index_1(void) {
   arl_ptr l = setup_small_list();
   char expected[] = {l->array[0], l->array[2], l->array[3], l->array[4]};
   cll_error err;
   //
 
-  err = arl_move_elements_left(l, 2, 1);
+  err = _move_elements_left(l, 2, 1);
 
   TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
   TEST_ASSERT_EQUAL_CHAR_ARRAY(expected, l->array, 4);
 }
 
-void test_arl_move_elements_left_delete_index_2(void) {
+void test__move_elements_left_delete_index_2(void) {
   arl_ptr l = setup_small_list();
   char expected[] = {l->array[0], l->array[1], l->array[3], l->array[4]};
   cll_error err;
   //
 
-  err = arl_move_elements_left(l, 3, 1);
+  err = _move_elements_left(l, 3, 1);
 
   TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
   TEST_ASSERT_EQUAL_CHAR_ARRAY(expected, l->array, 4);
 }
 
-void test_arl_move_elements_left_delete_index_3(void) {
+void test__move_elements_left_delete_index_3(void) {
   arl_ptr l = setup_small_list();
   char expected[] = {l->array[0], l->array[1], l->array[2], l->array[4]};
   cll_error err;
   //
 
-  err = arl_move_elements_left(l, 4, 1);
+  err = _move_elements_left(l, 4, 1);
 
   TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
   TEST_ASSERT_EQUAL_CHAR_ARRAY(expected, l->array, 4);
 }
 
-void test_arl_move_elements_left_delete_index_4(void) {
+void test__move_elements_left_delete_index_4(void) {
   arl_ptr l = setup_small_list();
   char expected[] = {l->array[0], l->array[1], l->array[2], l->array[3]};
   cll_error err;
   //
 
-  err = arl_move_elements_left(l, 5, 1);
+  err = _move_elements_left(l, 5, 1);
 
   TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
   TEST_ASSERT_EQUAL_CHAR_ARRAY(expected, l->array, 4);
 }
 
-void test_arl_move_elements_left_delete_last_indexes_0(void) {
+void test__move_elements_left_delete_last_indexes_0(void) {
   arl_ptr l = setup_small_list();
   char expected[] = {l->array[0], l->array[1], l->array[2], l->array[3]};
   cll_error err;
 
   // Reaching over the array's boundary, is handled.
-  err = arl_move_elements_left(l, 5, 2);
+  err = _move_elements_left(l, 5, 2);
 
   TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
   TEST_ASSERT_EQUAL(3, l->length);
   TEST_ASSERT_EQUAL_CHAR_ARRAY(expected, l->array, l->length);
 }
 
-void test_arl_move_elements_left_delete_last_indexes_1(void) {
+void test__move_elements_left_delete_last_indexes_1(void) {
   arl_ptr l = setup_small_list();
   char expected[] = {l->array[0], l->array[1], l->array[2]};
   cll_error err;
 
   // Reaching over the array's boundary, is handled.
-  err = arl_move_elements_left(l, 5, 3);
+  err = _move_elements_left(l, 5, 3);
 
   TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
   TEST_ASSERT_EQUAL(2, l->length);
   TEST_ASSERT_EQUAL_CHAR_ARRAY(expected, l->array, l->length);
 }
 
-void test_arl_move_elements_left_delete_all(void) {
+void test__move_elements_left_delete_all(void) {
   arl_ptr l = setup_small_list();
   cll_error err;
 
   // Reaching over the array's boundary, is handled.
-  err = arl_move_elements_left(l, 5, 999);
+  err = _move_elements_left(l, 5, 999);
 
   TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
   TEST_ASSERT_EQUAL(0, l->length);
 }
 
-void test_arl_move_elements_left_move_by_bigger_than_start_i(void) {
+void test__move_elements_left_move_by_bigger_than_start_i(void) {
   arl_ptr l = setup_small_list();
   char expected[] = {l->array[3], l->array[4]};
   cll_error err;
 
-  err = arl_move_elements_left(l, 3, 4);
+  err = _move_elements_left(l, 3, 4);
 
   TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
   TEST_ASSERT_EQUAL_CHAR_ARRAY(expected, l->array, l->length);
@@ -803,12 +802,12 @@ void test_arl_move_elements_left_move_by_bigger_than_start_i(void) {
  *    INPUT  l.array {0, 1, 2, 3, 4, 5, , , , }, start_i 3, move_by 2
  *    OUTPUT l.array {0, 3, 4, 5, , , , , , }
  */
-void test_arl_move_elements_left_success(void) {
+void test__move_elements_left_success(void) {
   arl_ptr l = setup_small_list();
   char expected[] = {l->array[0], l->array[3], l->array[4], l->array[5]};
   cll_error err;
 
-  err = arl_move_elements_left(l, 3, 2);
+  err = _move_elements_left(l, 3, 2);
 
   TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
   TEST_ASSERT_EQUAL_CHAR_ARRAY(expected, l->array, l->length);

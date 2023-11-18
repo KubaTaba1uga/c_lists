@@ -10,7 +10,8 @@
 #include <string.h>
 
 // App
-#include "ar_list.c"
+#include "arl_list.c"
+#include "c_lists/ar_list.h"
 #include "c_lists/cll_def.h"
 #include "c_lists/cll_error.h"
 
@@ -43,7 +44,7 @@ void setUp(void) {
     TEST_FAIL_MESSAGE("Unable to allocate memory for `array_memory_mock`. "
                       "Mocking malloc failed!");
 
-  list_memory_mock_size = sizeof(struct ar_list);
+  list_memory_mock_size = sizeof(struct arl_def);
 
   list_memory_mock = malloc(list_memory_mock_size);
   if (!list_memory_mock)
@@ -120,7 +121,7 @@ void mock_app_realloc(arl_ptr l, size_t new_array_size) {
  *    PRIVATE API TESTS
  ******************************************************************************/
 
-void test_arl_count_new_capacity(void) {
+void test__count_new_capacity(void) {
   /* Show array capacity growth ratio by example. */
   /* Purpose of this function is mainly documentational. */
 
@@ -132,7 +133,7 @@ void test_arl_count_new_capacity(void) {
   cll_error err;
 
   for (i = 0; i < (sizeof(expected_values) / sizeof(size_t)); i++) {
-    err = arl_count_new_capacity(length, capacity, &value);
+    err = _count_new_capacity(length, capacity, &value);
 
     capacity = length = value;
 
@@ -141,7 +142,7 @@ void test_arl_count_new_capacity(void) {
   }
 }
 
-void test_arl_count_new_capacity_overflow_failure(void) {
+void test__count_new_capacity_overflow_failure(void) {
   /* Show array growth stop. */
   /* Upper bound of list is well defined. */
   size_t length, capacity, value;
@@ -149,17 +150,17 @@ void test_arl_count_new_capacity_overflow_failure(void) {
 
   capacity = length = CLL_SIZE_T_MAX;
 
-  err = arl_count_new_capacity(length, capacity, &value);
+  err = _count_new_capacity(length, capacity, &value);
   TEST_ASSERT_EQUAL_ERROR(CLL_ERROR_OVERFLOW, err);
 }
 
-void test_arl_grow_array_capacity_memory_failure(void) {
+void test__grow_array_capacity_memory_failure(void) {
   arl_ptr l = setup_small_list();
   cll_error err;
 
   app_realloc_IgnoreAndReturn(NULL);
 
-  err = arl_grow_array_capacity(l);
+  err = _grow_array_capacity(l);
 
   TEST_ASSERT_EQUAL_ERROR(CLL_ERROR_OUT_OF_MEMORY, err);
   TEST_ASSERT_EQUAL_PTR(array_memory_mock, l->array);
@@ -167,23 +168,23 @@ void test_arl_grow_array_capacity_memory_failure(void) {
   TEST_ASSERT_EQUAL(array_memory_mock_size / sizeof(void *), l->capacity);
 }
 
-void test_arl_grow_array_capacity_max_failure(void) {
+void test__grow_array_capacity_max_failure(void) {
   arl_ptr l = setup_small_list();
   cll_error err;
 
   l->capacity = CLL_SIZE_T_MAX;
 
-  err = arl_grow_array_capacity(l);
+  err = _grow_array_capacity(l);
 
   TEST_ASSERT_EQUAL_ERROR(CLL_ERROR_OVERFLOW, err);
 }
 
-void test_arl_grow_array_capacity_success(void) {
+void test__grow_array_capacity_success(void) {
   arl_ptr l = setup_small_list();
   size_t new_l_capacity, new_array_size;
   cll_error err;
 
-  err = arl_count_new_capacity(l->length, l->capacity, &new_l_capacity);
+  err = _count_new_capacity(l->length, l->capacity, &new_l_capacity);
 
   TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
 
@@ -191,7 +192,7 @@ void test_arl_grow_array_capacity_success(void) {
 
   mock_app_realloc(l, new_array_size);
 
-  err = arl_grow_array_capacity(l);
+  err = _grow_array_capacity(l);
 
   TEST_ASSERT_EQUAL_ERROR(CLL_SUCCESS, err);
   TEST_ASSERT_EQUAL_PTR(array_memory_mock, l->array);

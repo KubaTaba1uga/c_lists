@@ -16,7 +16,7 @@ endif
 
 
 ar_list_sources = files(
-  'ar_list.c',
+  'arl_list.c',
 ) + common_sources
 
 sources = ar_list_sources
