@@ -48,10 +48,3 @@ arl_lib_dep = declare_dependency(link_with: arl_lib,
 if get_option('enable_tests')
   subdir('test')
 endif
-
-# ******************************************************************************
-# *    Examples
-# ******************************************************************************
-if get_option('enable_tests')
-  subdir('examples')
-endif
