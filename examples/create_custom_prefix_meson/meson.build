@@ -9,6 +9,8 @@ project('example', 'c',
            'c_std=c99',
          ])
 
+add_project_arguments('-save-temps', language : 'c')
+
 ###############
 # DEPS
 ###############
@@ -29,11 +31,9 @@ c_lists_char = subproject('c_lists_char',
                                )
 
 int_dep = c_lists_int.get_variable('arl_lib_dep')
-int_lib = c_lists_int.get_variable('arl_lib')
-
-
 char_dep = c_lists_char.get_variable('arl_lib_dep')
+
 ###############
 # EXAMPLE
 ###############
-main = executable('main', sources: ['main.c'], dependencies: [int_dep])
+main = executable('main', sources: ['main.c'], dependencies: [int_dep, char_dep])
