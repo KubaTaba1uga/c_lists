@@ -1,1 +1,3 @@
-option('enable_tests', type : 'boolean', value: true)
+option('enable_tests', type: 'boolean', value: true)
+option('arl_prefix', type: 'string', value: 'arl_')
+option('arl_type', type: 'string', value: 'void *')

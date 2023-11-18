@@ -1,4 +1,4 @@
-ar_list_test_sources = ar_list_sources + interfaces_h
+ar_list_test_sources = arl_list_sources + interfaces_h
 ar_list_test_linker_flags = [
   '-zmuldefs',
 ]

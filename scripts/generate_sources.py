@@ -3,8 +3,12 @@ import os
 import sys
 from pathlib import Path
 
+if len(sys.argv) < 3:
+    raise ValueError("Not enough arguments!")
+
+
 DEFAULT_PREFIX = "arl_"
-NEW_PREFIX = os.environ["NEW_PREFIX"]
+NEW_PREFIX = sys.argv[2]  # os.environ["NEW_PREFIX"]
 
 _THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 _SRC_DIR = os.path.join(_THIS_DIR, "..", "src")
@@ -15,8 +19,8 @@ def regenerate_file(file_path):
     with open(file_path, "r") as src_fp:
         source = src_fp.read()
 
-    if len(sys.argv) == 3:
-        file_path = os.path.join(sys.argv[2], os.path.basename(file_path))
+    if len(sys.argv) == 4:
+        file_path = os.path.join(sys.argv[3], os.path.basename(file_path))
         print(file_path)
 
     # New file's source creation
@@ -30,9 +34,6 @@ def regenerate_file(file_path):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        raise ValueError("Providing file path is required!")
-
     input_file = sys.argv[1]
 
     files_to_gen = [

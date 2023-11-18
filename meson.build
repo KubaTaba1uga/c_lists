@@ -16,20 +16,27 @@ if get_option('enable_tests')
 endif
 
 
-c_lists_include = include_directories('include')
+c_lists_include = [include_directories('include')]
+
+_prefix_script = find_program('scripts' / 'generate_sources.py')
+
+_prefix_gen = generator(_prefix_script,
+                        output: ['@BASENAME@.c', '@BASENAME@.h'],
+                        arguments: ['@INPUT@', '@EXTRA_ARGS@', '@BUILD_DIR@'],
+                       )
 
 subdir('src')
 
-_sources_gen = find_program('scripts' / 'generate_sources.py')
+arl_list_sources += _prefix_gen.process(arl_list_file, extra_args: get_option('arl_prefix')) 
 
-c_lists_gen = generator(_sources_gen,
-                        output: ['@BASENAME@.c', '@BASENAME@.h'],
-                        arguments: ['@INPUT', '@BUILD_DIR@'],
+arl_list_lib = library('arl_list_lib', arl_list_sources,
+                       include_directories: c_lists_include,
+                       c_args: [
+                         '-DCLL_VALUE_TYPE=' + get_option('arl_type'),
+                       ]
                       )
 
-#c_lists_lib = library('c_lists', sources, include_directories: c_lists_include)
-
-#c_lists_dep = declare_dependency(link_with: c_lists_lib, include_directories: c_lists_include)
+arl_list_dep = declare_dependency(link_with: arl_list_lib, include_directories: c_lists_include)
 
 # ******************************************************************************
 # *    Tests

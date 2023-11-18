@@ -5,7 +5,7 @@ cmock_dependency = cmock_subproject.get_variable('cmock_dep')
 
 tests_dependencies = [unity_dependency, cmock_dependency]
 
-tests_include = [c_lists_dir, c_lists_include]
+tests_include = [c_lists_include]
 
 scripts = join_paths('..', 'scripts')
 
