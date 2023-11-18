@@ -2,7 +2,7 @@
 
 Simple and leightwight library for lists datastructures, no dependencies, C99 compliant, cross platform (Windows/Linux/MacOs).
 
-Library instance can be generated for basic types (char, float, int etc.) and for `void *`.
+Library instance can be generated for basic types (`char`, `float`, `int` etc.) and for `void *`.
 
 User can generate version of each list's seperatlly, based on defined macro.
 User can use it's own structs/enums. How give capability to include user's file in project's so? Can it be done only during linking? 
