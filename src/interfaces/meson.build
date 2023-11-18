@@ -3,7 +3,7 @@ std_lib_interface_h = files(
 )
 
 interfaces_sources = files(
-   'cll_std_lib_interface.c', 
+   'cll_std_lib_interface.c'
 ) + std_lib_interface_h
 
 arl_list_sources += interfaces_sources

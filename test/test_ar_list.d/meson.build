@@ -10,13 +10,12 @@ test_file_name = 'test_ar_list_logic.c'
 test_name = 'test_ar_list_logic'
 
 test_src = files(test_file_name)
-test_src += ar_list_test_sources
 
 test_ar_list_exe = executable(test_name,
   sources: [
    test_src,
    cmock_gen_runner.process(test_file_name),
-   cmock_gen_mock.process(std_lib_interface_h)
+   cmock_gen_mock.process(std_lib_interface_h),
   ],
   include_directories: tests_include,
   dependencies: tests_dependencies,
@@ -43,9 +42,6 @@ test_ar_list_exe = executable(test_name,
   include_directories: tests_include,
   dependencies: tests_dependencies,
   link_args: ar_list_test_linker_flags,
-  c_args: [
-    '-DCLL_VALUE_TYPE=void *',
-  ]
 )
 
 test(test_name, test_ar_list_exe)
@@ -69,7 +65,7 @@ test_ar_list_exe = executable(test_name,
   dependencies: tests_dependencies,
   link_args: ar_list_test_linker_flags,
   c_args: [
-    '-DCLL_VALUE_TYPE=char',
+    '-DARL_VALUE_TYPE=char',
   ]
 )
 
@@ -116,7 +112,6 @@ test_pointers_utils_exe = executable(test_pointers_utils_name,
   dependencies: tests_dependencies,
   link_args: ar_list_test_linker_flags,  
   c_args: [
-    '-DCLL_VALUE_TYPE=void *',
     '-DDEBUG_MOVE_POINTERS=true'
   ]
 

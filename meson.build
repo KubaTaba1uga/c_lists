@@ -29,11 +29,12 @@ subdir('src')
 
 arl_list_sources += _prefix_gen.process(arl_list_file, extra_args: get_option('arl_prefix')) 
 
-arl_list_lib = library('arl_list_lib', arl_list_sources,
-                       include_directories: c_lists_include,
+arl_list_lib = library('arl_list_lib',
+                       include_directories: c_lists_include,                       
+                       sources: arl_list_sources,
                        c_args: [
                          '-DCLL_VALUE_TYPE=' + get_option('arl_type'),
-                       ]
+                       ],
                       )
 
 arl_list_dep = declare_dependency(link_with: arl_list_lib, include_directories: c_lists_include)

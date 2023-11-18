@@ -11,7 +11,6 @@
 
 // App
 #include "arl_list.c"
-#include "c_lists/cll_def.h"
 
 // Test framework
 #include "../interfaces.h"
@@ -146,7 +145,7 @@ void test__count_new_capacity_overflow_failure(void) {
   size_t length, capacity, value;
   arl_error err;
 
-  capacity = length = CLL_SIZE_T_MAX;
+  capacity = length = ARL_SIZE_T_MAX;
 
   err = _count_new_capacity(length, capacity, &value);
   TEST_ASSERT_EQUAL_ERROR(ARL_ERROR_OVERFLOW, err);
@@ -170,7 +169,7 @@ void test__grow_array_capacity_max_failure(void) {
   arl_ptr l = setup_small_list();
   arl_error err;
 
-  l->capacity = CLL_SIZE_T_MAX;
+  l->capacity = ARL_SIZE_T_MAX;
 
   err = _grow_array_capacity(l);
 

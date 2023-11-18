@@ -7,7 +7,6 @@
 
 // App
 #include "arl_list.c"
-#include "c_lists/cll_def.h"
 
 // Test framework
 #include "../interfaces.h"
@@ -608,7 +607,7 @@ void test__move_elements_right_new_length_overflow_failure(void) {
   arl_ptr l = setup_small_list();
   arl_error err;
 
-  err = _move_elements_right(l, 0, CLL_SIZE_T_MAX);
+  err = _move_elements_right(l, 0, ARL_SIZE_T_MAX);
 
   TEST_ASSERT_EQUAL_ERROR(ARL_ERROR_OVERFLOW, err);
 }

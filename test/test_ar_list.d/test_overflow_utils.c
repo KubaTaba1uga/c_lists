@@ -15,7 +15,7 @@
 
 void test__is_overflow_size_t_multi_true(void) {
   bool received;
-  size_t a = CLL_SIZE_T_MAX, b = 2;
+  size_t a = ARL_SIZE_T_MAX, b = 2;
 
   received = _is_overflow_size_t_multi(a, b);
 
@@ -24,7 +24,7 @@ void test__is_overflow_size_t_multi_true(void) {
 
 void test__is_overflow_size_t_multi_false(void) {
   bool received;
-  size_t a = CLL_SIZE_T_MAX, b = 1;
+  size_t a = ARL_SIZE_T_MAX, b = 1;
 
   received = _is_overflow_size_t_multi(a, b);
 

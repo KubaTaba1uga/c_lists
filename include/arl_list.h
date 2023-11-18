@@ -10,8 +10,18 @@
 // C standard library
 #include <stddef.h>
 
-// App
-#include "cll_def.h"
+/*******************************************************************************
+ *    MACRO
+ ******************************************************************************/
+#define ARL_SIZE_T_MAX (size_t) - 1
+
+// Value's type macro
+#ifndef ARL_VALUE_TYPE
+#define ARL_VALUE_TYPE void *
+#endif
+
+// Value's type's utils
+#define ARL_VALUE_SIZE sizeof(ARL_VALUE_TYPE)
 
 /*******************************************************************************
  *    PUBLIC API
@@ -59,20 +69,20 @@ const char *arl_strerror(arl_error error);
 
 // List's data operations
 //// Getters
-arl_error arl_get(arl_ptr l, size_t i, CLL_VALUE_TYPE *value);
+arl_error arl_get(arl_ptr l, size_t i, ARL_VALUE_TYPE *value);
 arl_error arl_slice(arl_ptr l, size_t start_i, size_t elements_amount,
-                    CLL_VALUE_TYPE slice[]);
+                    ARL_VALUE_TYPE slice[]);
 //// Setters
-arl_error arl_set(arl_ptr l, size_t i, CLL_VALUE_TYPE value);
-arl_error arl_insert(arl_ptr l, size_t i, CLL_VALUE_TYPE value);
-arl_error arl_append(arl_ptr l, CLL_VALUE_TYPE value);
+arl_error arl_set(arl_ptr l, size_t i, ARL_VALUE_TYPE value);
+arl_error arl_insert(arl_ptr l, size_t i, ARL_VALUE_TYPE value);
+arl_error arl_append(arl_ptr l, ARL_VALUE_TYPE value);
 arl_error arl_insert_multi(arl_ptr l, size_t i, size_t v_len,
-                           CLL_VALUE_TYPE values[v_len]);
+                           ARL_VALUE_TYPE values[v_len]);
 //// Removers
-arl_error arl_pop(arl_ptr l, size_t i, CLL_VALUE_TYPE *value);
+arl_error arl_pop(arl_ptr l, size_t i, ARL_VALUE_TYPE *value);
 arl_error arl_pop_multi(arl_ptr l, size_t i, size_t elements_amount,
-                        CLL_VALUE_TYPE holder[]);
-arl_error arl_remove(arl_ptr l, size_t i, void (*callback)(CLL_VALUE_TYPE));
-arl_error arl_clear(arl_ptr l, void (*callback)(CLL_VALUE_TYPE));
+                        ARL_VALUE_TYPE holder[]);
+arl_error arl_remove(arl_ptr l, size_t i, void (*callback)(ARL_VALUE_TYPE));
+arl_error arl_clear(arl_ptr l, void (*callback)(ARL_VALUE_TYPE));
 
 #endif
