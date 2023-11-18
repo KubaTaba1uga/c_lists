@@ -7,11 +7,11 @@ NEW_PREFIX=cal_ python3 ../../scripts/generate_sources.py ../../src/arl_list.c .
 
 If script succeed new files should appear:
   `../../src/cal_list.c`
-  `../../iinclude/c_lists/cal_list.h`
+  `../../include/c_lists/cal_list.h`
   
 Compile example:
 ```
-gcc main.c ../../src/cal_list.c -I../../include -o main
+gcc main.c ../../src/cal_list.c ../../src/cll_error.c -I../../include -o main
 ```
 
 Run example:
