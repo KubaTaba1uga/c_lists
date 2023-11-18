@@ -21,7 +21,6 @@ def regenerate_file(file_path):
 
     if len(sys.argv) == 4:
         file_path = os.path.join(sys.argv[3], os.path.basename(file_path))
-        print(file_path)
 
     # New file's source creation
     new_content = source.replace(DEFAULT_PREFIX.lower(), NEW_PREFIX.lower())
@@ -31,6 +30,8 @@ def regenerate_file(file_path):
 
     new_file_path = os.path.join(os.path.dirname(file_path), new_file_name)
     with open(new_file_path, "w") as dst_fp:
+        print(new_file_path)
+
         dst_fp.write(new_content)
 
 

@@ -7,8 +7,7 @@ project('c_lists', 'c',
 	 default_options: [
            'werror=true',
            'c_std=c99',
-         ],
-       )
+         ])
 
 if get_option('enable_tests')
   add_project_arguments('-DENABLE_TESTS=1', language : 'c')
@@ -20,24 +19,28 @@ c_lists_include = [include_directories('include')]
 
 _prefix_script = find_program('scripts' / 'generate_sources.py')
 
-_prefix_gen = generator(_prefix_script,
-                        output: ['@BASENAME@.c', '@BASENAME@.h'],
-                        arguments: ['@INPUT@', '@EXTRA_ARGS@', '@BUILD_DIR@'],
-                       )
-
 subdir('src')
 
-arl_list_sources += _prefix_gen.process(arl_list_file, extra_args: get_option('arl_prefix')) 
+# ******************************************************************************
+# *    Array List
+# ******************************************************************************
+_arl_prefix = get_option('arl_prefix')
+__arl_prefix = _arl_prefix + '_'
 
-arl_list_lib = library('arl_list_lib',
-                       include_directories: c_lists_include,                       
-                       sources: arl_list_sources,
-                       c_args: [
-                         '-DCLL_VALUE_TYPE=' + get_option('arl_type'),
-                       ],
-                      )
+_arl_list_gen_sources = custom_target('arl_list_generated_sources',
+                                      output: [__arl_prefix + 'list.c', __arl_prefix + 'list.h'],
+                                      command: [_prefix_script, arl_list_file, __arl_prefix, '@OUTDIR@'])
 
-arl_list_dep = declare_dependency(link_with: arl_list_lib, include_directories: c_lists_include)
+arl_lib = library(_arl_prefix,
+                  include_directories: c_lists_include,                       
+                  sources: [arl_list_sources + _arl_list_gen_sources],
+                  c_args: [
+                    '-DCLL_VALUE_TYPE=' + get_option('arl_type'),
+                  ],
+                  name_prefix: 'lib_')
+
+arl_lib_dep = declare_dependency(link_with: arl_lib,
+                                 include_directories: c_lists_include)
 
 # ******************************************************************************
 # *    Tests

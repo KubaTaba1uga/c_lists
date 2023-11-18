@@ -1,4 +1,4 @@
-# This file will be generated.
+# This file will be used during real files generation.
 arl_list_file = files(
   'arl_list.c'
 )

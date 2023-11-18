@@ -13,9 +13,9 @@ test_src = files(test_file_name)
 
 test_ar_list_exe = executable(test_name,
   sources: [
-   test_src,
-   cmock_gen_runner.process(test_file_name),
-   cmock_gen_mock.process(std_lib_interface_h),
+    test_src,
+    std_lib_mock,
+    cmock_gen_runner.process(test_file_name),
   ],
   include_directories: tests_include,
   dependencies: tests_dependencies,
@@ -37,7 +37,7 @@ test_ar_list_exe = executable(test_name,
   sources: [
    test_src,
    cmock_gen_runner.process(test_file_name),
-   cmock_gen_mock.process(std_lib_interface_h)
+   std_lib_mock,
   ],
   include_directories: tests_include,
   dependencies: tests_dependencies,
@@ -59,7 +59,7 @@ test_ar_list_exe = executable(test_name,
   sources: [
    test_src,
    cmock_gen_runner.process(test_file_name),
-   cmock_gen_mock.process(std_lib_interface_h)
+   std_lib_mock,
   ],
   include_directories: tests_include,
   dependencies: tests_dependencies,
