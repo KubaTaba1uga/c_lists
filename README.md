@@ -3,7 +3,8 @@
 Simple and leightwight library for lists datastructures, no dependencies, C99 compliant, cross platform (Windows/Linux/MacOs).
 
 Library instance can be generated for basic types (`char`, `float`, `int` etc.) and for `void *`. 
-My goal is to give one interface, to whatever type You may need to put, inside a list. 
+My goal is to have one lis't interface, to whatever type You may need to put inside it.
+Names and types can vary, but API/logic remain the same. 
 
 User can generate version of each list's seperatlly, based on defined macros.
 
