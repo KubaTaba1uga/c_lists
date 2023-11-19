@@ -394,8 +394,9 @@ bool _is_i_too_big(arl_ptr l, size_t i) { return i >= (l->length); }
 
 /* Counts list's new capacity.
  */
-arl_error _count_new_capacity(size_t current_length, size_t current_capacity,
-                              size_t *new_capacity) {
+static arl_error _count_new_capacity(size_t current_length,
+                                     size_t current_capacity,
+                                     size_t *new_capacity) {
 
   /* Size is always smaller than capacity. There is no need in checking
    * new_size divided by cur_size overflow.

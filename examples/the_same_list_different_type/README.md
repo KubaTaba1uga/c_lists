@@ -17,6 +17,14 @@ Compile example:
 gcc main.c int_list.c char_list.c -o main -DCHAR_VALUE_TYPE=char -DINT_VALUE_TYPE=int
 ```
 
+Compile example as different objs files:
+```
+gcc -c int_list.c -o int_list.o -DINT_VALUE_TYPE=int
+gcc -c char_list.c -o char_list.o -DCHAR_VALUE_TYPE=char
+gcc -c main.c -o _main.o
+gcc _main.o int_list.o char_list.o -o main
+```
+
 Run example:
 ```
 ./main
