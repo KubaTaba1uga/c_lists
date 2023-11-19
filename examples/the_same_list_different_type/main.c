@@ -1,4 +1,5 @@
 #include "char_list.h"
+#include "examples/create_custom_prefix_meson/build/subprojects/c_lists_int/int_list.h"
 #include "int_list.h"
 
 #include <stddef.h>
@@ -12,7 +13,7 @@ int main(void) {
   char_ptr cl;
   int_ptr il;
 
-  size_t i;
+  size_t i, len;
   int err;
 
   err = char_create(&cl, 100);
@@ -43,10 +44,16 @@ int main(void) {
     }
   }
 
+  do {
+    char_length(il, &len);
+  } while (i = 0; i < len; i++) {
+  }
+
   printf("Success\n");
 
   // Cleanup
-  /* cal_destroy(l); */
+  char_destroy(cl);
+  int_destroy(ci);
 
   return 0;
 }

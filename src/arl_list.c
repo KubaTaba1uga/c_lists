@@ -13,6 +13,24 @@
  * would shrink internall array, than edit current ones. Maybe even new list?
  */
 
+/* Notes:
+ * - Because of generic nature of the library, functions need to return
+ *     the error. Example scenario:
+          user want to use int as type
+          user insert new value to list
+          underneath sth failed
+          what should we return to user to indicate the error?
+       However this convetion is hard to use in other scenarios,
+          getting length is a good example. If we always return error,
+          we cannot do sth like:
+             for (i=0; i < arl_length(l); i++)
+               ....
+          So as compromise, lib is trying to use returning by error as
+          best effort principle. There might be exceptions of this rule
+          each need to have use case described in function doc.
+
+*/
+
 // TO-DO extend - join two lists into one
 // TO-DO shrink array:
 // 1. pop
