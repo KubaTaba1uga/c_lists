@@ -4,9 +4,6 @@
 /* Array list require allocating one continous chunk of memory. As all
  * allocating functions take required memory size in size_t type, it is safe to
  * assume that SIZE_MAX is maximum allocable memory size for a list's instance.
- * To not shrink list accadidentially at some point ARL_MAX_CAPACITY
- * is defined as upper boundary. If You require bigger capacity check out other
- * lists.
  * List's array is not being shrinked, even on pop or clear. As it may be
  * usefull for someone, it is not essential to list's logic (in opposition
  * to growing). I would rather do some versions of current functions which
@@ -16,20 +13,20 @@
 /* Notes:
  * - Because of generic nature of the library, functions need to return
  *     the error. Example scenario:
-          user want to use int as type
-          user insert new value to list
-          underneath sth failed
-          what should we return to user to indicate the error?
-       However this convetion is hard to use in other scenarios,
-          getting length is a good example. If we always return error,
-          we cannot do sth like:
-             for (i=0; i < arl_length(l); i++)
-               ....
-          So as compromise, lib is trying to use returning by error as
-          best effort principle. There might be exceptions of this rule
-          each need to have use case described in function doc.
-
-*/
+ *         user want to use int as type
+ *         user insert new value to list
+ *         underneath sth failed
+ *         what should we return to user to indicate the error?
+ *      However this convetion is hard to use in other scenarios,
+ *         getting length is a good example. If we always return error,
+ *         we cannot do sth like:
+ *            for (i=0; i < arl_length(l); i++)
+ *              ....
+ *         So as compromise, lib is trying to use returning by error as
+ *         best effort principle. There might be exceptions of this rule
+ *         each need to have use case described in function doc.
+ *
+ */
 
 // TO-DO extend - join two lists into one
 // TO-DO shrink array:
