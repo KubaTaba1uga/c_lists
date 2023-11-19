@@ -8,7 +8,7 @@ if len(sys.argv) < 3:
 
 
 DEFAULT_PREFIX = "arl_"
-NEW_PREFIX = sys.argv[2]  # os.environ["NEW_PREFIX"]
+NEW_PREFIX = sys.argv[2] + "_"  # os.environ["NEW_PREFIX"]
 
 _THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 _SRC_DIR = os.path.join(_THIS_DIR, "..", "src")
