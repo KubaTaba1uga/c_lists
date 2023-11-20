@@ -1,5 +1,5 @@
 # C Lists Library
-Simple and leightwight library for lists datastructures. 
+Simple and leightwight library for lists datastructures. <br>
 Generic values, no dependencies, C99 compliant, cross platform (Windows/Linux/MacOs).
 
 1. [Getting Started](#Getting-Started)
