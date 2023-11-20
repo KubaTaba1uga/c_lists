@@ -9,7 +9,7 @@ Example placeholder
 
 This is basic scenario where list's genericness is done by treating elements as of `void *` type. 
 
-It's fine for some cases, but not for all of them. This lib wants to fill a gap in exactly `not all of them` space.
+It's fine for some cases, but not for all of them. This lib wants to fill a gap in exactly `not all of them` space. <br>
 Let's imagine that You would like to use a list for `char` type, to create kind of dynamic string.
 ```
 Example placeholder
