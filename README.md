@@ -47,8 +47,7 @@ Pros:
  - There is no macro overusage so the library is simple to understand and use. <br>
  - Library can be generated for basic types (`char`, `float`, `int` etc.) and for `void *`. <br> 
 There are plans to allow custom structures and enums, if that's sth that You need, let me know ;) 
-
-To avoid name collisions look on generating_sources section.
+ - To avoid name collisions look on generating_sources section.
 
 Template for new c projects. Includes build system, test, mocking, readme, license, pipelines. 
 
