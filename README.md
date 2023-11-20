@@ -42,10 +42,6 @@ Template for new c projects. Includes build system, test, mocking, readme, licen
 7. [Authors](#Authors)
 8. [License](#License)
 
-## Design decision
-Each list's interface follows FIRST-CLASS ADT Pattern. 
-
-
 ## Getting Started
 
 Clone project
