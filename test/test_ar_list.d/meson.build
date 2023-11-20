@@ -2,7 +2,7 @@ ar_list_test_sources = arl_list_sources + interfaces_h
 ar_list_test_linker_flags = [
   '-zmuldefs',
 ]
-ar_list_c_args: [
+ar_list_c_args = [
     '-DARL_VALUE_TYPE=void *',
 ]
 
