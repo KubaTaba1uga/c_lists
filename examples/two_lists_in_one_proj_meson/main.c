@@ -44,7 +44,7 @@ int main(void) {
   }
 
   i = 0;
-  do {
+  for (i = 0; i < chr_length(cl); i++) {
     err = chr_get(cl, i, &c);
     if (err) {
       puts(int_strerror(err));
@@ -52,9 +52,7 @@ int main(void) {
     }
 
     printf("%c", c);
-
-    chr_length(cl, &len);
-  } while (++i < len);
+  }
 
   printf("\nSuccess\n");
 

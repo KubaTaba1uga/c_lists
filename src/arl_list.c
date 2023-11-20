@@ -28,7 +28,6 @@
  *
  */
 
-// TO-DO: fix arl_length
 // TO-DO extend - join two lists into one
 // TO-DO shrink array:
 // 1. pop
@@ -37,9 +36,6 @@
 // 4. clear - get as arg new capacity, shrink to new capacity.
 //     ?? do we really need it? I think this is duplication of
 //     destroy currtent list, create a new one. ??
-
-// TO-DO use opaque pointers to allow user link to struct
-// TO-DO make library as meson's custom target
 
 /*******************************************************************************
  *    IMPORTS
