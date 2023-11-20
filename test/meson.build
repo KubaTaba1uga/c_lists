@@ -5,7 +5,7 @@ cmock_dependency = cmock_subproject.get_variable('cmock_dep')
 
 tests_dependencies = [unity_dependency, cmock_dependency]
 
-tests_include = [c_lists_dir, c_lists_include]
+tests_include = [c_lists_include]
 
 scripts = join_paths('..', 'scripts')
 
@@ -17,13 +17,15 @@ cmock_gen_runner = generator(
   arguments: ['@INPUT@', '@OUTPUT@'],
 )
 
-cmock_gen_mock = generator(
-   find_program(scripts / 'create_mock.rb'),
-   output: ['mock_@BASENAME@.c', 'mock_@BASENAME@.h', '@PLAINNAME@'],
-   arguments: ['@INPUT@', '@BUILD_DIR@'],
-)
+cmock_prog = find_program(scripts / 'create_mock.rb')
+
+std_lib_mock = custom_target('std_lib_mock',
+                             output: ['mock_cll_std_lib_interface.h', 'mock_cll_std_lib_interface.c'],
+                             input: [std_lib_interface_h],
+                             command: [cmock_prog, std_lib_interface_h, '@OUTDIR@'],
+                           )
 
 interfaces_h = files('interfaces.h')
 
 subdir('test_ar_list.d')
-subdir('test_l_error.d')
+

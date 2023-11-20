@@ -1,24 +1,12 @@
-c_lists_dir = [include_directories('.')]
-
-common_sources = files(
- 'cll_interfaces.h',
+# This file will be used during real files generation.
+arl_list_file = files(
+  'arl_list.c'
 )
 
-error_sources = files(
- 'cll_error.c',  
-)
-
-common_sources += error_sources
+arl_list_sources = files()
 
 if get_option('enable_tests')
   subdir('interfaces')
 endif
-
-
-ar_list_sources = files(
-  'ar_list.c',
-) + common_sources
-
-sources = ar_list_sources
 
 

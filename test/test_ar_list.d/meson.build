@@ -1,6 +1,9 @@
-ar_list_test_sources = ar_list_sources + interfaces_h
+ar_list_test_sources = arl_list_sources + interfaces_h
 ar_list_test_linker_flags = [
   '-zmuldefs',
+]
+ar_list_c_args = [
+    '-DARL_VALUE_TYPE=void *',
 ]
 
 ################################################
@@ -10,21 +13,17 @@ test_file_name = 'test_ar_list_logic.c'
 test_name = 'test_ar_list_logic'
 
 test_src = files(test_file_name)
-test_src += ar_list_test_sources
 
 test_ar_list_exe = executable(test_name,
   sources: [
-   test_src,
-   cmock_gen_runner.process(test_file_name),
-   cmock_gen_mock.process(std_lib_interface_h)
+    test_src,
+    std_lib_mock,
+    cmock_gen_runner.process(test_file_name),
   ],
   include_directories: tests_include,
   dependencies: tests_dependencies,
   link_args: ar_list_test_linker_flags,
-  c_args: [
-    # '-Wno-error=unused-function',
-  ]
-
+  c_args: ar_list_c_args
 )
 
 test(test_name, test_ar_list_exe)
@@ -42,14 +41,12 @@ test_ar_list_exe = executable(test_name,
   sources: [
    test_src,
    cmock_gen_runner.process(test_file_name),
-   cmock_gen_mock.process(std_lib_interface_h)
+   std_lib_mock,
   ],
   include_directories: tests_include,
   dependencies: tests_dependencies,
   link_args: ar_list_test_linker_flags,
-  c_args: [
-    '-DCLL_VALUE_TYPE=void *',
-  ]
+  c_args: ar_list_c_args
 )
 
 test(test_name, test_ar_list_exe)
@@ -67,13 +64,13 @@ test_ar_list_exe = executable(test_name,
   sources: [
    test_src,
    cmock_gen_runner.process(test_file_name),
-   cmock_gen_mock.process(std_lib_interface_h)
+   std_lib_mock,
   ],
   include_directories: tests_include,
   dependencies: tests_dependencies,
   link_args: ar_list_test_linker_flags,
   c_args: [
-    '-DCLL_VALUE_TYPE=char',
+    '-DARL_VALUE_TYPE=char',
   ]
 )
 
@@ -96,6 +93,7 @@ test_overflow_exe = executable(test_overflow_utils_name,
   include_directories: tests_include,
   dependencies: tests_dependencies,
   link_args: ar_list_test_linker_flags,
+  c_args: ar_list_c_args
 )
 
 test(test_overflow_utils_name, test_overflow_exe, suite: 'test_utils')
@@ -110,6 +108,7 @@ test_pointers_utils_name = 'test_pointers_utils'
 test_pointers_utils_src = files(test_pointers_utils_file)
 test_pointers_utils_src += ar_list_test_sources
 
+
 test_pointers_utils_exe = executable(test_pointers_utils_name,
   sources: [
    test_pointers_utils_src,
@@ -119,10 +118,31 @@ test_pointers_utils_exe = executable(test_pointers_utils_name,
   dependencies: tests_dependencies,
   link_args: ar_list_test_linker_flags,  
   c_args: [
-    '-DCLL_VALUE_TYPE=void *',
     '-DDEBUG_MOVE_POINTERS=true'
-  ]
+  ] + ar_list_c_args
 
 )
 
 test(test_pointers_utils_name, test_pointers_utils_exe, suite: 'test_utils')
+
+################################################
+# TEST ERRORS UTILS
+################################################
+test_name = 'test_errors_utils.c'
+
+test_src = files(test_name)
+test_src += ar_list_test_sources
+
+test_l_error_exe = executable('test_errors_utils',
+  sources: [
+    test_src,
+    cmock_gen_runner.process(test_name),
+  ],
+  include_directories: tests_include,
+  dependencies: tests_dependencies,
+  link_args: ar_list_test_linker_flags,
+  c_args: ar_list_c_args
+)
+
+
+test('test_l_error', test_l_error_exe)
