@@ -1,4 +1,5 @@
 # C Lists Library
+Simple and leightwight library for lists datastructures, generic values, no dependencies, C99 compliant, cross platform (Windows/Linux/MacOs).
 
 1. [Getting Started](#Getting-Started)
 3. [Prerequisites](#Prerequisites)
@@ -9,15 +10,12 @@
 8. [License](#License)
 
 ## Why?
-
-Simple and leightwight library for lists datastructures, no dependencies, C99 compliant, cross platform (Windows/Linux/MacOs).
-
 Library can be used as any other C data structure library, by compiling with default settings.
 ```
 gcc -c src/arl_list.c -I include/ -o arl_list_lib.o
 ```
 
-This is basic scenario where list's genericness is done by treating elements as of `void *` type. 
+This is basic scenario where list's genericness is done by treating it's elements as of `void *` type. 
 
 It's fine for some cases, but not for all of them. This lib wants to fill a gap in exactly `not all of them` space. <br>
 Let's imagine that You would like to use a list for `char` type, to create kind of dynamic string. <br>
