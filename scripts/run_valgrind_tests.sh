@@ -10,7 +10,7 @@ fi
 
 meson test --wrap='valgrind --leak-check=full --show-leak-kinds=all --error-exitcode=1 -s' $test_name -C $builddir && \
 
-success=$(!?)
+success=$?
 
 cat $builddir/meson-logs/testlog-valgrind.txt
 

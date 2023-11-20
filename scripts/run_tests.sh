@@ -10,7 +10,7 @@ fi
 
 meson test $test_name -C $builddir
 
-success=$(!?)
+success=$?
 
 cat $builddir/meson-logs/testlog.txt
 
