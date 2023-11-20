@@ -47,7 +47,9 @@ What is nice about C Lists Library?
  - There is no macro overusage so the library is simple to understand and use. <br>
  - Library can be generated for basic types (`char`, `float`, `int` etc.) and for `void *`. <br> 
 There are plans to allow custom structures and enums, if that's sth that You need, let me know ;) 
- - To avoid name collisions look on generating_sources section.
+ - There is a mechanism to delete almost all macro, look on generating_sources section.
+ - There is mechanism to delete names duplications, look on generating_sources section.
+ - Meson support.
 
 Template for new c projects. Includes build system, test, mocking, readme, license, pipelines. 
 
