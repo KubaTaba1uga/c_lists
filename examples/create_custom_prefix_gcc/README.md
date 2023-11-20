@@ -2,7 +2,7 @@ Readme assumes that Your current location is this dir.
 
 Generate files with new prefix:
 ```
-python3 ../../scripts/generate_sources.py ../../src/arl_list.c cal ./
+python3 ../../scripts/generate_sources.py ../../src/arl_list.c cal 'void *' .
 ```
 
 If script succeed new files should appear:
