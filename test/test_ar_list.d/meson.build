@@ -2,6 +2,9 @@ ar_list_test_sources = arl_list_sources + interfaces_h
 ar_list_test_linker_flags = [
   '-zmuldefs',
 ]
+ar_list_c_args: [
+    '-DARL_VALUE_TYPE=void *',
+]
 
 ################################################
 # TEST AR LIST LOGIC
@@ -20,6 +23,7 @@ test_ar_list_exe = executable(test_name,
   include_directories: tests_include,
   dependencies: tests_dependencies,
   link_args: ar_list_test_linker_flags,
+  c_args: ar_list_c_args
 )
 
 test(test_name, test_ar_list_exe)
@@ -42,6 +46,7 @@ test_ar_list_exe = executable(test_name,
   include_directories: tests_include,
   dependencies: tests_dependencies,
   link_args: ar_list_test_linker_flags,
+  c_args: ar_list_c_args
 )
 
 test(test_name, test_ar_list_exe)
@@ -88,6 +93,7 @@ test_overflow_exe = executable(test_overflow_utils_name,
   include_directories: tests_include,
   dependencies: tests_dependencies,
   link_args: ar_list_test_linker_flags,
+  c_args: ar_list_c_args
 )
 
 test(test_overflow_utils_name, test_overflow_exe, suite: 'test_utils')
@@ -113,7 +119,7 @@ test_pointers_utils_exe = executable(test_pointers_utils_name,
   link_args: ar_list_test_linker_flags,  
   c_args: [
     '-DDEBUG_MOVE_POINTERS=true'
-  ]
+  ] + ar_list_c_args
 
 )
 
@@ -135,6 +141,7 @@ test_l_error_exe = executable('test_errors_utils',
   include_directories: tests_include,
   dependencies: tests_dependencies,
   link_args: ar_list_test_linker_flags,
+  c_args: ar_list_c_args
 )
 
 
