@@ -29,7 +29,7 @@ int main(void) {
   printf("Success\n");
 
   // Cleanup
-  /* cal_destroy(l); */
+  cal_destroy(l);
 
   return 0;
 }
