@@ -2,6 +2,22 @@
 
 Simple and leightwight library for lists datastructures, no dependencies, C99 compliant, cross platform (Windows/Linux/MacOs).
 
+Library can be used as any other C data structure library, by compiling with default settings.
+```
+Example placeholder
+```
+
+This is basic scenario where list's genericness is done by treating elements as of `void *` type. 
+
+It's fine for some cases, but not for all of them. This lib wants to fill a gap in exactly `not all of them` space.
+Let's imagine that You would like to use a list for `char` type, to create kind of dynamic string.
+It would require allocatin memory for each of the chars before appending the char as an element, pretty painfull ain't it?
+We can easilly imagine the same list but working on char type and this is exactly what the library fanciness is about.
+You can create the same list that You are usually using (with `void *` type) but with any type that You need. 
+   
+
+
+
 Library instance can be generated for basic types (`char`, `float`, `int` etc.) and for `void *`. 
 My goal is to have one lis't interface, to whatever type You may need to put inside it.
 Names and types can vary, but API/logic remain the same. 
