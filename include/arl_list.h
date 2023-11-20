@@ -15,11 +15,6 @@
  ******************************************************************************/
 #define ARL_SIZE_T_MAX (size_t) - 1
 
-// Value's type macro
-#ifndef ARL_VALUE_TYPE
-#define ARL_VALUE_TYPE void *
-#endif
-
 // Value's type's utils
 #define ARL_VALUE_SIZE sizeof(ARL_VALUE_TYPE)
 
