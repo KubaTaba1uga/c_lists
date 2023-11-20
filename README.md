@@ -79,9 +79,6 @@ There are plans to allow custom structures and enums, if that's sth that You nee
  - There is mechanism to delete names duplications, look on generating_sources section.
  - Meson support.
 
-Template for new c projects. Includes build system, test, mocking, readme, license, pipelines. 
-
-
 ## Getting Started
 
 Clone project
