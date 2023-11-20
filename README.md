@@ -1,5 +1,15 @@
 # C Lists Library
 
+1. [Getting Started](#Getting-Started)
+3. [Prerequisites](#Prerequisites)
+4. [Building](#Building)
+5. [Tests](#Tests)
+6. [Pipelines](#Pipelines)
+7. [Authors](#Authors)
+8. [License](#License)
+
+## Description
+
 Simple and leightwight library for lists datastructures, no dependencies, C99 compliant, cross platform (Windows/Linux/MacOs).
 
 Library can be used as any other C data structure library, by compiling with default settings.
@@ -41,8 +51,28 @@ You can create the same list that You are usually using (with `void *` type) but
 ```
 gcc -c src/arl_list.c -I include/ -o arl_list_lib.o -DARL_VALUE_TYPE=char
 ```
+some c file
+```
+  // Dynamic string
+  char *my_string_0 = "nanananananana";
+  char *my_sting_1 = "RTRTRTRTRTRTR";
+  char c;
+  arl_ptr l;
+  size_t i;
 
-What is nice about C Lists Library?
+  arl_create(&l, 10);
+
+  for (i = 0; i < strlen(my_string_0); i++) {
+    arl_append(l, my_string_0[i]);
+  }
+  for (i = 0; i < strlen(my_string_1); i++) {
+     arl_append(l, my_string_1[i]);
+  }
+  ...
+```
+
+
+## What is nice about C Lists Library?
  - Only two files are required to use a list, source file and header file. <br>
  - There is no macro overusage so the library is simple to understand and use. <br>
  - Library can be generated for basic types (`char`, `float`, `int` etc.) and for `void *`. <br> 
@@ -53,13 +83,6 @@ There are plans to allow custom structures and enums, if that's sth that You nee
 
 Template for new c projects. Includes build system, test, mocking, readme, license, pipelines. 
 
-1. [Getting Started](#Getting-Started)
-3. [Prerequisites](#Prerequisites)
-4. [Building](#Building)
-5. [Tests](#Tests)
-6. [Pipelines](#Pipelines)
-7. [Authors](#Authors)
-8. [License](#License)
 
 ## Getting Started
 
