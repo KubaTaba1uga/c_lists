@@ -14,16 +14,14 @@ Let's imagine that You would like to use a list for `char` type, to create kind 
 It would require allocatin memory for each of the chars before appending the char as an element, pretty painfull ain't it?
 We can easilly imagine the same list but working on char type and this is exactly what this library is about.
 You can create the same list that You are usually using (with `void *` type) but with any type that You need. 
+```
+Example placeholder
+```
    
+Library can be generated for basic types (`char`, `float`, `int` etc.) and for `void *`. 
+There are plans to allow custom structures and enums, if that's sth that You need let me know, it may speed things up ;) 
 
-
-
-Library instance can be generated for basic types (`char`, `float`, `int` etc.) and for `void *`. 
-My goal is to have one lis't interface, to whatever type You may need to put inside it.
-Names and types can vary, but API/logic remain the same. 
-
-You may want to create multiple list vaersions, to avoid name collisions look on generating_sources section.
-
+To avoid name collisions look on generating_sources section.
 
 
 Template for new c projects. Includes build system, test, mocking, readme, license, pipelines. 
