@@ -25,9 +25,10 @@ subdir('src')
 # *    Array List
 # ******************************************************************************
 _arl_prefix = get_option('arl_prefix')
+_arl_prefix_ = _arl_prefix + '_'
 
 _arl_list_gen_sources = custom_target('arl_list_generated_sources',
-                                      output: [_arl_prefix + 'list.c', _arl_prefix + 'list.h'],
+                                      output: [_arl_prefix_ + 'list.c', _arl_prefix_ + 'list.h'],
                                       command: [_prefix_script, arl_list_file, _arl_prefix, '@OUTDIR@'])
 
 message(get_option('arl_type'))

@@ -6,7 +6,6 @@
 
 int main(void) {
   char myprefix_data[] = "abcbcbcbcb";
-  int int_data[] = {1, 2, 3, 4, 5};
 
   myprefix_ptr l;
 
@@ -20,7 +19,7 @@ int main(void) {
   }
 
   for (i = 0; i < strlen(myprefix_data); i++) {
-    err = myprefix_append(l, myprefix_data[i]);
+    err = myprefix_append(l, &myprefix_data[i]);
     if (err) {
       puts(myprefix_strerror(err));
       return -3;
