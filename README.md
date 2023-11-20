@@ -10,23 +10,40 @@ gcc -c src/arl_list.c -I include/ -o arl_list_lib.o
 This is basic scenario where list's genericness is done by treating elements as of `void *` type. 
 
 It's fine for some cases, but not for all of them. This lib wants to fill a gap in exactly `not all of them` space. <br>
-Let's imagine that You would like to use a list for `char` type, to create kind of dynamic string.
-```
-Example placeholder
-```
+Let's imagine that You would like to use a list for `char` type, to create kind of dynamic string. <br>
 It would require allocatin memory for each of the chars before appending the char as an element
 ```
-Example placeholder
+  // Dynamic string
+  char *my_string_0 = "nanananananana";
+  char *my_sting_1 = "RTRTRTRTRTRTR";
+  char *c;
+  arl_ptr l;
+  size_t i;
+
+  arl_create(&l, 10);
+
+  for (i = 0; i < strlen(my_string_0); i++) {
+    c = malloc(sizeof(c));
+    *c = my_string_0[i];
+    arl_append(l, c);
+  }
+  for (i = 0; i < strlen(my_string_1); i++) {
+    c = malloc(sizeof(c));
+    *c = my_string_0[i];
+    arl_append(l, c);
+  }
+  ...
 ```
 pretty painfull ain't it?
 
 We can easilly imagine the same list but working on char type and this is exactly what this library is about.
-You can create the same list that You are usually using (with `void *` type) but with any type that You need. 
+You can create the same list that You are usually using (with `void *` type) but with any type that we need (char). 
 ```
-Example placeholder
+gcc -c src/arl_list.c -I include/ -o arl_list_lib.o -DARL_VALUE_TYPE=char
 ```
-   
-There is no macro overusage so the library is simple to understand and tweak. <br>
+
+To use each list only pair of source and header files is required. <br>
+There is no macro overusage so the library is simple to understand and use. <br>
 Currently library can be generated for basic types (`char`, `float`, `int` etc.) and for `void *`. <br> 
 There are plans to allow custom structures and enums, if that's sth that You need, let me know ;) 
 
