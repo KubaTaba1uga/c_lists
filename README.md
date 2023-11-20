@@ -8,7 +8,7 @@
 7. [Authors](#Authors)
 8. [License](#License)
 
-## Description
+## Why?
 
 Simple and leightwight library for lists datastructures, no dependencies, C99 compliant, cross platform (Windows/Linux/MacOs).
 
