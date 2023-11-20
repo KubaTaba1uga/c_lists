@@ -4,7 +4,7 @@ Simple and leightwight library for lists datastructures, no dependencies, C99 co
 
 Library can be used as any other C data structure library, by compiling with default settings.
 ```
-Example placeholder
+gcc -c src/arl_list.c -I include/ -o arl_list_lib.o
 ```
 
 This is basic scenario where list's genericness is done by treating elements as of `void *` type. 
