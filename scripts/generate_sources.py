@@ -14,6 +14,7 @@ Syntax: python3 generate_sources.py <source file> <new prefix> <new type> (<dest
 
 DEFAULT_TYPE = "ARL_VALUE_TYPE"
 DEFAULT_PREFIX = "arl_"
+# TO-DO get DEFAULT_PREFIX and DEFAULT_TYPE dyanmically, based on file_path
 
 file_path = sys.argv[1]
 new_prefix = sys.argv[2] + "_"
