@@ -37,14 +37,15 @@ It would require allocatin memory for each of the chars before appending the cha
 pretty painfull ain't it?
 
 We can easilly imagine the same list but working on char type and this is exactly what this library is about.
-You can create the same list that You are usually using (with `void *` type) but with any type that we need (char). 
+You can create the same list that You are usually using (with `void *` type) but with any type that You need. 
 ```
 gcc -c src/arl_list.c -I include/ -o arl_list_lib.o -DARL_VALUE_TYPE=char
 ```
 
-To use each list only pair of source and header files is required. <br>
-There is no macro overusage so the library is simple to understand and use. <br>
-Currently library can be generated for basic types (`char`, `float`, `int` etc.) and for `void *`. <br> 
+Pros:
+ - Only two files are required to use a list, source file and header file. <br>
+ - There is no macro overusage so the library is simple to understand and use. <br>
+ - Library can be generated for basic types (`char`, `float`, `int` etc.) and for `void *`. <br> 
 There are plans to allow custom structures and enums, if that's sth that You need, let me know ;) 
 
 To avoid name collisions look on generating_sources section.
