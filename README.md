@@ -27,7 +27,7 @@ Example placeholder
 ```
    
 Currently library can be generated for basic types (`char`, `float`, `int` etc.) and for `void *`. 
-There is no macro overusage so the library is simple to understand and tweak.
+There is no macro overusage so the library is simple to understand and tweak. <br>
 There are plans to allow custom structures and enums, if that's sth that You need, let me know ;) 
 
 To avoid name collisions look on generating_sources section.
