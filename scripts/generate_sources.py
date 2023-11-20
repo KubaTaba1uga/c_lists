@@ -1,5 +1,6 @@
 #!/bin/env python3
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -24,7 +25,17 @@ _SRC_DIR = os.path.join(_THIS_DIR, "..", "src")
 _HEADERS_DIR = os.path.join(_THIS_DIR, "..", "include")
 
 
-def regenerate_file(file_path):
+def main():
+    files_to_gen = [
+        os.path.join(_SRC_DIR, Path(file_path).stem + ".c"),
+        os.path.join(_HEADERS_DIR, Path(file_path).stem + ".h"),
+    ]
+
+    for file_ in files_to_gen:
+        regenerate_file(file_)
+
+
+def regenerate_file(file_path: str) -> None:
     with open(file_path, "r") as src_fp:
         old_content = src_fp.read()
 
@@ -38,24 +49,30 @@ def regenerate_file(file_path):
     new_file_path = os.path.join(os.path.dirname(file_path), new_file_name)
 
     with open(new_file_path, "w") as dst_fp:
-        print(new_file_path)
         dst_fp.write(new_content)
+        print("Generated:", new_file_path)
 
 
-def regenerate_content(file_content):
-    new_content = file_content.replace(DEFAULT_TYPE, new_type)
+def regenerate_content(file_content: str) -> str:
+    regeneration_functions = [
+        sanitize_content,
+        lambda string: string.replace(DEFAULT_TYPE, new_type),
+        lambda string: string.replace(
+            DEFAULT_PREFIX.lower(), new_prefix.lower()
+        ).replace(DEFAULT_PREFIX.upper(), new_prefix.upper()),
+    ]
 
-    new_content = new_content.replace(
-        DEFAULT_PREFIX.lower(), new_prefix.lower()
-    ).replace(DEFAULT_PREFIX.upper(), new_prefix.upper())
-    return new_content
+    for func in regeneration_functions:
+        file_content = func(file_content)
+
+    return file_content
+
+
+def sanitize_content(file_content: str) -> str:
+    # definitons need to be deleted, they break compilation
+    regex = r"#ifndef ARL_VALUE_TYPE(\n^(?!#endif$).*)+\n#endif"
+    return re.sub(regex, "\n", file_content, flags=re.M)
 
 
 if __name__ == "__main__":
-    files_to_gen = [
-        os.path.join(_SRC_DIR, Path(file_path).stem + ".c"),
-        os.path.join(_HEADERS_DIR, Path(file_path).stem + ".h"),
-    ]
-
-    for file_ in files_to_gen:
-        regenerate_file(file_)
+    main()
