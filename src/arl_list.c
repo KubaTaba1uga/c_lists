@@ -154,13 +154,18 @@ arl_error arl_destroy(arl_ptr l) {
   return ARL_SUCCESS;
 }
 
-/* Gets list's length.
+/* Returns list's length.
+ *
+ * !!!WARNING!!!
+ * THIS FUNCTION DO NOT RETURN ERROR!!!
+ * !!!WARNING!!!
+ *
+ * Length is often used in for loop.
+ * Lib wants to be user friendly so we want to support sth like:
+ *   for (i=0; i<srl_length(l); i++)
+ *           ...
  */
-arl_error arl_length(arl_ptr l, size_t *length) {
-  *length = l->length;
-
-  return ARL_SUCCESS;
-}
+size_t arl_length(arl_ptr l) { return l->length; }
 
 /* Gets value under the index.
  */
@@ -176,8 +181,8 @@ arl_error arl_get(arl_ptr l, size_t i, ARL_VALUE_TYPE *value) {
 /* Fills slice with elements from index i till index
  *  i+elemets_amount. Start i and elements amount have
  *  to respect list's length, otherwise error is raised.
- *  Slice's length has to be bigger than elements amount.
- *  Otherwise behaviour is undefined.
+ *  Slice's length has to be bigger than elements amount,
+ *  otherwise behaviour is undefined.
  */
 arl_error arl_slice(arl_ptr l, size_t start_i, size_t elements_amount,
                     ARL_VALUE_TYPE slice[]) {
@@ -211,7 +216,7 @@ arl_error arl_set(arl_ptr l, size_t i, ARL_VALUE_TYPE value) {
 }
 
 /* Insert one element under the index.
- *  If index bigger than list's length, appends the value.
+ * If index bigger than list's length, appends the value.
  */
 arl_error arl_insert(arl_ptr l, size_t i, ARL_VALUE_TYPE value) {
   size_t new_length, move_by = 1;

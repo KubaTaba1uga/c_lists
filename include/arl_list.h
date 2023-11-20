@@ -60,7 +60,7 @@ typedef struct arl_def *arl_ptr;
 // List operations
 arl_error arl_create(arl_ptr *l, size_t default_size);
 arl_error arl_destroy(arl_ptr l);
-arl_error arl_length(arl_ptr l, size_t *length);
+size_t arl_length(arl_ptr l);
 const char *arl_strerror(arl_error error);
 
 // List's data operations
