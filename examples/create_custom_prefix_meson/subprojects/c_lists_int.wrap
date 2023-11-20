@@ -1,4 +1,0 @@
-[wrap-git]
-url = https://github.com/KubaTaba1uga/c_lists.git
-revision = generate_header_dynamically_to_avoid_name_collisions
-depth = 1

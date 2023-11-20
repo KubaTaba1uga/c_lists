@@ -16,10 +16,9 @@ add_project_arguments('-save-temps', language : 'c')
 ###############
 c_lists_proj = subproject('c_lists',
                          default_options: [
-                                  'enable_tests=false',
-                                  'arl_prefix=myprefix',
-                                ]
-                               )
+                           'enable_tests=false',
+                           'arl_prefix=myprefix',
+                           ])
 c_lists_dep = c_lists_proj.get_variable('arl_lib_dep')
 
 ###############
