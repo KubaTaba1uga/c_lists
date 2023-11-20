@@ -103,8 +103,6 @@ static const char *const ARL_ERROR_STRINGS[] = {
     // 5
     "Index too big",
     // 6
-    "Array's maximum capacity reached",
-    // 7
     "Popping empty list is disallowed",
 
 };

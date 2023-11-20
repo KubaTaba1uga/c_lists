@@ -146,3 +146,38 @@ test_l_error_exe = executable('test_errors_utils',
 
 
 test('test_l_error', test_l_error_exe)
+
+################################################
+# TEST GENERATION SCRIPT
+################################################
+test_name = 'test_ar_list_char.c'
+
+test_src = files(test_name)
+
+test_command = [_prefix_script_command[0],
+                _prefix_script_command[1],
+                'arl',
+                'char',
+                '@OUTDIR@'
+               ]
+
+test_gen_sources = custom_target('test_generated_sources',
+                                  output: _prefix_script_output,
+                                  command: test_command)
+
+test_l_error_exe = executable('test_generation_script',
+  sources: [
+    test_src,
+    test_gen_sources,
+    std_lib_mock,
+    cmock_gen_runner.process(test_name),
+  ],
+  include_directories: tests_include,
+  dependencies: tests_dependencies,
+  link_args: ar_list_test_linker_flags,
+)
+
+
+test('test_generation_script', test_l_error_exe)
+
+
