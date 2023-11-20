@@ -28,6 +28,7 @@
  *
  */
 
+// TO-DO: fix arl_length
 // TO-DO extend - join two lists into one
 // TO-DO shrink array:
 // 1. pop
