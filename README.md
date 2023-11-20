@@ -42,7 +42,7 @@ You can create the same list that You are usually using (with `void *` type) but
 gcc -c src/arl_list.c -I include/ -o arl_list_lib.o -DARL_VALUE_TYPE=char
 ```
 
-Pros:
+What is nice about C Lists Library?
  - Only two files are required to use a list, source file and header file. <br>
  - There is no macro overusage so the library is simple to understand and use. <br>
  - Library can be generated for basic types (`char`, `float`, `int` etc.) and for `void *`. <br> 
