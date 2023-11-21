@@ -62,6 +62,11 @@ library and more. Check it out if You need more than just src files.
 
 ## Tests
 
+Create build with tests enabled
+```
+meson setup build -Denable_tests=true
+```
+
 Run all tests
 ```
 meson test -C build
