@@ -50,7 +50,7 @@ However each list is composed of one src file and one header file, which should 
 
 There are three building options available:
  - `enable_tests` flag indicating tests compilation
- - `arl_prefix` prefix for [array list's](https://en.wikipedia.org/wiki/Dynamic_array) public functions
+ - `arl_prefix` prefix for [array list's](https://en.wikipedia.org/wiki/Dynamic_array) public interface
  - `arl_type` type of array list's elements
 
 Create build with some options configured
