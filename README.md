@@ -85,6 +85,7 @@ There are plans to allow custom structures and enums, if that's sth that You nee
  - There is a mechanism to delete almost all macro, look on generating_sources section.
  - There is mechanism to delete names duplications, look on generating_sources section.
  - Meson support.
+ - Only lists, no unnecessary stuff.
 
 ## Getting Started
 
