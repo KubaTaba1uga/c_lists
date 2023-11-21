@@ -48,6 +48,7 @@ It would require allocatin memory for each of the chars before appending the cha
 ```
 pretty painfull ain't it?
 
+So why can't we use the same mechanism as for `void *` but for `char? 
 We can easilly imagine the same list but working on char type and this is exactly what this library is about.
 You can create the same list that You are usually using (with `void *` type) but with any type that You need. 
 ```
@@ -73,9 +74,10 @@ some c file
   ...
 ```
 
+I think it would be nice to give C developers a datastructures libs that wouldn't create `void *` limitation.
 
-## What is nice about C Lists Library?
- - Only two files are required to use a list, source file and header file. <br>
+## BTW What is nice about C Lists Library?
+ - Only two files are required to use particullar list, source file and header file. <br>
  - There is no macro overusage so the library is simple to understand and use. <br>
  - Library can be generated for basic types (`char`, `float`, `int` etc.) and for `void *`. <br> 
 There are plans to allow custom structures and enums, if that's sth that You need, let me know ;) 
