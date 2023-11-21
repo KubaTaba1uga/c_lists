@@ -35,6 +35,11 @@ gcc main.c ../../src/arl_list.c  -I../../include -o main -DARL_VALUE_TYPE=char &
 - [Meson](https://mesonbuild.com/)
 - [Ruby](https://www.ruby-lang.org/en/)
 
+Install perequesites by scripts
+
+./scripts/install_ruby.sh
+./scripts/install_meson.sh
+
 If installing perequesites by scripts has failed, You need to install them manually.
 
 ## Building
