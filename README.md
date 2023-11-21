@@ -44,7 +44,7 @@ Tool use for building is Meson.
 There are three building options available:
  - `enable_tests` flag indicating tests compilation
  - `arl_prefix` prefix for all array list's public functions
- - `arl_type` type for array lis's elements
+ - `arl_type` type of array list's elements
 
 Create build with some options configured
 ```
