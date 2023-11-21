@@ -6,8 +6,8 @@ Generic values, no dependencies, C99 compliant, cross platform (Windows/Linux/Ma
 2. [Prerequisites](#Prerequisites)
 3. [Building](#Building)
 4. [Tests](#Tests)
-5. [Why?](#Why)
-6. [Generating Sources](#Generating-Sources)
+5. [Generating Sources](#Generating-Sources)  
+6. [Why?](#Why)
 7. [Authors](#Authors)
 8. [License](#License)
 
