@@ -17,9 +17,9 @@ endif
 
 c_lists_include = [include_directories('include')]
 
-_prefix_script = find_program('scripts' / 'generate_sources.py')
-
 subdir('src')
+
+_prefix_script = find_program('scripts' / 'generate_sources.py')
 
 # ******************************************************************************
 # *    Array List
@@ -27,11 +27,13 @@ subdir('src')
 _arl_prefix = get_option('arl_prefix')
 _arl_prefix_ = _arl_prefix + '_'
 
+_prefix_script_command = [_prefix_script, arl_list_file,
+                          _arl_prefix, get_option('arl_type'), '@OUTDIR@']
+_prefix_script_output = [_arl_prefix_ + 'list.c', _arl_prefix_ + 'list.h']
+
 _arl_list_gen_sources = custom_target('arl_list_generated_sources',
-                                      output: [_arl_prefix_ + 'list.c', _arl_prefix_ + 'list.h'],
-                                      command: [_prefix_script, arl_list_file,
-                                                _arl_prefix, get_option('arl_type'),
-                                                '@OUTDIR@'])
+                                      output: _prefix_script_output,
+                                      command: _prefix_script_command)
 
 arl_lib = library(_arl_prefix,
                   include_directories: c_lists_include,                       

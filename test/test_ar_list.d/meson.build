@@ -26,7 +26,7 @@ test_ar_list_exe = executable(test_name,
   c_args: ar_list_c_args
 )
 
-test(test_name, test_ar_list_exe)
+test(test_name, test_ar_list_exe, suite: 'test_arl')
 
 ################################################
 # TEST AR LIST LOGIC (void *)
@@ -49,7 +49,7 @@ test_ar_list_exe = executable(test_name,
   c_args: ar_list_c_args
 )
 
-test(test_name, test_ar_list_exe)
+test(test_name, test_ar_list_exe, suite: 'test_arl')
 
 ################################################
 # TEST AR LIST LOGIC (char)
@@ -74,7 +74,7 @@ test_ar_list_exe = executable(test_name,
   ]
 )
 
-test(test_name, test_ar_list_exe)
+test(test_name, test_ar_list_exe, suite: 'test_arl')
 
 ################################################
 # TEST OVERFLOW UTILS
@@ -96,7 +96,7 @@ test_overflow_exe = executable(test_overflow_utils_name,
   c_args: ar_list_c_args
 )
 
-test(test_overflow_utils_name, test_overflow_exe, suite: 'test_utils')
+test(test_overflow_utils_name, test_overflow_exe, suite: 'test_arl')
 
 
 ################################################
@@ -123,7 +123,7 @@ test_pointers_utils_exe = executable(test_pointers_utils_name,
 
 )
 
-test(test_pointers_utils_name, test_pointers_utils_exe, suite: 'test_utils')
+test(test_pointers_utils_name, test_pointers_utils_exe, suite: 'test_arl')
 
 ################################################
 # TEST ERRORS UTILS
@@ -145,4 +145,38 @@ test_l_error_exe = executable('test_errors_utils',
 )
 
 
-test('test_l_error', test_l_error_exe)
+test('test_l_error', test_l_error_exe, suite: 'test_arl')
+
+################################################
+# TEST GENERATION SCRIPT
+################################################
+test_name = 'test_ar_list_char.c'
+
+test_src = files(test_name)
+
+test_command = [_prefix_script_command[0],
+                _prefix_script_command[1],
+                'arl',
+                'char',
+                '@OUTDIR@'
+               ]
+
+test_gen_sources = custom_target('test_generated_sources',
+                                  output: _prefix_script_output,
+                                  command: test_command)
+
+test_l_error_exe = executable('test_generation_script',
+  sources: [
+    test_src,
+    test_gen_sources,
+    std_lib_mock,
+    cmock_gen_runner.process(test_name),
+  ],
+  include_directories: tests_include,
+  dependencies: tests_dependencies,
+  link_args: ar_list_test_linker_flags,
+)
+
+
+test('test_generation_script', test_l_error_exe, suite: 'test_arl')
+

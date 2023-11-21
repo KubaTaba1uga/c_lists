@@ -28,7 +28,6 @@
  *
  */
 
-// TO-DO: fix arl_length
 // TO-DO extend - join two lists into one
 // TO-DO shrink array:
 // 1. pop
@@ -37,9 +36,6 @@
 // 4. clear - get as arg new capacity, shrink to new capacity.
 //     ?? do we really need it? I think this is duplication of
 //     destroy currtent list, create a new one. ??
-
-// TO-DO use opaque pointers to allow user link to struct
-// TO-DO make library as meson's custom target
 
 /*******************************************************************************
  *    IMPORTS
@@ -103,8 +99,6 @@ static const char *const ARL_ERROR_STRINGS[] = {
     // 5
     "Index too big",
     // 6
-    "Array's maximum capacity reached",
-    // 7
     "Popping empty list is disallowed",
 
 };
@@ -156,13 +150,18 @@ arl_error arl_destroy(arl_ptr l) {
   return ARL_SUCCESS;
 }
 
-/* Gets list's length.
+/* Returns list's length.
+ *
+ * !!!WARNING!!!
+ * THIS FUNCTION DO NOT RETURN ERROR!!!
+ * !!!WARNING!!!
+ *
+ * Length is often used in for loop.
+ * Lib wants to be user friendly so we want to support sth like:
+ *   for (i=0; i<srl_length(l); i++)
+ *           ...
  */
-arl_error arl_length(arl_ptr l, size_t *length) {
-  *length = l->length;
-
-  return ARL_SUCCESS;
-}
+size_t arl_length(arl_ptr l) { return l->length; }
 
 /* Gets value under the index.
  */
@@ -178,8 +177,8 @@ arl_error arl_get(arl_ptr l, size_t i, ARL_VALUE_TYPE *value) {
 /* Fills slice with elements from index i till index
  *  i+elemets_amount. Start i and elements amount have
  *  to respect list's length, otherwise error is raised.
- *  Slice's length has to be bigger than elements amount.
- *  Otherwise behaviour is undefined.
+ *  Slice's length has to be bigger than elements amount,
+ *  otherwise behaviour is undefined.
  */
 arl_error arl_slice(arl_ptr l, size_t start_i, size_t elements_amount,
                     ARL_VALUE_TYPE slice[]) {
@@ -213,7 +212,7 @@ arl_error arl_set(arl_ptr l, size_t i, ARL_VALUE_TYPE value) {
 }
 
 /* Insert one element under the index.
- *  If index bigger than list's length, appends the value.
+ * If index bigger than list's length, appends the value.
  */
 arl_error arl_insert(arl_ptr l, size_t i, ARL_VALUE_TYPE value) {
   size_t new_length, move_by = 1;

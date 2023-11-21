@@ -7,7 +7,7 @@
 
 int main(void) {
   char c, char_data[] = "abcbcbcbcb";
-  int int_data[] = {1, 2, 3, 4, 5};
+  int n, int_data[] = {1, 2, 3, 4, 5};
 
   chr_ptr cl;
   int_ptr il;
@@ -43,18 +43,25 @@ int main(void) {
     }
   }
 
-  i = 0;
-  do {
+  for (i = 0; i < chr_length(cl); i++) {
     err = chr_get(cl, i, &c);
+    if (err) {
+      puts(chr_strerror(err));
+      return -5;
+    }
+
+    printf("%c", c);
+  }
+
+  for (i = 0; i < int_length(il); i++) {
+    err = int_get(il, i, &n);
     if (err) {
       puts(int_strerror(err));
       return -5;
     }
 
-    printf("%c", c);
-
-    chr_length(cl, &len);
-  } while (++i < len);
+    printf("%i", n);
+  }
 
   printf("\nSuccess\n");
 

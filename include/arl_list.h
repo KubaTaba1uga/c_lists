@@ -15,7 +15,10 @@
  ******************************************************************************/
 #define ARL_SIZE_T_MAX (size_t) - 1
 
-// Value's type's utils
+#ifndef ARL_VALUE_TYPE
+#define ARL_VALUE_TYPE void *
+#endif
+
 #define ARL_VALUE_SIZE sizeof(ARL_VALUE_TYPE)
 
 /*******************************************************************************
@@ -35,7 +38,6 @@ typedef enum {
    *  knowing each calculation made by the lib (by You).
    *  Just thinking about it gives me a hadache :P
    *
-   * TO-DO Add more overflow handlings to lib itself.
    */
   ARL_ERROR_OVERFLOW,
   ARL_ERROR_UNDERFLOW,
@@ -44,9 +46,8 @@ typedef enum {
 
   ARL_ERROR_INDEX_TOO_BIG,
 
-  ARL_ERROR_REACHED_CAPACITY_MAX,
-
   ARL_ERROR_POP_EMPTY_LIST,
+
   /* Enum assigns values automatically by incrementing
    *   the first value. `ARL_ERROR_LEN` stands for number
    *   of elements in enum (aka `length`).
@@ -59,7 +60,7 @@ typedef struct arl_def *arl_ptr;
 // List operations
 arl_error arl_create(arl_ptr *l, size_t default_size);
 arl_error arl_destroy(arl_ptr l);
-arl_error arl_length(arl_ptr l, size_t *length);
+size_t arl_length(arl_ptr l);
 const char *arl_strerror(arl_error error);
 
 // List's data operations
