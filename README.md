@@ -131,7 +131,7 @@ pretty painfull ain't it?
 
 So why can't we use the same mechanism as for `void *` but for `char`? 
 
-We can easilly imagine the same list but working on char type and this is exactly what this library is about.
+We can easilly imagine the same list but working on `char` type and this is exactly what this library is about.
 You can create the same list that You are usually using (with `void *` type) but with any type that You need. 
 ```
 gcc -c src/arl_list.c -I include/ -o arl_list_lib.o -DARL_VALUE_TYPE=char
