@@ -44,7 +44,9 @@ If installing perequesites by scripts has failed, You need to install them manua
 
 ## Building
 
-Tool use for building is Meson.
+Main tool used for building here is Meson.
+However each list is composed of one src file and one header file, this should make 
+ the lib easy to compile with any other tool.
 
 There are three building options available:
  - `enable_tests` flag indicating tests compilation
