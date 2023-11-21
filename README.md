@@ -44,8 +44,8 @@ If installing perequesites by scripts has failed, You need to install them manua
 
 ## Building
 
-Main tool used for building here is Meson.
-However each list is composed of one src file and one header file, this should make 
+Main tool used for building here is Meson. <br>
+However each list is composed of one src file and one header file, which should make 
  the lib easy to compile with any other tool.
 
 There are three building options available:
