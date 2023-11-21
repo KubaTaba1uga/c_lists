@@ -42,9 +42,9 @@ If installing perequesites by scripts has failed, You need to install them manua
 Tool use for building is Meson.
 
 There are three building options available:
- - enable_tests flag indicating tests compilation
- - arl_prefix prefix for all array list's public functions
- - arl_type type for array lis's elements
+ - `enable_tests` flag indicating tests compilation
+ - `arl_prefix` prefix for all array list's public functions
+ - `arl_type` type for array lis's elements
 
 Create build with some options configured
 ```
