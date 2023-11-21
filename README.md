@@ -88,7 +88,7 @@ python3 scripts/generate_sources.py <source file> <new prefix> <new type> (<dest
 ```
  - `source file` is path to the particullar list, ex. `src/arl_list.c`.
  - `new prefix` is prefix which will be used in new src, ex. `arl`.
- - `new type` is user defined type type of list's elements, ex. `void *`,
+ - `new type` is type of list's elements, ex. `void *`,
  - `dest dir` is path to directory in which sources will appear, ex. `.`. This is only optional argument. 
 
 ## Why
