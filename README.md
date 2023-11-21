@@ -91,35 +91,14 @@ There are plans to allow custom structures and enums, if that's sth that You nee
 
 Clone project
 ```
-git clone https://github.com/KubaTaba1uga/c_project_template.git <new project name>
+git clone https://github.com/KubaTaba1uga/c_lists.git
 ```
 
-Delete template git files
-```
-rm -rf <new project name>/.git
-```
+Currently supported lists:
+ - [Array List](https://en.wikipedia.org/wiki/Dynamic_array)
 
-Initiate new git files
-```
-cd <new project name>
-git init
-```
+If installing perequesites by scripts has failed, You need to install them manually.
 
-Once you have initialized the repository, create a remote repository somewhere like GitHub.com.
-
-Add the remote URL to your local git repository
-```
-git remote add origin <URL>
-```
-
-Commit at least one file
-
-Push changes
-```
-git push -u origin master
-```
-
-I recommend installing perequesitest and confirming that all tests are passing before src/* and test/* are actually deleted.
 
 ## Prerequisites
 - [Meson](https://mesonbuild.com/)
@@ -130,24 +109,8 @@ Ruby is used by CMock.
 ## Building
 
 
-Install perequesites by scripts
-```
-./scripts/install_ruby.sh
-./scripts/install_meson.sh
-```
-
-If installing perequesites by scripts has failed, You need to install them manually.
 
 
-Configure build for app and tests
-```
-meson setup build
-```
-
-Compile build config
-```
-meson compile -C build
-```
 
 ## Tests
 
