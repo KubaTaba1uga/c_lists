@@ -154,15 +154,6 @@ There are plans to allow custom structures and enums, if that's sth that You nee
  - Meson support.
  - Only lists, no unnecessary stuff.
 
-
-## Pipelines
-
-Two pipelines are configured. <br>
-unit-tests.yaml makes sure that all unit tests passed. <br>
-merge-gatekeeper.yaml makes sure that all pipelines ran successfully before merging pull request.
-
-
-
 ## Authors
 
   - **Jakub Buczyński** - *C Project Template* -
