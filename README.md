@@ -98,11 +98,12 @@ Currently supported lists:
  - [Array List](https://en.wikipedia.org/wiki/Dynamic_array)
 
 Variables to define:
- - ARL_VALUE_TYPE macro standing for type that You would like to use
+ - ARL_VALUE_TYPE macro standing for type that You would like to use with arl_list.c
 
 To confirm that everything is working we can go to `examples/create_custom_types_gcc` and compile the example.
 ```
-gcc main.c ../../src/arl_list.c  -I../../include -o main -DARL_VALUE_TYPE=char
+gcc main.c ../../src/arl_list.c  -I../../include -o main -DARL_VALUE_TYPE=char && \
+./main
 ```
 
 ## Prerequisites
