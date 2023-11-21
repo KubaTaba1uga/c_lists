@@ -162,8 +162,8 @@ gcc -c src/arl_list.c -I include/ -o arl_list_lib.o -DARL_VALUE_TYPE=char
  - There is no macro overusage so the library is simple to understand and use. <br>
  - Library can be generated for basic types (`char`, `float`, `int` etc.) and for `void *`. <br> 
 There are plans to allow custom structures and enums, if that's sth that You need, let me know ;) 
- - There is a mechanism to delete almost all macro, look on generating_sources section.
- - There is mechanism to delete names duplications, look on generating_sources section.
+ - There is a mechanism to delete almost all macro, look on [Generating Sources](#Generating-Sources) section.
+ - There is mechanism to delete names duplications, look on [Generating Sources](#Generating-Sources) section.
  - Meson support.
  - Only lists, no unnecessary stuff.
 
