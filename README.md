@@ -75,8 +75,6 @@ some c file
   ...
 ```
 
-I think it would be nice to give C developers a datastructures libs that wouldn't create `void *` limitation.
-
 ## BTW What is nice about C Lists Library?
  - Only two files are required to use particullar list, source file and header file. <br>
  - There is no macro overusage so the library is simple to understand and use. <br>
