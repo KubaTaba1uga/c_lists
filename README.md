@@ -101,8 +101,7 @@ This is basic scenario where list's genericness is done by treating it's element
 
 As this may be fine for most use cases, this kind of implementation is creating unnecessery limits. <br>
 Let's imagine that You would like to use a list for `char` type, to create kind of dynamic string. <br>
-Function need to create and fill the string, but it's length cannot be predicted. <br>
-Real world example would be sth like buffer. <br>
+Real world example equivalent would be chars buffer. <br>
 It would require allocatin memory for each of the chars before appending the char as an element
 ```
   // Dynamic string
