@@ -58,7 +58,6 @@ You can create the same list that You are usually using (with `void *` type) but
 ```
 gcc -c src/arl_list.c -I include/ -o arl_list_lib.o -DARL_VALUE_TYPE=char
 ```
-some c file
 ```
   // Dynamic string
   char *my_string_0 = "nanananananana";
