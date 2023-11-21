@@ -64,7 +64,7 @@ meson compile -C build
 ```
 
 Src file and header file shoudl appear in build dir `build/my_prefix_list.c` `build/my_prefix_list.h`. <br>
-These are regenerated files to include into Your project. Meson is capable to generate shared library, static
+These files are ready to include into Your project. Meson is capable of generating shared library, static
 library and more. Check it out if You need more than just src files.
 
 ## Tests
