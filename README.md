@@ -11,6 +11,45 @@ Generic values, no dependencies, C99 compliant, cross platform (Windows/Linux/Ma
 7. [Authors](#Authors)
 8. [License](#License)
 
+
+## Getting Started
+
+Clone project
+```
+git clone https://github.com/KubaTaba1uga/c_lists.git
+```
+
+Currently supported lists:
+ - [Array List](https://en.wikipedia.org/wiki/Dynamic_array)
+
+Variables to define:
+ - ARL_VALUE_TYPE macro standing for type that You would like to use with arl_list.c
+
+To confirm that everything is working we can go to `examples/create_custom_types_gcc` and compile the example.
+```
+gcc main.c ../../src/arl_list.c  -I../../include -o main -DARL_VALUE_TYPE=char && \
+./main
+```
+
+## Prerequisites
+- [Meson](https://mesonbuild.com/)
+- [Ruby](https://www.ruby-lang.org/en/)
+
+If installing perequesites by scripts has failed, You need to install them manually.
+
+## Building
+
+
+
+
+
+## Tests
+
+Run all tests
+```
+meson test -C build
+```
+
 ## Why
 Library can be used as any other C data structure library, by compiling with default settings.
 ```
@@ -87,43 +126,6 @@ There are plans to allow custom structures and enums, if that's sth that You nee
  - Meson support.
  - Only lists, no unnecessary stuff.
 
-## Getting Started
-
-Clone project
-```
-git clone https://github.com/KubaTaba1uga/c_lists.git
-```
-
-Currently supported lists:
- - [Array List](https://en.wikipedia.org/wiki/Dynamic_array)
-
-Variables to define:
- - ARL_VALUE_TYPE macro standing for type that You would like to use with arl_list.c
-
-To confirm that everything is working we can go to `examples/create_custom_types_gcc` and compile the example.
-```
-gcc main.c ../../src/arl_list.c  -I../../include -o main -DARL_VALUE_TYPE=char && \
-./main
-```
-
-## Prerequisites
-- [Meson](https://mesonbuild.com/)
-- [Ruby](https://www.ruby-lang.org/en/)
-
-If installing perequesites by scripts has failed, You need to install them manually.
-
-## Building
-
-
-
-
-
-## Tests
-
-Run all tests
-```
-meson test -C build
-```
 
 ### Style test
 
