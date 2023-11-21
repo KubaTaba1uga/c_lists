@@ -167,7 +167,7 @@ There are plans to allow custom structures and enums, if that's sth that You nee
 
 ## Authors
 
-  - **Jakub Buczyński** - *C Project Template* -
+  - **Jakub Buczyński** - *C Lists Library* -
     [KubaTaba1uga](https://github.com/KubaTaba1uga)
 
 ## License
