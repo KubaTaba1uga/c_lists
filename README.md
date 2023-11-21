@@ -22,7 +22,7 @@ This is basic scenario where list's genericness is done by treating it's element
 As this may be fine for most use cases, this kind of implementation is creating unnecessery limits. <br>
 Let's imagine that You would like to use a list for `char` type, to create kind of dynamic string. <br>
 Function need to create and fill the string, but it's length cannot be predicted. <br>
-Real world example would be sth like user input buffer. <br>
+Real world example would be sth like buffer. <br>
 It would require allocatin memory for each of the chars before appending the char as an element
 ```
   // Dynamic string
@@ -32,16 +32,19 @@ It would require allocatin memory for each of the chars before appending the cha
   arl_ptr l;
   size_t i;
 
+  // Creates list's instance
   arl_create(&l, 10);
 
   for (i = 0; i < strlen(my_string_0); i++) {
     c = malloc(sizeof(c));
     *c = my_string_0[i];
+    // Appends my_string_0's values
     arl_append(l, c);
   }
   for (i = 0; i < strlen(my_string_1); i++) {
     c = malloc(sizeof(c));
     *c = my_string_0[i];
+    // Appends my_string_1's values
     arl_append(l, c);
   }
   ...
