@@ -97,14 +97,19 @@ git clone https://github.com/KubaTaba1uga/c_lists.git
 Currently supported lists:
  - [Array List](https://en.wikipedia.org/wiki/Dynamic_array)
 
-If installing perequesites by scripts has failed, You need to install them manually.
+Variables to define:
+ - ARL_VALUE_TYPE macro standing for type that You would like to use
 
+To confirm that everything is working we can go to `examples/create_custom_types_gcc` and compile the example.
+```
+gcc main.c ../../src/arl_list.c  -I../../include -o main -DARL_VALUE_TYPE=char
+```
 
 ## Prerequisites
 - [Meson](https://mesonbuild.com/)
 - [Ruby](https://www.ruby-lang.org/en/)
 
-Ruby is used by CMock.
+If installing perequesites by scripts has failed, You need to install them manually.
 
 ## Building
 
