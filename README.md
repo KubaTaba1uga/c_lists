@@ -39,9 +39,26 @@ If installing perequesites by scripts has failed, You need to install them manua
 
 ## Building
 
+Tool use for building is Meson.
 
+There are three building options available:
+ - enable_tests flag indicating tests compilation
+ - arl_prefix prefix for all array list's public functions
+ - arl_type type for array lis's elements
 
+Create build with some options configured
+```
+meson setup build -Denable_tests=false -Darl_prefix=my_prefix -Darl_type=float
+```
 
+Compile build
+```
+meson compile -C build
+```
+
+Src file and header file shoudl appear in build dir `build/my_prefix_list.c` `build/my_prefix_list.h`.
+These are regenerated files to include into Your project. Meson is capabile of doing much more, 
+here are described only cutom functions. 
 
 ## Tests
 
