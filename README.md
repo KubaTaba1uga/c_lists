@@ -86,10 +86,10 @@ Sources for particullar list can be generated to make things easier.
 ```
 python3 scripts/generate_sources.py <source file> <new prefix> <new type> (<dest dir>)
 ```
-`source file` is path to the particullar list, ex. `src/arl_list.c`.
-`new prefix` is prefix which will be used in new src, ex. `arl`.
-`new type` is user defined type type of list's elements, ex. `void *`,
-`dest dir` is path to directory in which sources will appear, ex. `.`. This is only optional argument. 
+ - `source file` is path to the particullar list, ex. `src/arl_list.c`.
+ - `new prefix` is prefix which will be used in new src, ex. `arl`.
+ - `new type` is user defined type type of list's elements, ex. `void *`,
+ - `dest dir` is path to directory in which sources will appear, ex. `.`. This is only optional argument. 
 
 ## Why
 Library can be used as any other C data structure library, by compiling with default settings.
