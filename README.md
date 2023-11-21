@@ -19,8 +19,10 @@ gcc -c src/arl_list.c -I include/ -o arl_list_lib.o
 
 This is basic scenario where list's genericness is done by treating it's elements as of `void *` type. 
 
-It's fine for some cases, but not for all of them. This lib wants to fill a gap in exactly `not all of them` space. <br>
+As this may be fine for most use cases, this kind of implementation is creating unnecessery limits. <br>
 Let's imagine that You would like to use a list for `char` type, to create kind of dynamic string. <br>
+Function need to create and fill the string, but it's length cannot be predicted.
+Real world example would be sth like user input buffer.
 It would require allocatin memory for each of the chars before appending the char as an element
 ```
   // Dynamic string
