@@ -2,11 +2,11 @@
 Simple and leightwight library for lists datastructures. <br>
 Generic values, no dependencies, C99 compliant, cross platform (Windows/Linux/MacOs).
 
-1. [Why?](#Why)
 1. [Getting Started](#Getting-Started)
-3. [Prerequisites](#Prerequisites)
-4. [Building](#Building)
-5. [Tests](#Tests)
+2. [Prerequisites](#Prerequisites)
+3. [Building](#Building)
+4. [Tests](#Tests)
+5. [Why?](#Why)
 6. [Pipelines](#Pipelines)
 7. [Authors](#Authors)
 8. [License](#License)
