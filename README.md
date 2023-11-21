@@ -156,13 +156,6 @@ There are plans to allow custom structures and enums, if that's sth that You nee
  - Only lists, no unnecessary stuff.
 
 
-### Style test
-
-New tests units should be grouped by directories.
-To understand more look on ./test directory.
-
-Hierarchial build is very favoured by Meson, splitting test unit's into seperate directories allow keeping meson.builds short and simple.
-
 ## Pipelines
 
 Two pipelines are configured. <br>
