@@ -191,7 +191,7 @@ arl_error arl_slice(arl_ptr l, size_t start_i, size_t elements_amount,
   if (_is_i_too_big(l, last_elem_i))
     return ARL_ERROR_INVALID_ARGS;
 
-  for (k = 0; k < elements_amount; k++) {
+  for (k = 0; k <= elements_amount; k++) {
     _get(l, k + start_i, &slice[k]);
   }
 
